@@ -24,6 +24,40 @@ img{max-width:100%;display:block}
 
 /* header */
 .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:22px 18px;border-bottom:1.5px dashed var(--rule)}
+
+/* search: a taped-in index card, not a search engine box.
+   Sits with the city/area/category rows — it filters the same places they do. */
+.search{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding-block:0 26px}
+.search .lead{font-family:var(--hand);font-size:20px;color:var(--muted)}
+.sbox{position:relative;display:flex;align-items:center;flex:1 1 240px;max-width:360px}
+/* z-index: the focus transform below promotes the input into the positioned
+   paint layer, which would otherwise cover this icon while you type. */
+.search .mag{position:absolute;left:11px;z-index:1;width:17px;height:17px;color:var(--muted);pointer-events:none}
+.search input{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--sheet);
+  border:1.5px solid var(--rule);border-radius:4px;padding:7px 30px 8px 34px;transition:border-color .15s,transform .15s}
+.search input::placeholder{font-family:var(--hand);font-size:19px;color:var(--muted);opacity:1}
+.search input:hover{border-color:var(--muted)}
+.search input:focus{outline:none;border-color:var(--ink);transform:rotate(-.8deg)}
+.qx{position:absolute;right:6px;appearance:none;background:none;border:0;cursor:pointer;color:var(--muted);
+  font-size:20px;line-height:1;padding:2px 6px;border-radius:3px}
+.qx:hover{color:var(--ink)}
+.qres{position:absolute;top:calc(100% + 7px);left:0;right:0;z-index:40;background:var(--sheet);
+  border:1.5px solid var(--ink);border-radius:5px;box-shadow:3px 4px 0 rgba(63,33,22,.13);
+  max-height:min(62vh,420px);overflow-y:auto;padding:4px}
+/* Both lines are clipped to one row each, so every result is the same height
+   and a long Japanese name can't push the meta line out of alignment. */
+.qr{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 9px;align-items:baseline;padding:7px 9px;cursor:pointer;border-radius:4px}
+.qr+.qr{border-top:1px dashed var(--rule)}
+.qr>i{width:9px;height:9px;border-radius:50%;background:var(--c);grid-row:span 2;align-self:center}
+.qn{font-weight:700;font-size:15px;line-height:1.3;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qn small{font-family:var(--jp);font-weight:500;font-size:12.5px;color:var(--muted);margin-left:6px}
+.qn mark{background:var(--tape);color:inherit;border-radius:2px;padding:0 1px}
+.qm{grid-column:2;font-size:12.5px;color:var(--muted);line-height:1.3;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qm b{font-weight:700;color:#4F7A1E}
+.qr[aria-selected="true"]{background:var(--paper);outline:1.5px solid var(--ink);outline-offset:-1.5px}
+.qr[aria-selected="true"] .qn mark{background:var(--yuzu)}
+.qnone{margin:0;padding:10px 11px;font-family:var(--hand);font-size:19px;color:var(--muted)}
+@media (max-width:760px){.sbox{max-width:none}}
 .brand{display:flex;align-items:center;text-decoration:none}
 .brand img{height:64px;width:auto;margin-block:-8px;transition:transform .2s}
 .brand:hover img{transform:rotate(-4deg)}
@@ -76,7 +110,7 @@ img{max-width:100%;display:block}
 .a[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink);transform:rotate(-1.5deg)}
 .a[aria-pressed="true"] small{color:var(--yuzu)}
 /* filters */
-.filters{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding-block:10px 26px;font-size:15px}
+.filters{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding-block:10px 14px;font-size:15px}
 .filters .lead{font-family:var(--hand);font-size:20px;color:var(--muted);margin-right:2px}
 .f{appearance:none;background:none;border:0;font:inherit;cursor:pointer;color:var(--ink);display:inline-flex;align-items:center;gap:7px;padding:4px 2px;font-weight:500}
 .f i{width:11px;height:11px;border-radius:50%;background:var(--c);flex:0 0 auto}
@@ -244,7 +278,8 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
   .areas,.filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(90deg,#000 88%,transparent)}
   .areas::-webkit-scrollbar,.filters::-webkit-scrollbar,.cities::-webkit-scrollbar{display:none}
   .areas>*,.filters>*{flex:0 0 auto;white-space:nowrap}
-  .filters{gap:4px 14px;padding-block:8px 18px}
+  .filters{gap:4px 14px;padding-block:8px 10px}
+  .search{padding-block:0 18px}
   .entry{grid-template-columns:96px minmax(0,1fr);gap:14px;padding-block:20px}
   .pola{padding:5px 5px 22px}
   .pola .cap{font-size:13px;bottom:2px}

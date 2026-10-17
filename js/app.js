@@ -333,10 +333,13 @@ function renderTrips(){
     return `<section class="agroup"><div><span class="kicker">${list.length} trips</span><h2>${G.t}</h2><p class="why">${G.why}</p></div><div class="trips">${list.map((t,i)=>`<article class="trip" style="--r:${[-1.2,.9,-.6,1.4][i%4]}deg"><span class="tape"></span><div class="th"><span class="tn">${String(i+1).padStart(2,"0")}</span><h3>${t.n}<small>${t.jp}</small></h3></div><p class="best">${t.best}</p><dl class="facts"><div><dt>getting there</dt><dd>${t.go}</dd></div><div><dt>one way</dt><dd>${t.time} · ${t.cost}</dd></div><div><dt>plan for</dt><dd>${t.day}</dd></div></dl><p class="pass"><b>Pass?</b> ${t.ps}</p><p class="see"><b>Don't miss:</b> ${t.see.join(" · ")}</p><p class="hfood"><b>Halal food:</b> ${t.halal}</p><p class="tip">${t.tip}</p><div class="stores"><a class="store" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(t.q)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>${t.book?`<a class="store" href="${t.book}" target="_blank" rel="noopener">Book a tour on GetYourGuide ↗</a>`:""}${t.city&&CITIES[t.city]&&P.some(p=>p.city===t.city)?`<button class="store go-city" data-c="${t.city}">See our ${CITIES[t.city].n} page →</button>`:""}</div></article>`).join("")}</div></section>`}).join("");
   $("tripgroups").querySelectorAll(".go-city").forEach(b=>b.onclick=()=>{city=b.dataset.c;store.set("tabineko-city",city);selected=null;area=null;zoomTo=null;halalOnly=false;renderAll();show("map")});
 }
-function show(target){
+// quiet=true swaps the page without moving the viewport, so a search jump can
+// scroll to its own card instead of fighting this function for the scroll.
+function show(target,quiet){
   const pg=["apps","trips"].includes(target)?target:null;
   $("home").hidden=!!pg;$("apps").hidden=pg!=="apps";$("trips").hidden=pg!=="trips";
   document.querySelectorAll(".top nav a").forEach(a=>a.classList.toggle("cur",a.dataset.go===(pg||"map")));
+  if(quiet)return;
   if(pg){window.scrollTo(0,0);return}
   const el=target&&document.getElementById(target);
   if(el)requestAnimationFrame(()=>el.scrollIntoView({behavior:"smooth",block:"start"}));else window.scrollTo(0,0);
@@ -351,6 +354,103 @@ renderAll();renderApps();renderTrips();
   b.onclick=()=>m.scrollIntoView({behavior:"smooth",block:"start"});
   const upd=()=>{const r=m.getBoundingClientRect();b.classList.toggle("show",!$("home").hidden&&r.bottom<0)};
   addEventListener("scroll",upd,{passive:true});upd();})();
+
+// Search is a jump, not a filter. It looks across every city, because the place
+// you half-remember is rarely in the city you happen to have open, and the rest
+// of the UI is hard-gated to one city at a time.
+const LOW=s=>(s||"").toLowerCase();
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const IDX=P.map(p=>({p,name:LOW(p.n),jp:p.jp||"",area:LOW(p.area),
+  cat:LOW(CATS[p.cat].n),cityn:LOW(CITIES[p.city].n),rest:LOW([p.tip,p.cap,p.t].join(" "))}));
+
+// Ranked so an exact name beats a word buried in a tip. 0 means "no match",
+// and every typed word has to match something, so "kyoto coffee" narrows.
+function score(e,w){
+  if(e.name.startsWith(w))return 100;
+  if(e.name.includes(w))return 70;
+  if(e.jp.includes(w))return 60;
+  if(e.cityn.startsWith(w))return 45;
+  if(e.area.includes(w))return 40;
+  if(e.cat.includes(w))return 30;
+  if(e.rest.includes(w))return 10;
+  return 0;
+}
+function searchPlaces(q){
+  const terms=LOW(q).trim().split(/\s+/).filter(Boolean);
+  if(!terms.length)return[];
+  const out=[];
+  IDX.forEach(e=>{let sc=0;
+    for(const w of terms){const s=score(e,w);if(!s)return;sc+=s}
+    if(e.p.city===city)sc+=5;
+    out.push({e,sc})});
+  return out.sort((a,b)=>b.sc-a.sc||a.e.name.localeCompare(b.e.name)).slice(0,8);
+}
+// Marks every matched run, so the user can see which word earned the hit.
+function hl(s,terms){
+  const n=LOW(s),m=new Array(s.length).fill(false);
+  terms.forEach(w=>{for(let i=n.indexOf(w);i>-1;i=n.indexOf(w,i+w.length))
+    for(let k=i;k<i+w.length;k++)m[k]=true});
+  let out="",open=false;
+  for(let i=0;i<s.length;i++){
+    if(m[i]&&!open){out+="<mark>";open=true}
+    if(!m[i]&&open){out+="</mark>";open=false}
+    out+=esc(s[i])}
+  return out+(open?"</mark>":"");
+}
+(function(){
+  const box=$("q"),res=$("qres"),clr=$("qx");if(!box)return;
+  let hits=[],cur=-1;
+  const close=()=>{res.hidden=true;res.innerHTML="";box.setAttribute("aria-expanded","false");
+    box.removeAttribute("aria-activedescendant");hits=[];cur=-1};
+  const mark=()=>{res.querySelectorAll(".qr").forEach((el,i)=>el.setAttribute("aria-selected",i===cur));
+    if(cur>-1){const el=res.children[cur];box.setAttribute("aria-activedescendant",el.id);
+      el.scrollIntoView({block:"nearest"})}else box.removeAttribute("aria-activedescendant")};
+  function draw(){
+    const terms=LOW(box.value).trim().split(/\s+/).filter(Boolean);
+    clr.hidden=!box.value;
+    hits=searchPlaces(box.value);cur=-1;
+    if(!box.value.trim()){close();return}
+    if(!hits.length){
+      res.innerHTML=`<p class="qnone">Apollo hasn't been there yet.</p>`;
+      res.hidden=false;box.setAttribute("aria-expanded","true");return}
+    res.innerHTML=hits.map(({e},i)=>{const p=e.p,C=CATS[p.cat];
+      return `<div class="qr" id="qr-${i}" role="option" aria-selected="false" data-i="${i}" style="--c:var(--${p.cat})">
+        <i aria-hidden="true"></i>
+        <span class="qn">${hl(p.n,terms)}${p.jp&&LOW(p.jp.trim())!==LOW(p.n.trim())?`<small>${esc(p.jp)}</small>`:""}</span>
+        <span class="qm">${esc(CITIES[p.city].n)} · ${esc(p.area)} · ${esc(C.n)}${p.halal?' · <b>halal</b>':""}</span>
+      </div>`}).join("");
+    res.hidden=false;box.setAttribute("aria-expanded","true");
+    res.querySelectorAll(".qr").forEach(el=>{
+      el.onmouseenter=()=>{cur=+el.dataset.i;mark()};
+      el.onclick=()=>pick(hits[+el.dataset.i].e.p)});
+  }
+  function pick(p){
+    box.value="";close();clr.hidden=true;box.blur();
+    if(p.city!==city){city=p.city;store.set("tabineko-city",city)}
+    // A hit must never land on a card the filters are hiding, so clear every
+    // filter that could be hiding it rather than guessing which one is.
+    active=new Set(Object.keys(CATS));area=null;halalOnly=false;zoomTo=null;selected=null;
+    renderCities();renderAreas();renderFilters();
+    select(p.id,true);
+  }
+  box.oninput=draw;
+  box.onfocus=()=>{if(box.value.trim())draw()};
+  clr.onclick=()=>{box.value="";close();clr.hidden=true;box.focus()};
+  box.onkeydown=e=>{
+    if(e.key==="Escape"){box.value="";close();clr.hidden=true;box.blur();return}
+    if(!hits.length)return;
+    if(e.key==="ArrowDown"){e.preventDefault();cur=(cur+1)%hits.length;mark()}
+    else if(e.key==="ArrowUp"){e.preventDefault();cur=(cur-1+hits.length)%hits.length;mark()}
+    else if(e.key==="Enter"){e.preventDefault();pick(hits[cur>-1?cur:0].e.p)}
+  };
+  document.addEventListener("click",e=>{if(!e.target.closest(".search"))close()});
+  // "/" is the web's search shortcut; ignore it while the user is typing elsewhere.
+  // The box lives on the home page, so from Day trips or Apps we go back first.
+  addEventListener("keydown",e=>{
+    if(e.key!=="/"||e.metaKey||e.ctrlKey)return;
+    const t=e.target.tagName;if(t==="INPUT"||t==="TEXTAREA"||e.target.isContentEditable)return;
+    e.preventDefault();if($("home").hidden)show("map",true);box.focus()});
+})();
 
 addEventListener("hashchange",()=>show(location.hash.slice(1)));
 if(location.hash==="#apps"||location.hash==="#trips")show(location.hash.slice(1));else document.querySelector('.top nav a[data-go="map"]').classList.add("cur");

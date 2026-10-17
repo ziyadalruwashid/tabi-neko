@@ -35,6 +35,16 @@
   <div class="cities" id="cities"></div>
   <div class="areas" id="areas"></div>
   <div class="filters" id="filters"></div>
+  <div class="search" role="search">
+    <span class="lead">or look for:</span>
+    <div class="sbox">
+      <svg class="mag" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.8 15.8 21 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="a place, an area, a dish…" aria-label="Search places"
+             role="combobox" aria-expanded="false" aria-controls="qres" aria-autocomplete="list">
+      <button class="qx" id="qx" type="button" aria-label="Clear search" hidden>×</button>
+      <div class="qres" id="qres" role="listbox" aria-label="Search results" hidden></div>
+    </div>
+  </div>
 
   <button class="tomap" id="tomap" type="button" aria-label="Back to the map">↑ Map</button>
   <main id="map">
