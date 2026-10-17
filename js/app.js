@@ -36,9 +36,14 @@ function renderFilters(){
     else if(active.has(k)){active.delete(k);if(!active.size)active=new Set(all)}
     else active.add(k);zoomTo=null;renderFilters();renderMap();renderList()});
 }
-function fitBox(list,W,H,min=.03){
+// trim ignores that fraction of places at each edge, so a handful of far-out
+// spots (Disney, USJ) stop shrinking the centre where almost everything is.
+// Those places are then drawn as tabs on the border rather than dropped.
+function fitBox(list,W,H,min=.03,trim=0){
   if(!list.length)return BOX[city];
-  let n=Math.max(...list.map(p=>p.lat)),s=Math.min(...list.map(p=>p.lat)),e=Math.max(...list.map(p=>p.lng)),w=Math.min(...list.map(p=>p.lng));
+  const lat=list.map(p=>p.lat).sort((a,b)=>a-b),lo=list.map(p=>p.lng).sort((a,b)=>a-b);
+  const t=list.length>=12?trim:0,q=(a,f)=>a[Math.round((a.length-1)*f)];
+  let n=q(lat,1-t),s=q(lat,t),e=q(lo,1-t),w=q(lo,t);
   const k=Math.cos(((n+s)/2)*Math.PI/180);
   let la=Math.max(n-s,min),ln=Math.max((e-w)*k,min);
   la*=1.12;ln*=1.12;
@@ -52,27 +57,71 @@ function renderMap(){
   const pts=P.filter(p=>p.city===city),W=600,H=480,G=GEO[city],c=CITIES[city];
   const vis=pts.filter(p=>visible(p)&&!p.nomap);
   if(zoomTo&&selected){const sp=pts.find(p=>p.id===selected);if(sp&&(sp.lat>zoomTo.n||sp.lat<zoomTo.s||sp.lng<zoomTo.w||sp.lng>zoomTo.e))zoomTo=null}
-  const B=zoomTo||fitBox(vis.length?vis:pts,W,H);
+  const B=zoomTo||fitBox(vis.length?vis:pts,W,H,.03,.03);
   const E=EXTRA[city]||{streets:[],stations:[],marks:[],labels:[]};
   const k=Math.cos(((B.n+B.s)/2)*Math.PI/180),s=Math.min(W/((B.e-B.w)*k),H/(B.n-B.s));
   const ox=(W-(B.e-B.w)*k*s)/2,oy=(H-(B.n-B.s)*s)/2;
   const X=(a,b)=>ox+(b-B.w)*k*s,Y=(a,b)=>oy+(B.n-a)*s;
   const pl=a=>a.map(q=>X(q[0],q[1]).toFixed(1)+","+Y(q[0],q[1]).toFixed(1)).join(" ");
   const span=B.n-B.s,wide=span>.05,tight=span<.012;
+  // Measured up here so the pin pass below can keep clear of the scale bar.
+  const kmPx=s/111,km=kmPx>70?1:(kmPx>28?2:5),bar=km*kmPx;
 
   // Pins are grouped first so every label below can dodge them.
-  const R=30,items=vis.map(p=>({p,x:X(p.lat,p.lng),y:Y(p.lat,p.lng)})),groups=[];
+  // A place the trimmed frame left outside the sheet is pulled onto the margin and
+  // marked `off`, so it stays visible and clickable as an edge tab with a chevron
+  // pointing the way it really lies. `off` pins only ever group with other `off`
+  // pins — a tab on the margin is not in the same spot as a pin that lives there.
+  // Only the trimmed overview pushes places off the sheet on purpose, so only it
+  // gets tabs. In a cluster zoom the rest of the city is meant to be out of shot —
+  // clamping there would ring the sheet with tabs for everything you zoomed past.
+  const clamp=!zoomTo;
+  const R=30,M=30,items=vis.map(p=>{
+    const rx=X(p.lat,p.lng),ry=Y(p.lat,p.lng);
+    if(!clamp||(rx>=0&&rx<=W&&ry>=0&&ry<=H))return {p,x:rx,y:ry};
+    const x=Math.min(W-M,Math.max(M,rx)),y=Math.min(H-M,Math.max(M,ry));
+    return {p,x,y,off:true,ang:Math.atan2(ry-y,rx-x)};
+  }),groups=[];
   items.forEach(it=>{
-    if(it.p.id===selected){groups.push({m:[it],x:it.x,y:it.y,sel:true});return}
-    const gr=groups.find(q=>!q.sel&&Math.hypot(q.x-it.x,q.y-it.y)<R);
-    if(gr){gr.m.push(it);gr.x=gr.m.reduce((a,q)=>a+q.x,0)/gr.m.length;gr.y=gr.m.reduce((a,q)=>a+q.y,0)/gr.m.length}else groups.push({m:[it],x:it.x,y:it.y});
+    if(it.p.id===selected){groups.push({m:[it],x:it.x,y:it.y,sel:true,off:it.off});return}
+    const gr=groups.find(q=>!q.sel&&q.off===it.off&&Math.hypot(q.x-it.x,q.y-it.y)<R);
+    if(gr){gr.m.push(it);gr.x=gr.m.reduce((a,q)=>a+q.x,0)/gr.m.length;gr.y=gr.m.reduce((a,q)=>a+q.y,0)/gr.m.length}else groups.push({m:[it],x:it.x,y:it.y,off:it.off});
   });
+  // Mean outward direction, so a tab holding several off places points sensibly.
+  const oang=gr=>Math.atan2(gr.m.reduce((a,it)=>a+Math.sin(it.ang),0),gr.m.reduce((a,it)=>a+Math.cos(it.ang),0));
+  // The scale bar and compass are drawn under the pins, so a pin landing on them
+  // reads as part of the legend. Nudge marks off them, and off the paper's edge —
+  // the tighter frame leaves more pins straddling it. Runs before `blobs` so the
+  // label solver dodges where the marks actually end up.
+  const FURN=[[16,H-34,28+bar+58,H-6],[W-62,6,W-8,66]];
+  groups.forEach(gr=>{
+    const must=gr.m.some(it=>it.p.tier==="must");
+    // In `tight` mode a cluster fans its members out around this point, so the
+    // radius to keep clear is the fan's reach, not the ring's.
+    const r=gr.m.length===1?(must?20:14)
+      :tight?16+gr.m.length*3+(must?20:14)
+      :15+Math.min(9,gr.m.length*1.2)+(must?9:0);
+    let x=Math.min(W-r-2,Math.max(r+2,gr.x)),y=Math.min(H-r-2,Math.max(r+2,gr.y));
+    for(let pass=0;pass<2;pass++)FURN.forEach(([x0,y0,x1,y1])=>{
+      if(x+r<=x0||x-r>=x1||y+r<=y0||y-r>=y1)return;
+      const c=[[x,y0-r-2],[x,y1+r+2],[x0-r-2,y],[x1+r+2,y]]
+        .filter(([a,b])=>a>=r+2&&a<=W-r-2&&b>=r+2&&b<=H-r-2);
+      if(!c.length)return;
+      const w=c.reduce((p,q)=>Math.hypot(q[0]-x,q[1]-y)<Math.hypot(p[0]-x,p[1]-y)?q:p);
+      x=w[0];y=w[1];
+    });
+    gr.x=x;gr.y=y;
+  });
+  // Radii must match what the pin pass below actually paints, `must` ring included —
+  // a must pin draws out to r=19 and a must cluster to r+9, so modelling either at
+  // the plain body radius lets the label solver tuck names under the dashed ring.
   const blobs=[];
   groups.forEach((gr,gi)=>{
     const i=gr.sel?1e9:gi; // the selected pin is drawn last, so it covers everything
-    if(gr.m.length===1){blobs.push({i,x:gr.x,y:gr.y,r:gr.sel?24:15});return}
-    if(tight){const rad=16+gr.m.length*3;gr.m.forEach((it,j)=>{const a=-Math.PI/2+j*2*Math.PI/gr.m.length;blobs.push({i,x:gr.x+rad*Math.cos(a),y:gr.y+rad*Math.sin(a),r:15})});return}
-    blobs.push({i,x:gr.x,y:gr.y,r:15+Math.min(9,gr.m.length*1.2)+4});
+    const must=gr.m.some(it=>it.p.tier==="must");
+    if(gr.m.length===1){blobs.push({i,x:gr.x,y:gr.y,r:gr.sel?24:must?21:15});return}
+    if(tight){const rad=16+gr.m.length*3;gr.m.forEach((it,j)=>{const a=-Math.PI/2+j*2*Math.PI/gr.m.length;blobs.push({i,x:gr.x+rad*Math.cos(a),y:gr.y+rad*Math.sin(a),r:it.p.tier==="must"?21:15})});return}
+    blobs.push({i,x:gr.x,y:gr.y,r:15+Math.min(9,gr.m.length*1.2)+(must?10:4)});
   });
   const taken=[];
   const free=(x,y,w,h)=>{
@@ -90,6 +139,24 @@ function renderMap(){
     }
     return null;
   };
+  // Street and water names are rotated and centred. Testing their whole length
+  // matters — a centre-only test happily drops a pin halfway along the name — but an
+  // axis-aligned box around rotated text grossly overstates it: a 120x15 name at 45°
+  // becomes a 95x95 box and gets rejected everywhere. So walk the real baseline.
+  // Walks the glyph box, not the baseline: `y` is a text baseline, so the ink sits
+  // above it, and `dy` shifts it further. Reserving a band centred on the baseline
+  // instead leaves the tops of the letters unclaimed, which is how a station name
+  // ends up a few px inside the street name it crosses.
+  const rpts=(x,y,w,rot,h,dy=0)=>{const a=rot*Math.PI/180,n=Math.max(2,Math.round(w/14)),o=[];
+    const ly=dy-h*.275,ox=-ly*Math.sin(a),oy=ly*Math.cos(a);
+    for(let i=0;i<=n;i++){const d=-w/2+w*i/n;o.push([x+d*Math.cos(a)+ox,y+d*Math.sin(a)+oy])}return o};
+  const rfree=(x,y,w,h,rot,dy)=>rpts(x,y,w,rot,h,dy).every(([px,py])=>px>3&&px<W-3&&py>3&&py<H-3
+    &&freeAt(px,py,h*.5+2)
+    &&!taken.some(t=>px>t.x-7&&px<t.x+t.w+7&&py>t.y-h*.5&&py<t.y+t.h+h*.5));
+  // Reserves 4px taller than the clearance test uses, to cover the stroke halo. Only
+  // what the label reserves grows, not what it needs to find a slot, so this costs
+  // no street labels.
+  const rtake=(x,y,w,h,rot,dy)=>rpts(x,y,w,rot,h,dy).forEach(([px,py])=>taken.push({x:px-7,y:py-h/2-2,w:14,h:h+4}));
   const ring=d=>[[d,5,"start"],[-d,5,"end"],[0,-d,"middle"],[0,d*1.5,"middle"],[d*.7,-d*.7,"start"],[-d*.7,-d*.7,"end"],[d*.7,d*1.1,"start"],[-d*.7,d*1.1,"end"]];
   const SIDES=[...ring(10),...ring(19),...ring(30)];
   const HERE=[[0,0,"middle"],...ring(14),...ring(26),...ring(38)];
@@ -106,14 +173,15 @@ function renderMap(){
   G.areas.forEach(([t,a,b])=>pool.push({t,x:X(a,b),y:Y(a,b),gate:false}));
   E.labels.forEach(([t,a,b])=>pool.push({t,x:X(a,b),y:Y(a,b),gate:true}));
   if(!tight)groups.forEach((gr,gi)=>{
-    if(gr.m.length<2)return;
+    if(gr.m.length<2||gr.off)return; // a clamped tab is not in the district it sits on
     const r=15+Math.min(9,gr.m.length*1.2);let best=null,bd=1e9;
     pool.forEach(q=>{if(q.used)return;const d=Math.hypot(q.x-gr.x,q.y-gr.y);if(d<bd&&d<r+48){bd=d;best=q}});
     if(!best)return;
     const w=best.t.length*9;
     // A caption can only be covered by marks drawn after its own cluster, so the
     // test is draw-order aware; without that, dense Tokyo rejects every slot.
-    const slot=[[0,r+12],[0,-r-24],[-w*.4,r+12],[w*.4,r+12],[-w*.4,-r-24],[w*.4,-r-24]]
+    const slot=[[0,r+12],[0,-r-24],[-w*.4,r+12],[w*.4,r+12],[-w*.4,-r-24],[w*.4,-r-24],
+      [-w*.8,r+12],[w*.8,r+12],[-w*.8,-r-24],[w*.8,-r-24],[-w/2-r-6,4],[w/2+r+6,4]]
       .map(([dx,dy])=>[gr.x-w/2+dx,gr.y+dy])
       .find(([x,y])=>y>3&&y+12<H-3&&x>3&&x+w<W-3
         &&!blobs.some(b=>b.i>gi&&Math.hypot(b.x-Math.max(x,Math.min(b.x,x+w)),b.y-Math.max(y,Math.min(b.y,y+12)))<b.r-3)
@@ -153,8 +221,9 @@ function renderMap(){
     if(Math.hypot(x2-x1,y2-y1)<60)return;
     let ang=Math.atan2(y2-y1,x2-x1)*180/Math.PI;if(ang>90)ang-=180;if(ang<-90)ang+=180;
     const at=[.72,.5,.28,.86,.14].map(f=>[x1+(x2-x1)*f,y1+(y2-y1)*f])
-      .find(([mx,my])=>mx>8&&mx<W-8&&my>8&&my<H-8&&freeAt(mx,my,13));
+      .find(([mx,my])=>mx>8&&mx<W-8&&my>8&&my<H-8&&freeAt(mx,my,13)&&rfree(mx,my,nm.length*7.4,15,ang,-5));
     if(!at)return;
+    rtake(at[0],at[1],nm.length*7.4,15,ang,-5);
     lab+=`<text class="stn" transform="translate(${at[0].toFixed(1)},${at[1].toFixed(1)}) rotate(${ang.toFixed(1)})" text-anchor="middle" dy="-5" stroke="var(--land)" stroke-width="3" paint-order="stroke">${nm}</text>`});
 
   E.stations.forEach(([nm,a,b])=>{const x=X(a,b),y=Y(a,b);if(x<-20||x>W+20||y<-20||y>H+20)return;
@@ -172,8 +241,16 @@ function renderMap(){
 
   if(G.loop&&wide){const L=G.loop,x=X(L.at[0],L.at[1]),y=Y(L.at[0],L.at[1]);
     if(freeAt(x,y,15))lab+=`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" font-family="var(--hand)" font-size="16" fill="${L.c}" stroke="var(--land)" stroke-width="4" paint-order="stroke">${L.name}</text>`}
-  G.wl.forEach(([t,a,b,rot])=>{const x=X(a,b),y=Y(a,b);if(x<10||x>W-10||y<10||y>H-10||!freeAt(x,y,14))return;
-    lab+=`<text class="wl" transform="translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${rot})" text-anchor="middle">${t}</text>`});
+  // Water names slide along their own axis before giving up: the anchor in the data
+  // is a nice spot in the bay, not the only one, and dropping the whole name because
+  // one pin landed on it loses more than moving it does.
+  G.wl.forEach(([t,a,b,rot])=>{const x0=X(a,b),y0=Y(a,b),w=t.length*8.5;
+    const ar=rot*Math.PI/180,dx=Math.cos(ar),dy=Math.sin(ar);
+    const at=[0,.5,-.5,1,-1].map(f=>[x0+dx*w*f,y0+dy*w*f])
+      .find(([x,y])=>x>10&&x<W-10&&y>10&&y<H-10&&freeAt(x,y,14)&&rfree(x,y,w,16,rot));
+    if(!at)return;
+    rtake(at[0],at[1],w,16,rot);
+    lab+=`<text class="wl" transform="translate(${at[0].toFixed(1)},${at[1].toFixed(1)}) rotate(${rot})" text-anchor="middle">${t}</text>`});
   pool.forEach(q=>{if(q.used||(q.gate&&span>=.07))return;const p2=place(q.x,q.y,q.t.length*9,12,HERE);
     if(p2)lab+=`<text class="ml" x="${p2.x.toFixed(1)}" y="${p2.y.toFixed(1)}" text-anchor="${p2.a}" stroke="var(--land)" stroke-width="4" paint-order="stroke">${q.t}</text>`});
   if(G.sticker){const S=G.sticker,x=X(S.lat,S.lng),y=Y(S.lat,S.lng);
@@ -181,17 +258,18 @@ function renderMap(){
       lab+=`<image href="assets/${S.img}.png" x="${(x-S.w/2).toFixed(1)}" y="${(y-S.w*.8).toFixed(1)}" width="${S.w}" height="${S.w}" preserveAspectRatio="xMidYMid meet" transform="rotate(-6 ${x.toFixed(1)} ${y.toFixed(1)})"/><text x="${x.toFixed(1)}" y="${(y+S.w*.34).toFixed(1)}" text-anchor="middle" font-family="var(--hand)" font-size="16" fill="var(--ink)" stroke="var(--land)" stroke-width="4" paint-order="stroke">${S.note}</text>`}
   g+=lab;
 
-  const kmPx=s/111,km=kmPx>70?1:(kmPx>28?2:5),bar=km*kmPx;
   g+=`<g transform="translate(22,${H-20})"><rect x="0" y="-4" width="${(bar/2).toFixed(1)}" height="8" fill="var(--ink)" stroke="var(--ink)" stroke-width="1"/><rect x="${(bar/2).toFixed(1)}" y="-4" width="${(bar/2).toFixed(1)}" height="8" fill="var(--sheet)" stroke="var(--ink)" stroke-width="1"/><text x="${(bar+8).toFixed(1)}" y="5" font-family="var(--hand)" font-size="16" fill="var(--ink)">${km} km</text></g>`;
   g+=`<g transform="translate(${W-36},42)"><circle r="18" fill="var(--sheet)" opacity=".8"/><circle r="18" fill="none" stroke="var(--rule)" stroke-width="1.3"/><path d="M-13 0H13M0 -13V13" stroke="var(--rule)" stroke-width="1"/><path d="M0 -15L5 0L-5 0Z" fill="var(--lantern)"/><path d="M0 15L5 0L-5 0Z" fill="var(--ink)" opacity=".18"/><path d="M0 -15L5 0L0 15L-5 0Z" fill="none" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/><text y="-20" text-anchor="middle" font-family="var(--hand)" font-weight="700" font-size="15" fill="var(--ink)">N</text></g>`;
 
-  const pin=(p,x,y)=>{const on=p.id===selected;let fl="";
+  // Arrowhead at distance d along angle a, drawn upright then swung into place.
+  const chev=(x,y,a,d)=>`<path d="M${(d-7).toFixed(1)} -6L${d} 0L${(d-7).toFixed(1)} 6" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity=".5" transform="rotate(${(a*180/Math.PI).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}) translate(${x.toFixed(1)} ${y.toFixed(1)})"/>`;
+  const pin=(p,x,y,ang)=>{const on=p.id===selected;let fl="";
     if(on){const{lw,lx,up,ly}=flag(p,x,y);
       fl=`<g transform="rotate(${up?-1.6:1.6} ${lx.toFixed(1)} ${(ly+12).toFixed(1)})"><path d="M${x.toFixed(1)} ${(up?y-18:y+18).toFixed(1)}V${(up?ly+24:ly).toFixed(1)}" stroke="var(--ink)" stroke-width="1.6"/>`
         +`<rect x="${(lx-lw/2).toFixed(1)}" y="${ly.toFixed(1)}" width="${lw.toFixed(1)}" height="25" rx="3" fill="var(--sheet)" stroke="var(--ink)" stroke-width="1.7"/>`
         +`<rect x="${(lx-lw/2).toFixed(1)}" y="${(ly+21).toFixed(1)}" width="${lw.toFixed(1)}" height="4" fill="var(--${p.cat})"/>`
         +`<text x="${lx.toFixed(1)}" y="${(ly+17).toFixed(1)}" text-anchor="middle" font-family="var(--hand)" font-weight="700" font-size="19" fill="var(--ink)">${p.n}</text></g>`}
-    return `<g class="pin${on?" on":""}" data-id="${p.id}" tabindex="0" role="button" aria-label="${p.n}"><ellipse cx="${x.toFixed(1)}" cy="${(y+14).toFixed(1)}" rx="7.5" ry="2.6" fill="var(--ink)" opacity=".16"/><g class="b">
+    return `<g class="pin${on?" on":""}" data-id="${p.id}" tabindex="0" role="button" aria-label="${p.n}${ang===undefined?"":", further out past the edge"}">${ang===undefined?"":chev(x,y,ang,p.tier==="must"?24:19)}<ellipse cx="${x.toFixed(1)}" cy="${(y+14).toFixed(1)}" rx="7.5" ry="2.6" fill="var(--ink)" opacity=".16"/><g class="b">
       <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="13" fill="var(--${p.cat})" stroke="var(--sheet)" stroke-width="3"/>
       <text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="middle" font-family="var(--body)" font-weight="700" font-size="11" fill="#fff">${+p.num}</text>
       ${p.tier==="must"?`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="19" fill="none" stroke="var(--lantern)" stroke-width="1.8" stroke-dasharray="3 3.5"/>`:""}
@@ -200,8 +278,8 @@ function renderMap(){
   const CK=Object.keys(CATS);
   let top="";
   groups.forEach((gr,gi)=>{
-    if(gr.m.length===1){const h=pin(gr.m[0].p,gr.m[0].x,gr.m[0].y);if(gr.sel)top+=h;else g+=h;return}
-    if(tight){const n=gr.m.length,rad=16+n*3;gr.m.forEach((it,i)=>{const a=-Math.PI/2+i*2*Math.PI/n;g+=pin(it.p,gr.x+rad*Math.cos(a),gr.y+rad*Math.sin(a))});return}
+    if(gr.m.length===1){const h=pin(gr.m[0].p,gr.x,gr.y,gr.m[0].ang);if(gr.sel)top+=h;else g+=h;return}
+    if(tight){const n=gr.m.length,rad=16+n*3;gr.m.forEach((it,i)=>{const a=-Math.PI/2+i*2*Math.PI/n;g+=pin(it.p,gr.x+rad*Math.cos(a),gr.y+rad*Math.sin(a),it.ang)});return}
     const n=gr.m.length,r=15+Math.min(9,n*1.2),must=gr.m.some(it=>it.p.tier==="must"),tally={};
     gr.m.forEach(it=>tally[it.p.cat]=(tally[it.p.cat]||0)+1);
     const ks=CK.filter(q=>tally[q]);
@@ -209,7 +287,7 @@ function renderMap(){
     if(ks.length<2)ring=`<circle cx="${gr.x.toFixed(1)}" cy="${gr.y.toFixed(1)}" r="${r.toFixed(1)}" fill="none" stroke="var(--${ks[0]})" stroke-width="5"/>`;
     else{let a0=-Math.PI/2;ks.forEach(q=>{const sw=2*Math.PI*tally[q]/n,gap=Math.min(.11,sw*.3);
       ring+=`<path d="${ARC(gr.x,gr.y,r,a0+gap/2,a0+sw-gap/2)}" fill="none" stroke="var(--${q})" stroke-width="5" stroke-linecap="round"/>`;a0+=sw})}
-    g+=`<g class="clu" data-g="${gi}" tabindex="0" role="button" aria-label="${n} places here, zoom in"><ellipse cx="${gr.x.toFixed(1)}" cy="${(gr.y+r+1).toFixed(1)}" rx="${(r*.62).toFixed(1)}" ry="3" fill="var(--ink)" opacity=".16"/><g class="b">
+    g+=`<g class="clu" data-g="${gi}" tabindex="0" role="button" aria-label="${n} places ${gr.off?"further out past the edge":"here"}, zoom in">${gr.off?chev(gr.x,gr.y,oang(gr),r+(must?14:7)):""}<ellipse cx="${gr.x.toFixed(1)}" cy="${(gr.y+r+1).toFixed(1)}" rx="${(r*.62).toFixed(1)}" ry="3" fill="var(--ink)" opacity=".16"/><g class="b">
       ${must?`<circle cx="${gr.x.toFixed(1)}" cy="${gr.y.toFixed(1)}" r="${(r+8).toFixed(1)}" fill="none" stroke="var(--lantern)" stroke-width="1.8" stroke-dasharray="3 3.5"/>`:""}
       <circle cx="${gr.x.toFixed(1)}" cy="${gr.y.toFixed(1)}" r="${r.toFixed(1)}" fill="var(--sheet)" stroke="var(--land)" stroke-width="3"/>
       ${ring}
