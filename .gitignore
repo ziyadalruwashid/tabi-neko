@@ -8,3 +8,7 @@ desktop.ini
 
 # Local dev servers
 node_modules/
+
+# Local dev notes (personal; not for the public repo)
+CLAUDE.md
+places-without-photos-oct17.csv
