@@ -27,7 +27,10 @@ img{max-width:100%;display:block}
 
 /* search: a taped-in index card, not a search engine box.
    Sits with the city/area/category rows — it filters the same places they do. */
-.search{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding-block:0 26px}
+/* Row order is: areas, search, filters. The three padding-blocks interlock —
+   each row's bottom plus the next row's top is the gap between them — so
+   moving a row means moving its padding with it. */
+.search{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding-block:10px 14px}
 .search .lead{font-family:var(--hand);font-size:20px;color:var(--muted)}
 .sbox{position:relative;display:flex;align-items:center;flex:1 1 240px;max-width:360px}
 /* z-index: the focus transform below promotes the input into the positioned
@@ -135,7 +138,7 @@ img{max-width:100%;display:block}
 .ao[aria-selected="true"]{background:var(--paper);outline:1.5px solid var(--ink);outline-offset:-1.5px}
 .ao[aria-selected="true"] mark{background:var(--yuzu)}
 /* filters */
-.filters{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding-block:10px 14px;font-size:15px}
+.filters{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding-block:0 26px;font-size:15px}
 .filters .lead{font-family:var(--hand);font-size:20px;color:var(--muted);margin-right:2px}
 .f{appearance:none;background:none;border:0;font:inherit;cursor:pointer;color:var(--ink);display:inline-flex;align-items:center;gap:7px;padding:4px 2px;font-weight:500}
 .f i{width:11px;height:11px;border-radius:50%;background:var(--c);flex:0 0 auto}
@@ -328,13 +331,13 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
   .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(90deg,#000 88%,transparent)}
   .filters::-webkit-scrollbar,.cities::-webkit-scrollbar{display:none}
   .filters>*{flex:0 0 auto;white-space:nowrap}
-  .filters{gap:4px 14px;padding-block:8px 10px}
+  .filters{gap:4px 14px;padding-block:0 18px}
   /* The trigger sits ~90px in behind "in Tokyo:", so anchoring a 340px panel
      to it would run off the right edge of a phone. Span the whole row. */
   .areas{position:relative}
   .adrop{position:static}
   .apanel{left:0;right:0;width:auto;max-width:none}
-  .search{padding-block:0 18px}
+  .search{padding-block:8px 10px}
   .entry{grid-template-columns:96px minmax(0,1fr);gap:14px;padding-block:20px}
   .pola{padding:5px 5px 22px}
   .pola .cap{font-size:13px;bottom:2px}
