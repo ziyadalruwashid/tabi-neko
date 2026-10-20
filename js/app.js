@@ -86,8 +86,13 @@ function renderAreas(){
     else if(e.key==="Enter"){e.preventDefault();pick(shown[cur>-1?cur:0].a)}
   };
 }
+// Each category wears its own sticker, tilted a different way so the row reads
+// as things stuck onto the page rather than a toolbar. The art is cut out of the
+// same sheets a photo-less place falls back to, so the row matches the cards.
+// "Halal only" keeps the plain dot — it is not a category and has no sticker.
+const TILT=[-5,4,-3,5.5,-4.5,3,-2.5];
 function renderFilters(){
-  $("filters").innerHTML=`<span class="lead">show me:</span>`+Object.entries(CATS).map(([k,c])=>`<button class="f" id="f-${k}" data-k="${k}" aria-pressed="${active.has(k)}" style="--c:var(--${k})"><i></i>${c.n}</button>`).join("")+(P.some(p=>p.city===city&&p.halal)?`<button class="f halalf" id="f-halal" aria-pressed="${halalOnly}" style="--c:#4F7A1E"><i></i>Halal only</button>`:"");
+  $("filters").innerHTML=`<span class="lead">show me:</span>`+Object.entries(CATS).map(([k,c],i)=>`<button class="f" id="f-${k}" data-k="${k}" aria-pressed="${active.has(k)}" style="--c:var(--${k});--r:${TILT[i%TILT.length]}deg"><img class="fi" src="assets/icons/${k}.png" alt="" width="26" height="26">${c.n}</button>`).join("")+(P.some(p=>p.city===city&&p.halal)?`<button class="f halalf" id="f-halal" aria-pressed="${halalOnly}" style="--c:#4F7A1E"><i></i>Halal only</button>`:"");
   const hb=$("f-halal");if(hb)hb.onclick=()=>{halalOnly=!halalOnly;zoomTo=null;selected=null;renderFilters();renderMap();renderList()};
   $("filters").querySelectorAll(".f[data-k]").forEach(b=>b.onclick=()=>{const k=b.dataset.k,all=Object.keys(CATS);
     if(active.has(k)&&active.size===all.length)active=new Set([k]);
