@@ -39,6 +39,10 @@ function renderFilters(){
 // trim ignores that fraction of places at each edge, so a handful of far-out
 // spots (Disney, USJ) stop shrinking the centre where almost everything is.
 // Those places are then drawn as tabs on the border rather than dropped.
+// Osaka needs a wider cut than the rest: its outliers come in pairs (teamLab
+// Nagai sits beside Sumiyoshi in the south, USJ beside Kaiyukan in the west),
+// so a 3% quantile drops one of each pair and the survivor still sets the frame.
+const TRIM={osaka:.05};
 function fitBox(list,W,H,min=.03,trim=0){
   if(!list.length)return BOX[city];
   const lat=list.map(p=>p.lat).sort((a,b)=>a-b),lo=list.map(p=>p.lng).sort((a,b)=>a-b);
@@ -57,7 +61,7 @@ function renderMap(){
   const pts=P.filter(p=>p.city===city),W=600,H=480,G=GEO[city],c=CITIES[city];
   const vis=pts.filter(p=>visible(p)&&!p.nomap);
   if(zoomTo&&selected){const sp=pts.find(p=>p.id===selected);if(sp&&(sp.lat>zoomTo.n||sp.lat<zoomTo.s||sp.lng<zoomTo.w||sp.lng>zoomTo.e))zoomTo=null}
-  const B=zoomTo||fitBox(vis.length?vis:pts,W,H,.03,.03);
+  const B=zoomTo||fitBox(vis.length?vis:pts,W,H,.03,TRIM[city]||.03);
   const E=EXTRA[city]||{streets:[],stations:[],marks:[],labels:[]};
   const k=Math.cos(((B.n+B.s)/2)*Math.PI/180),s=Math.min(W/((B.e-B.w)*k),H/(B.n-B.s));
   const ox=(W-(B.e-B.w)*k*s)/2,oy=(H-(B.n-B.s)*s)/2;
