@@ -4,6 +4,7 @@ const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},se
 let city=store.get("tabineko-city")||"tokyo"; if(!CITIES[city])city="tokyo";
 let active=new Set(Object.keys(CATS)),selected=null,area=null,zoomTo=null,halalOnly=false;
 const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const visible=p=>active.has(p.cat)&&(!area||p.area===area)&&(!halalOnly||p.halal);
 const SCRIB="M14 34 C 10 12, 70 4, 120 8 C 170 12, 196 26, 186 46 C 176 64, 90 68, 40 60 C 6 54, 4 30, 30 18 C 44 12, 60 10, 78 9";
 const UNDER="M2 6 C 30 2, 60 9, 90 4 S 140 7, 160 3";
@@ -337,11 +338,21 @@ function renderTrips(){
     return `<section class="agroup"><div><span class="kicker">${list.length} trips</span><h2>${G.t}</h2><p class="why">${G.why}</p></div><div class="trips">${list.map((t,i)=>`<article class="trip" style="--r:${[-1.2,.9,-.6,1.4][i%4]}deg"><span class="tape"></span><div class="th"><span class="tn">${String(i+1).padStart(2,"0")}</span><h3>${t.n}<small>${t.jp}</small></h3></div><p class="best">${t.best}</p><dl class="facts"><div><dt>getting there</dt><dd>${t.go}</dd></div><div><dt>one way</dt><dd>${t.time} · ${t.cost}</dd></div><div><dt>plan for</dt><dd>${t.day}</dd></div></dl><p class="pass"><b>Pass?</b> ${t.ps}</p><p class="see"><b>Don't miss:</b> ${t.see.join(" · ")}</p><p class="hfood"><b>Halal food:</b> ${t.halal}</p><p class="tip">${t.tip}</p><div class="stores"><a class="store" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(t.q)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>${t.book?`<a class="store" href="${t.book}" target="_blank" rel="noopener">Book a tour on GetYourGuide ↗</a>`:""}${t.city&&CITIES[t.city]&&P.some(p=>p.city===t.city)?`<button class="store go-city" data-c="${t.city}">See our ${CITIES[t.city].n} page →</button>`:""}</div></article>`).join("")}</div></section>`}).join("");
   $("tripgroups").querySelectorAll(".go-city").forEach(b=>b.onclick=()=>{city=b.dataset.c;store.set("tabineko-city",city);selected=null;area=null;zoomTo=null;halalOnly=false;renderAll();show("map")});
 }
+// Initials for a contributor with no photo yet: first letter of the first two
+// words, so "Apollo" gives A and "Tabi Neko" gives TN.
+const inits=n=>n.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join("").toUpperCase();
+function renderCrew(){
+  // Three ways to fill the polaroid, in order of preference: a real photo is
+  // cropped to fill the square, a cutout sticker sits contained on the tinted
+  // card the way a place with no photo falls back to its category sticker,
+  // and with neither we print the person's initials.
+  $("crewlist").innerHTML=`<section class="agroup"><div><span class="kicker">${CREW.length} so far</span><h2>The crew</h2><p class="why">Everyone who put something into this notebook.</p></div><div class="crew">${CREW.map((m,i)=>{const img=m.photo||m.art;return`<article class="member" style="--c:var(${m.c||"--lantern"});--r:${[-2.4,1.8,-1.2,2.6][i%4]}deg"><div class="pola"><span class="tape${i%2?" pink":""}"></span><div class="ph${m.photo?" photo":""}">${img?`<img src="${esc(img)}" alt="${esc(m.n)}" loading="lazy">`:`<span class="initial" aria-hidden="true">${esc(inits(m.n))}</span>`}</div>${m.cap?`<span class="cap">${esc(m.cap)}</span>`:""}</div><div class="txt"><h3>${esc(m.n)}${m.jp?`<small>${esc(m.jp)}</small>`:""}${m.role?`<em class="role">${esc(m.role)}</em>`:""}</h3><p>${esc(m.what)}</p>${m.tip?`<p class="tip">${esc(m.tip)}</p>`:""}${m.links&&m.links.length?`<div class="stores">${m.links.map(l=>`<a class="store" href="${esc(l[1])}" target="_blank" rel="noopener noreferrer">${esc(l[0])} ↗</a>`).join("")}</div>`:""}</div></article>`}).join("")}</div></section>`;
+}
 // quiet=true swaps the page without moving the viewport, so a search jump can
 // scroll to its own card instead of fighting this function for the scroll.
 function show(target,quiet){
-  const pg=["apps","trips"].includes(target)?target:null;
-  $("home").hidden=!!pg;$("apps").hidden=pg!=="apps";$("trips").hidden=pg!=="trips";
+  const pg=["apps","trips","crew"].includes(target)?target:null;
+  $("home").hidden=!!pg;$("apps").hidden=pg!=="apps";$("trips").hidden=pg!=="trips";$("crew").hidden=pg!=="crew";
   document.querySelectorAll(".top nav a").forEach(a=>a.classList.toggle("cur",a.dataset.go===(pg||"map")));
   if(quiet)return;
   if(pg){window.scrollTo(0,0);return}
@@ -353,7 +364,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   a.addEventListener("click",e=>{e.preventDefault();show(t);try{history.replaceState(null,"","#"+t)}catch(_){}});
 });
 
-renderAll();renderApps();renderTrips();
+renderAll();renderApps();renderTrips();renderCrew();
 (function(){const b=$("tomap"),m=document.querySelector(".mapwrap");if(!b||!m)return;
   b.onclick=()=>m.scrollIntoView({behavior:"smooth",block:"start"});
   const upd=()=>{const r=m.getBoundingClientRect();b.classList.toggle("show",!$("home").hidden&&r.bottom<0)};
@@ -363,7 +374,6 @@ renderAll();renderApps();renderTrips();
 // you half-remember is rarely in the city you happen to have open, and the rest
 // of the UI is hard-gated to one city at a time.
 const LOW=s=>(s||"").toLowerCase();
-const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const IDX=P.map(p=>({p,name:LOW(p.n),jp:p.jp||"",area:LOW(p.area),
   cat:LOW(CATS[p.cat].n),cityn:LOW(CITIES[p.city].n),rest:LOW([p.tip,p.cap,p.t].join(" "))}));
 
@@ -457,4 +467,4 @@ function hl(s,terms){
 })();
 
 addEventListener("hashchange",()=>show(location.hash.slice(1)));
-if(location.hash==="#apps"||location.hash==="#trips")show(location.hash.slice(1));else document.querySelector('.top nav a[data-go="map"]').classList.add("cur");
+if(["#apps","#trips","#crew"].includes(location.hash))show(location.hash.slice(1));else document.querySelector('.top nav a[data-go="map"]').classList.add("cur");
