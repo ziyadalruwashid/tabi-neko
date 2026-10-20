@@ -5,6 +5,7 @@ let city=store.get("tabineko-city")||"tokyo"; if(!CITIES[city])city="tokyo";
 let active=new Set(Object.keys(CATS)),selected=null,area=null,zoomTo=null,halalOnly=false;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const LOW=s=>(s||"").toLowerCase();
 const visible=p=>active.has(p.cat)&&(!area||p.area===area)&&(!halalOnly||p.halal);
 const SCRIB="M14 34 C 10 12, 70 4, 120 8 C 170 12, 196 26, 186 46 C 176 64, 90 68, 40 60 C 6 54, 4 30, 30 18 C 44 12, 60 10, 78 9";
 const UNDER="M2 6 C 30 2, 60 9, 90 4 S 140 7, 160 3";
@@ -21,13 +22,69 @@ function renderCities(){
   $("cities").innerHTML=h;
   $("cities").querySelectorAll(".cityb").forEach(b=>b.onclick=()=>{if(b.dataset.k===city)return;city=b.dataset.k;store.set("tabineko-city",city);selected=null;area=null;zoomTo=null;halalOnly=false;renderAll()});
 }
+// Tokyo has 35 neighbourhoods, which wrapped to four rows of pills and pushed
+// the map below the fold, so the list lives in a dropdown with its own filter
+// box. Picking an area re-renders this row from scratch, which drops the panel
+// and all its handlers with it — that is why nothing here needs tearing down.
+function closeAreas(){
+  const pan=$("apanel");if(!pan||pan.hidden)return;
+  pan.hidden=true;$("atrig").setAttribute("aria-expanded","false");$("aq").value="";
+}
 function renderAreas(){
-  const pts=P.filter(p=>p.city===city),names=[...new Set(pts.map(p=>p.area))];
+  const pts=P.filter(p=>p.city===city),cn=CITIES[city].n;
   const c=n=>pts.filter(p=>p.area===n).length;
-  $("areas").innerHTML=`<span class="lead">in ${CITIES[city].n}:</span><button class="a" id="a-all" aria-pressed="${!area}">everywhere <small>${pts.length}</small></button>`+
-    names.sort((x,y)=>c(y)-c(x)||x.localeCompare(y)).map((n,i)=>`<button class="a" id="a-${i}" data-a="${n}" aria-pressed="${area===n}">${n} <small>${c(n)}</small></button>`).join("");
-  $("a-all").onclick=()=>{area=null;selected=null;zoomTo=null;renderAreas();renderMap();renderList()};
-  $("areas").querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{area=area===b.dataset.a?null:b.dataset.a;selected=null;zoomTo=null;renderAreas();renderMap();renderList()});
+  const names=[...new Set(pts.map(p=>p.area))].sort((x,y)=>c(y)-c(x)||x.localeCompare(y));
+  // "everywhere" carries the empty string so one code path covers clearing too.
+  const opts=[{n:"everywhere",a:"",c:pts.length},...names.map(n=>({n,a:n,c:c(n)}))];
+  const sel=opts.find(o=>o.a===(area||""))||opts[0];
+  $("areas").innerHTML=`<span class="lead">in ${esc(cn)}:</span><div class="adrop">`+
+    `<button class="atrig" id="atrig" type="button" aria-haspopup="listbox" aria-controls="apanel" aria-expanded="false"${area?' data-on="1"':""}>`+
+      `<b>${esc(sel.n)}</b><small>${sel.c}</small>`+
+      `<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1.6 2.2 8 7.8 14.4 2.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`+
+    `</button>`+
+    `<div class="apanel" id="apanel" hidden>`+
+      `<div class="asbox">`+
+        `<svg class="mag" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.8 15.8 21 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`+
+        `<input id="aq" type="text" autocomplete="off" spellcheck="false" placeholder="which part of ${esc(cn)}?" aria-label="Filter areas" role="combobox" aria-expanded="true" aria-controls="alist" aria-autocomplete="list">`+
+      `</div>`+
+      `<div class="alist" id="alist" role="listbox" aria-label="Areas in ${esc(cn)}"></div>`+
+    `</div></div>`;
+
+  const trig=$("atrig"),pan=$("apanel"),inp=$("aq"),list=$("alist");
+  let shown=opts,cur=-1;
+  const pick=a=>{area=a||null;selected=null;zoomTo=null;renderAreas();renderMap();renderList()};
+  const mark=()=>{[...list.children].forEach((el,i)=>el.setAttribute("aria-selected",i===cur));
+    const el=cur>-1&&list.children[cur];
+    if(el){inp.setAttribute("aria-activedescendant",el.id);el.scrollIntoView({block:"nearest"})}
+    else inp.removeAttribute("aria-activedescendant")};
+  function draw(){
+    const q=LOW(inp.value).trim();
+    shown=q?opts.filter(o=>LOW(o.n).includes(q)):opts;
+    // Pre-select the top hit while filtering so Enter picks the obvious one,
+    // but leave nothing selected on the unfiltered list.
+    cur=q&&shown.length?0:-1;
+    list.innerHTML=shown.length?shown.map((o,i)=>
+      `<button class="ao" id="ao-${i}" type="button" role="option" aria-selected="false" data-a="${esc(o.a)}" data-i="${i}"${o.a===(area||"")?' data-cur="1"':""}><span>${hl(o.n,q?[q]:[])}</span><small>${o.c}</small></button>`
+    ).join(""):`<p class="qnone">No area by that name.</p>`;
+    list.querySelectorAll(".ao").forEach(el=>{
+      el.onmouseenter=()=>{cur=+el.dataset.i;mark()};
+      el.onclick=()=>pick(el.dataset.a)});
+    mark();
+  }
+  const open=()=>{pan.hidden=false;trig.setAttribute("aria-expanded","true");draw();
+    const at=list.querySelector('[data-cur="1"]');if(at)at.scrollIntoView({block:"nearest"});
+    inp.focus()};
+  trig.onclick=()=>pan.hidden?open():closeAreas();
+  trig.onkeydown=e=>{if((e.key==="ArrowDown"||e.key==="Enter"||e.key===" ")&&pan.hidden){e.preventDefault();open()}};
+  inp.oninput=draw;
+  inp.onkeydown=e=>{
+    if(e.key==="Escape"){e.preventDefault();closeAreas();trig.focus();return}
+    if(e.key==="Tab"){closeAreas();return}
+    if(!shown.length)return;
+    if(e.key==="ArrowDown"){e.preventDefault();cur=(cur+1)%shown.length;mark()}
+    else if(e.key==="ArrowUp"){e.preventDefault();cur=(cur-1+shown.length)%shown.length;mark()}
+    else if(e.key==="Enter"){e.preventDefault();pick(shown[cur>-1?cur:0].a)}
+  };
 }
 function renderFilters(){
   $("filters").innerHTML=`<span class="lead">show me:</span>`+Object.entries(CATS).map(([k,c])=>`<button class="f" id="f-${k}" data-k="${k}" aria-pressed="${active.has(k)}" style="--c:var(--${k})"><i></i>${c.n}</button>`).join("")+(P.some(p=>p.city===city&&p.halal)?`<button class="f halalf" id="f-halal" aria-pressed="${halalOnly}" style="--c:#4F7A1E"><i></i>Halal only</button>`:"");
@@ -373,7 +430,6 @@ renderAll();renderApps();renderTrips();renderCrew();
 // Search is a jump, not a filter. It looks across every city, because the place
 // you half-remember is rarely in the city you happen to have open, and the rest
 // of the UI is hard-gated to one city at a time.
-const LOW=s=>(s||"").toLowerCase();
 const IDX=P.map(p=>({p,name:LOW(p.n),jp:p.jp||"",area:LOW(p.area),
   cat:LOW(CATS[p.cat].n),cityn:LOW(CITIES[p.city].n),rest:LOW([p.tip,p.cap,p.t].join(" "))}));
 
@@ -458,6 +514,9 @@ function hl(s,terms){
     else if(e.key==="Enter"){e.preventDefault();pick(hits[cur>-1?cur:0].e.p)}
   };
   document.addEventListener("click",e=>{if(!e.target.closest(".search"))close()});
+  // Registered here, once, rather than inside renderAreas — that function reruns
+  // on every area, city and search pick, and would stack a listener each time.
+  document.addEventListener("click",e=>{if(!e.target.closest(".adrop"))closeAreas()});
   // "/" is the web's search shortcut; ignore it while the user is typing elsewhere.
   // The box lives on the home page, so from Day trips or Apps we go back first.
   addEventListener("keydown",e=>{

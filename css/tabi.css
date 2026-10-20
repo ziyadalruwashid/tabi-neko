@@ -104,11 +104,36 @@ img{max-width:100%;display:block}
 /* neighborhoods */
 .areas{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-block:14px 2px}
 .areas .lead{font-family:var(--hand);font-size:20px;color:var(--muted);margin-right:4px}
-.a{appearance:none;font:inherit;cursor:pointer;color:var(--ink);background:var(--sheet);border:1.5px solid var(--rule);border-radius:4px;padding:3px 11px 4px;font-size:14.5px;font-weight:500;display:inline-flex;align-items:baseline;gap:6px;transition:background .15s,border-color .15s,transform .15s}
-.a small{font-size:12px;color:var(--muted)}
-.a:hover{border-color:var(--ink);transform:rotate(-1.5deg)}
-.a[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink);transform:rotate(-1.5deg)}
-.a[aria-pressed="true"] small{color:var(--yuzu)}
+/* One trigger instead of a pill per neighbourhood. The panel borrows the
+   search box's look so the two filters on this page read as a pair. */
+.adrop{position:relative}
+.atrig{appearance:none;font:inherit;cursor:pointer;color:var(--ink);background:var(--sheet);border:1.5px solid var(--rule);border-radius:4px;padding:5px 11px 6px;font-size:14.5px;font-weight:500;display:inline-flex;align-items:baseline;gap:7px;transition:background .15s,border-color .15s}
+.atrig b{font-weight:500}
+.atrig small{font-size:12px;color:var(--muted)}
+.atrig svg{width:11px;height:8px;align-self:center;margin-left:1px;transition:transform .18s}
+.atrig:hover{border-color:var(--ink)}
+.atrig[aria-expanded="true"]{border-color:var(--ink)}
+.atrig[aria-expanded="true"] svg{transform:rotate(180deg)}
+.atrig[data-on]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.atrig[data-on] small{color:var(--yuzu)}
+.apanel{position:absolute;top:calc(100% + 7px);left:0;z-index:40;width:max(100%,270px);max-width:min(340px,calc(100vw - 36px));
+  background:var(--sheet);border:1.5px solid var(--ink);border-radius:5px;box-shadow:3px 4px 0 rgba(63,33,22,.13);padding:7px}
+.asbox{position:relative;display:flex;align-items:center;margin-bottom:6px}
+.asbox .mag{position:absolute;left:9px;width:15px;height:15px;color:var(--muted);pointer-events:none}
+.asbox input{width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:var(--paper);
+  border:1.5px solid var(--rule);border-radius:4px;padding:5px 9px 6px 30px}
+.asbox input::placeholder{font-family:var(--hand);font-size:17px;color:var(--muted);opacity:1}
+.asbox input:focus{outline:none;border-color:var(--ink)}
+.alist{max-height:min(52vh,320px);overflow-y:auto}
+.ao{appearance:none;font:inherit;cursor:pointer;width:100%;text-align:left;background:none;border:0;border-radius:4px;
+  color:var(--ink);font-size:14.5px;font-weight:500;display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:6px 9px}
+.ao>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ao small{font-size:12px;color:var(--muted);flex:0 0 auto}
+.ao+.ao{border-top:1px dashed var(--rule)}
+.ao mark{background:var(--tape);color:inherit;border-radius:2px;padding:0 1px}
+.ao[data-cur]{font-weight:700}
+.ao[aria-selected="true"]{background:var(--paper);outline:1.5px solid var(--ink);outline-offset:-1.5px}
+.ao[aria-selected="true"] mark{background:var(--yuzu)}
 /* filters */
 .filters{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:center;padding-block:10px 14px;font-size:15px}
 .filters .lead{font-family:var(--hand);font-size:20px;color:var(--muted);margin-right:2px}
@@ -298,10 +323,17 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
   .hero-side .note svg{width:52px;height:34px;margin:2px 0 0 54px;transform:rotate(-30deg) scaleY(-1)}
   .cities{gap:4px 6px;margin-inline:-16px;padding-inline:16px;scroll-snap-type:x proximity}
   .cities>*{scroll-snap-align:start;flex:0 0 auto}
-  .areas,.filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(90deg,#000 88%,transparent)}
-  .areas::-webkit-scrollbar,.filters::-webkit-scrollbar,.cities::-webkit-scrollbar{display:none}
-  .areas>*,.filters>*{flex:0 0 auto;white-space:nowrap}
+  /* .areas is deliberately not in this rule any more: overflow-x makes a
+     scroll container, which would clip the dropdown panel out of sight. */
+  .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .filters::-webkit-scrollbar,.cities::-webkit-scrollbar{display:none}
+  .filters>*{flex:0 0 auto;white-space:nowrap}
   .filters{gap:4px 14px;padding-block:8px 10px}
+  /* The trigger sits ~90px in behind "in Tokyo:", so anchoring a 340px panel
+     to it would run off the right edge of a phone. Span the whole row. */
+  .areas{position:relative}
+  .adrop{position:static}
+  .apanel{left:0;right:0;width:auto;max-width:none}
   .search{padding-block:0 18px}
   .entry{grid-template-columns:96px minmax(0,1fr);gap:14px;padding-block:20px}
   .pola{padding:5px 5px 22px}
