@@ -67,13 +67,16 @@ img{max-width:100%;display:block}
 @media (max-width:640px){.brand img{height:52px}}
 .brand b{font-family:var(--display);font-weight:400;font-size:26px;color:var(--lantern);letter-spacing:.01em}
 .brand span{font-family:var(--jp);font-weight:700;font-size:14px;color:var(--muted)}
-.top nav{display:flex;gap:22px;font-weight:500;font-size:15px}
+.top nav{display:flex;gap:22px;font-weight:500;font-size:15px;margin-inline-start:auto}
+/* The language switch: a small paper tag after the nav. */
+.langb{appearance:none;flex:0 0 auto;cursor:pointer;font:700 14px var(--body);color:var(--ink);background:var(--sheet);border:1.5px solid var(--ink);border-radius:999px;padding:4px 13px 5px;transform:rotate(-3deg);transition:background .15s,color .15s,transform .15s}
+.langb:hover{background:var(--ink);color:var(--paper);transform:rotate(0)}
 .top nav a{text-decoration:none;background-image:linear-gradient(var(--yuzu),var(--yuzu));background-size:0 40%;background-position:0 88%;background-repeat:no-repeat;transition:background-size .2s}
 .top nav a:hover{background-size:100% 40%}
 @media (max-width:640px){.top nav{gap:16px;font-size:14.5px}}
 /* Five links don't fit beside the logo on a small phone, so the nav drops to
    its own row under it and spreads across the width. */
-@media (max-width:480px){.top{flex-wrap:wrap;row-gap:10px;padding-block:16px 12px}.top nav{flex:1 0 100%;justify-content:space-between;gap:10px;font-size:14px;white-space:nowrap}}
+@media (max-width:480px){.top{flex-wrap:wrap;row-gap:10px;padding-block:16px 12px}.top nav{flex:1 0 100%;order:3;justify-content:space-between;gap:10px;font-size:14px;white-space:nowrap}}
 @media (max-width:359px){.top nav{font-size:12.5px;gap:6px}}
 
 /* hero */
@@ -365,6 +368,91 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
   .memo{font-size:21px}
 }
 @media (max-width:640px){.apage{padding:14px 4px 32px}.pics.n1{padding-inline:12%}}
+/* ---- Arabic ----
+   Switching to Arabic sets dir="rtl" on <html>, which flips every flex row,
+   grid and text block on its own. What's left here is the handful of rules
+   pinned to a physical left or right, plus type the Arabic faces need. */
+/* The Latin faces have no Arabic letters, so each Arabic letter falls through
+   to the next face in the stack. Only in Arabic: in English these would also
+   catch the odd accented letter Gaegu lacks, and change how lines wrap. */
+:root[dir=rtl]{
+  --display:"Bagel Fat One","Baloo Bhaijaan 2","Arial Rounded MT Bold",system-ui,sans-serif;
+  --hand:"Gaegu","Marhey","Comic Neue","Segoe Print",cursive;
+  --body:"DM Sans","IBM Plex Sans Arabic","Segoe UI",system-ui,sans-serif;
+}
+[dir=rtl] *{letter-spacing:0!important}
+[dir=rtl] .search .mag{left:auto;right:11px}
+[dir=rtl] .search input{padding:7px 34px 8px 30px}
+[dir=rtl] .qx{right:auto;left:6px}
+[dir=rtl] .qn small{margin:0 6px}
+[dir=rtl] .hero-side .cat{margin-left:0;margin-right:auto;transform:rotate(-4deg) scaleX(-1)}
+[dir=rtl] .hero-side .note{left:auto;right:-70px;transform:rotate(5deg)}
+[dir=rtl] .hero-side .note svg{margin:-6px 70px 0 0;transform:rotate(12deg) scaleX(-1)}
+[dir=rtl] .cityb{text-align:right}
+[dir=rtl] .areas .lead{margin-right:0;margin-left:4px}
+[dir=rtl] .atrig svg{margin-left:0;margin-right:1px}
+[dir=rtl] .apanel{left:auto;right:0}
+[dir=rtl] .asbox .mag{left:auto;right:9px}
+[dir=rtl] .asbox input{padding:5px 30px 6px 9px}
+[dir=rtl] .ao{text-align:right}
+[dir=rtl] .filters .lead{margin-right:0;margin-left:2px}
+[dir=rtl] .halalf{margin-left:0;margin-right:10px;padding-left:12px!important;padding-right:14px!important;border-left:0!important;border-right:1.5px dashed var(--rule)!important}
+[dir=rtl] .txt h3 small{margin:0 6px}
+[dir=rtl] .go.book{margin-left:0;margin-right:14px}
+[dir=rtl] .dontskip{margin-left:0;margin-right:4px;transform:rotate(3deg)}
+[dir=rtl] .tags b small{margin-left:0;margin-right:8px}
+[dir=rtl] .letter .sig{transform:rotate(3deg);transform-origin:right}
+[dir=rtl] footer .links{text-align:left}
+[dir=rtl] .store{padding:5px 9px 5px 12px}
+/* The map is drawn in its own coordinates and its labels are placed by
+   measuring from their start, so it stays left-to-right; Arabic labels inside
+   it still read right to left. */
+[dir=rtl] .map{direction:ltr}
+/* Arabic letters sit taller and lower than Latin ones, so the tight display
+   leading clips them. */
+[dir=rtl] .hero h1,[dir=rtl] .apphero h1{line-height:1.2}
+[dir=rtl] .hero h1 .small,[dir=rtl] .apphero h1 .small{line-height:1.4}
+[dir=rtl] .agroup h2,[dir=rtl] .words h2,[dir=rtl] .trip h3,[dir=rtl] .member h3,[dir=rtl] .app h3{line-height:1.35}
+/* Marhey, the Arabic hand font, runs about a seventh larger than Gaegu at
+   the same size, so every handwritten size steps down to match. */
+[dir=rtl] .search .lead{font-size:17.2px}
+[dir=rtl] .search input::placeholder{font-size:16.3px}
+[dir=rtl] .qnone{font-size:16.3px}
+[dir=rtl] .kicker{font-size:20.6px}
+[dir=rtl] .hero p .turn{font-size:20.6px}
+[dir=rtl] .hero-side .note{font-size:18.9px}
+[dir=rtl] .hop{font-size:15.5px}
+[dir=rtl] .areas .lead{font-size:17.2px}
+[dir=rtl] .asbox input::placeholder{font-size:14.6px}
+[dir=rtl] .filters .lead{font-size:17.2px}
+[dir=rtl] .mapcap b{font-size:18.9px}
+[dir=rtl] .st{font-size:12.9px}
+[dir=rtl] .lm{font-size:12.9px}
+[dir=rtl] .stn{font-size:12px}
+[dir=rtl] .wl{font-size:13.8px}
+[dir=rtl] .pola .cap{font-size:13.8px}
+[dir=rtl] .note{font-size:18.9px}
+[dir=rtl] .dontskip{font-size:16.3px}
+[dir=rtl] .empty{font-size:18.9px}
+[dir=rtl] .save .how{font-size:18.9px}
+[dir=rtl] .letter p{font-size:19.8px}
+[dir=rtl] .letter .sig{font-size:24.1px}
+[dir=rtl] footer .bye small{font-size:20.6px}
+[dir=rtl] .agroup .why{font-size:18.1px}
+[dir=rtl] .app .tip{font-size:17.2px}
+[dir=rtl] .appnote{font-size:16.3px}
+[dir=rtl] .trip .best{font-size:18.1px}
+[dir=rtl] .facts dt{font-size:14.6px}
+[dir=rtl] .trip .tip{font-size:17.2px}
+[dir=rtl] .member .tip{font-size:17.2px}
+[dir=rtl] .memo{font-size:19.8px}
+[dir=rtl] .acount{font-size:18.9px}
+@media (max-width:640px){[dir=rtl] .note{font-size:15.9px} [dir=rtl] .pola .cap{font-size:12px} [dir=rtl] .hero p .turn{font-size:18.1px} [dir=rtl] .hero-side .note{font-size:16.3px} [dir=rtl] .memo{font-size:18.1px}}
+@media (max-width:640px){
+  [dir=rtl] .filters{mask-image:linear-gradient(270deg,#000 88%,transparent)}
+  [dir=rtl] .tomap{right:auto;left:14px}
+  [dir=rtl] footer .links{text-align:right}
+}
 /* ---- phone layout ---- */
 .tomap{display:none}
 @media (max-width:640px){

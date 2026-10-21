@@ -7,26 +7,33 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Gaegu:wght@400;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Gaegu:wght@400;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Zen+Maru+Gothic:wght@500;700&family=Baloo+Bhaijaan+2:wght@800&family=Marhey:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="css/tabi.css">
+<script>
+// Someone who picked Arabic last time gets it before the first paint: the
+// page flips to RTL here and the Arabic text loads ahead of js/app.js.
+try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.lang="ar";document.documentElement.dir="rtl";
+  document.write('<script src="data/ar/ui.js"><\/script><script src="data/ar/content.js"><\/script>')}}catch(e){}
+</script>
 </head>
 <body>
 <div class="wrap" id="top">
   <header class="top">
-    <a class="brand" href="#top" aria-label="Tabi Neko home"><img src="assets/logo.png" alt="Tabi Neko"></a>
-    <nav aria-label="Main"><a href="#map">Map</a><a href="#trips">Day trips</a><a href="#apps">Apps</a><a href="#memories">Memories</a><a href="#crew">Contributors</a></nav>
+    <a class="brand" href="#top" aria-label="Tabi Neko home" data-i18n-attr="aria-label:brand"><img src="assets/logo.png" alt="Tabi Neko" data-i18n-attr="alt:logo"></a>
+    <nav aria-label="Main" data-i18n-attr="aria-label:nav"><a href="#map" data-i18n="nav.map">Map</a><a href="#trips" data-i18n="nav.trips">Day trips</a><a href="#apps" data-i18n="nav.apps">Apps</a><a href="#memories" data-i18n="nav.memories">Memories</a><a href="#crew" data-i18n="nav.crew">Contributors</a></nav>
+    <button class="langb" id="langb" type="button" lang="ar">عربي</button>
   </header>
   <div id="home">
 
   <section class="hero">
     <div>
-      <span class="kicker">a travel notebook, by Apollo</span>
-      <h1>I went to <span class="j">Japan.</span><span class="small">Here's where you should go.</span></h1>
-      <p>One cat. One notebook. Full of places I'd go back to tomorrow. From the neon of Tokyo to the quiet shrines of Kyoto, the street food of Osaka and the sea air of Kobe. Pick a city, follow the cat, and let the pages do the planning. <em class="turn">Turn the page, Apollo knows the way.</em></p>
+      <span class="kicker" data-i18n="hero.kicker">a travel notebook, by Apollo</span>
+      <h1 data-i18n="hero.h1">I went to <span class="j">Japan.</span><span class="small">Here's where you should go.</span></h1>
+      <p data-i18n="hero.p">One cat. One notebook. Full of places I'd go back to tomorrow. From the neon of Tokyo to the quiet shrines of Kyoto, the street food of Osaka and the sea air of Kobe. Pick a city, follow the cat, and let the pages do the planning. <em class="turn">Turn the page, Apollo knows the way.</em></p>
     </div>
     <div class="hero-side" aria-hidden="true">
       <img class="cat" src="assets/cat.png" alt="">
-      <div class="note">this is Apollo. he's your guide
+      <div class="note"><span data-i18n="hero.note">this is Apollo. he's your guide</span>
         <svg viewBox="0 0 70 46"><path d="M4 40 C 20 34, 40 30, 60 8 M 60 8 L 48 10 M 60 8 L 58 20" fill="none" stroke="#3F2116" stroke-width="2.2" stroke-linecap="round"/></svg>
       </div>
     </div>
@@ -35,24 +42,24 @@
   <div class="cities" id="cities"></div>
   <div class="areas" id="areas"></div>
   <div class="search" role="search">
-    <span class="lead">or look for:</span>
+    <span class="lead" data-i18n="search.lead">or look for:</span>
     <div class="sbox">
       <svg class="mag" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.8 15.8 21 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="a place, an area, a dish…" aria-label="Search places"
+      <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="a place, an area, a dish…" aria-label="Search places" data-i18n-attr="placeholder:search.ph,aria-label:search.aria"
              role="combobox" aria-expanded="false" aria-controls="qres" aria-autocomplete="list">
-      <button class="qx" id="qx" type="button" aria-label="Clear search" hidden>×</button>
-      <div class="qres" id="qres" role="listbox" aria-label="Search results" hidden></div>
+      <button class="qx" id="qx" type="button" aria-label="Clear search" data-i18n-attr="aria-label:search.clear" hidden>×</button>
+      <div class="qres" id="qres" role="listbox" aria-label="Search results" data-i18n-attr="aria-label:search.results" hidden></div>
     </div>
   </div>
   <div class="filters" id="filters"></div>
 
-  <button class="tomap" id="tomap" type="button" aria-label="Back to the map">↑ Map</button>
+  <button class="tomap" id="tomap" type="button" aria-label="Back to the map" data-i18n="tomap" data-i18n-attr="aria-label:tomap.aria">↑ Map</button>
   <main id="map">
     <div class="mapwrap">
       <span class="tape"></span><span class="tape pink r"></span>
       <div class="mapsheet">
-        <svg class="map" id="mapsvg" viewBox="0 0 600 480" role="img" aria-label="Hand-drawn map of places"></svg>
-        <div class="mapcap"><b id="mapTitle"></b><span id="mapCount"></span><button class="unzoom" id="unzoom" hidden>← whole map</button></div>
+        <svg class="map" id="mapsvg" viewBox="0 0 600 480" role="img" aria-label="Hand-drawn map of places" data-i18n-attr="aria-label:map.aria"></svg>
+        <div class="mapcap"><b id="mapTitle"></b><span id="mapCount"></span><button class="unzoom" id="unzoom" data-i18n="unzoom" hidden>← whole map</button></div>
       </div>
     </div>
     <div class="entries" id="list"></div>
@@ -62,10 +69,10 @@
   <section class="about" id="about">
     <div class="letter">
       <span class="tape"></span>
-      <p>Meow, I'm Apollo. I packed a tiny backpack, a camera and a very big appetite, and wandered Japan sniffing out the good stuff: halal wagyu, quiet shrines, coffee worth waking up early for, and the best spots for a nap with a view. Every page in this notebook is a place I'd happily go back to. Follow my paw prints, eat well, and don't forget to look up.</p>
-      <span class="sig">— Apollo 🐾</span>
+      <p data-i18n="about.p">Meow, I'm Apollo. I packed a tiny backpack, a camera and a very big appetite, and wandered Japan sniffing out the good stuff: halal wagyu, quiet shrines, coffee worth waking up early for, and the best spots for a nap with a view. Every page in this notebook is a place I'd happily go back to. Follow my paw prints, eat well, and don't forget to look up.</p>
+      <span class="sig" data-i18n="about.sig">— Apollo 🐾</span>
     </div>
-    <img class="cat2" src="assets/logo.png" alt="Tabi Neko">
+    <img class="cat2" src="assets/logo.png" alt="Tabi Neko" data-i18n-attr="alt:logo">
   </section>
 
   </div>
@@ -73,52 +80,52 @@
   <section id="trips" hidden>
     <div class="apphero">
       <div>
-        <span class="kicker">one train, one big day</span>
-        <h1>Day trips<span class="small">Base yourself in the city, wander out for the day.</span></h1>
-        <p>Apollo's favourite escapes from Tokyo, Kyoto and Osaka: how to get there, what it costs, what not to miss, and where to eat halal.</p>
+        <span class="kicker" data-i18n="trips.kicker">one train, one big day</span>
+        <h1 data-i18n="trips.h1">Day trips<span class="small">Base yourself in the city, wander out for the day.</span></h1>
+        <p data-i18n="trips.p">Apollo's favourite escapes from Tokyo, Kyoto and Osaka: how to get there, what it costs, what not to miss, and where to eat halal.</p>
       </div>
     </div>
     <div id="tripgroups"></div>
-    <p class="appnote">Fares and passes change. Last checked October 2026, so double-check on Google Maps or Navitime before you go.</p>
+    <p class="appnote" data-i18n="trips.note">Fares and passes change. Last checked October 2026, so double-check on Google Maps or Navitime before you go.</p>
   </section>
   <section id="apps" hidden>
     <div class="apphero">
       <div>
-        <span class="kicker">before you fly</span>
-        <h1>Apps for Japan<span class="small">Download these before you land.</span></h1>
-        <p>Grouped by what you'll actually need them for. All free to download unless it says otherwise.</p>
+        <span class="kicker" data-i18n="apps.kicker">before you fly</span>
+        <h1 data-i18n="apps.h1">Apps for Japan<span class="small">Download these before you land.</span></h1>
+        <p data-i18n="apps.p">Grouped by what you'll actually need them for. All free to download unless it says otherwise.</p>
       </div>
     </div>
     <div id="appgroups"></div>
-    <p class="appnote">App details change often. Last checked October 2026.</p>
+    <p class="appnote" data-i18n="apps.note">App details change often. Last checked October 2026.</p>
   </section>
   <section id="memories" hidden>
     <div class="apphero">
       <div>
-        <span class="kicker">the bits between the places</span>
-        <h1>Our memories<span class="small">Swipe through the trip.</span></h1>
-        <p>Not tips this time, just the days themselves: the photos we took and what was going on when we took them.</p>
+        <span class="kicker" data-i18n="memories.kicker">the bits between the places</span>
+        <h1 data-i18n="memories.h1">Our memories<span class="small">Swipe through the trip.</span></h1>
+        <p data-i18n="memories.p">Not tips this time, just the days themselves: the photos we took and what was going on when we took them.</p>
       </div>
     </div>
-    <div class="album" id="albumbook" role="region" aria-roledescription="carousel" aria-label="Memories album"></div>
+    <div class="album" id="albumbook" role="region" aria-roledescription="carousel" aria-label="Memories album" data-i18n-attr="aria-label:memories.aria,aria-roledescription:carousel"></div>
   </section>
   <section id="crew" hidden>
     <div class="apphero">
       <div>
-        <span class="kicker">who packed the notebook</span>
-        <h1>Contributors<span class="small">Apollo didn't do it alone.</span></h1>
-        <p>One cat can only be in one place at a time. This is everyone who walked the streets, took the photos and checked every opening time twice.</p>
+        <span class="kicker" data-i18n="crew.kicker">who packed the notebook</span>
+        <h1 data-i18n="crew.h1">Contributors<span class="small">Apollo didn't do it alone.</span></h1>
+        <p data-i18n="crew.p">One cat can only be in one place at a time. This is everyone who walked the streets, took the photos and checked every opening time twice.</p>
       </div>
     </div>
     <div id="crewlist"></div>
-    <p class="appnote">Want to add a place, fix a wrong time or send a better photo? Nudge whoever sent you here.</p>
+    <p class="appnote" data-i18n="crew.note">Want to add a place, fix a wrong time or send a better photo? Nudge whoever sent you here.</p>
   </section>
 
   <footer>
-    <p class="bye">またね!<small>mata ne, see you in Japan</small></p>
+    <p class="bye">またね!<small data-i18n="footer.bye">mata ne, see you in Japan</small></p>
     <div class="links">
-      <a href="#map">Map</a><a href="#trips">Day trips</a><a href="#apps">Apps</a><a href="#memories">Memories</a><a href="#crew">Contributors</a>
-      <span>Tabi Neko · made in Riyadh · 2026</span>
+      <a href="#map" data-i18n="nav.map">Map</a><a href="#trips" data-i18n="nav.trips">Day trips</a><a href="#apps" data-i18n="nav.apps">Apps</a><a href="#memories" data-i18n="nav.memories">Memories</a><a href="#crew" data-i18n="nav.crew">Contributors</a>
+      <span data-i18n="footer.made">Tabi Neko · made in Riyadh · 2026</span>
     </div>
   </footer>
 </div>

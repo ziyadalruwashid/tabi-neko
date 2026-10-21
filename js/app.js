@@ -5,7 +5,48 @@ let city=store.get("tabineko-city")||"tokyo"; if(!CITIES[city])city="tokyo";
 let active=new Set(Object.keys(CATS)),selected=null,area=null,zoomTo=null,halalOnly=false;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const LOW=s=>(s||"").toLowerCase();
+// Folds the Arabic letters people type interchangeably (أ/إ/آ/ا, ة/ه, ى/ي)
+// so a search matches however it is spelled. Every swap is one character for
+// one character, so hl() can still map match positions back onto the original.
+const LOW=s=>(s||"").toLowerCase().replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي");
+
+// ---- language ----
+// English is written inline and is also the lookup key, so a string missing
+// from data/ar/ui.js falls back to English instead of breaking. The Arabic
+// files are only fetched for someone who picks Arabic, see setLang() below.
+let lang=document.documentElement.lang==="ar"&&typeof AR!=="undefined"?"ar":"en";
+const isAR=()=>lang==="ar";
+const AR_ON=()=>typeof AR!=="undefined"&&!!AR.places;
+const fill=(s,v)=>v?s.replace(/\{(\w+)\}/g,(_,k)=>v[k]):s;
+const T=(s,v)=>fill(isAR()&&AR.ui[s]||s,v);
+// A field of a data entry in the current language, e.g. D(place,"tip").
+const D=(o,f)=>isAR()&&o._ar&&o._ar[f]||o[f];
+const AREA=a=>isAR()&&AR.areas[a]||a;
+const ML=s=>isAR()&&AR.map[s]||s;
+// Arabic counts change the noun's form with the number: 1 and 2 have their own
+// words, 3–10 take the plural and 11 and up the singular. forms = [one, two,
+// three-to-ten, eleven-plus]; en = [one, many].
+const N=(n,en,ar)=>!isAR()?`${n} ${n===1?en[0]:en[1]}`:n===1?ar[0]:n===2?ar[1]:`${n} ${n<=10?ar[2]:ar[3]}`;
+const PL={spot:[["spot","spots"],["مكان واحد","مكانان","أماكن","مكانًا"]],trip:[["trip","trips"],["رحلة واحدة","رحلتان","رحلات","رحلة"]],
+  app:[["app","apps"],["تطبيق واحد","تطبيقان","تطبيقات","تطبيقًا"]],place:[["place","places"],["مكان واحد","مكانان","أماكن","مكانًا"]]};
+const NP=(n,k)=>N(n,...PL[k]);
+// Prices, times and ranges stay in Latin digits in the Arabic text. Left loose
+// in a right-to-left line the bidi algorithm swaps the two ends of a range
+// ("¥15–18k" shows as "18k–15¥"), so each run is wrapped in invisible
+// left-to-right isolate marks and reads exactly as it does in English.
+const LTR_RUN=/[~≈]?[¥$€]?[a-zA-Z]*\d[\d.,:%]*[a-zA-Z+]*(?:\s?[–~-]\s?[¥$€]?\d[\d.,:%]*[a-zA-Z+]*)*/g;
+const iso=v=>typeof v==="string"?v.replace(LTR_RUN,"\u2066$&\u2069"):Array.isArray(v)?v.map(iso):v;
+const isoAll=set=>{for(const k in set){const o=set[k];for(const f in o)o[f]=iso(o[f])}};
+// Hangs each entry's Arabic on it as _ar, keyed the same way the files are.
+function attachAR(){
+  if(!AR.iso){[AR.places,AR.trips,AR.apps,AR.crew,AR.album].forEach(isoAll);AR.iso=true}
+  P.forEach(p=>p._ar=AR.places[p.city+"|"+p.n]);
+  TRIPS.forEach(t=>t._ar=AR.trips[t.n]);TGROUPS.forEach(g=>g._ar=AR.tgroups[g.k]);
+  APPS.forEach(a=>a._ar=AR.apps[a.n]);AGROUPS.forEach(g=>g._ar=AR.agroups[g.k]);
+  CREW.forEach(m=>m._ar=AR.crew[m.n]);ALBUM.forEach(m=>m._ar=AR.album[m.t]);
+  for(const k in CITIES)CITIES[k]._ar=AR.cities[k];for(const k in CATS)CATS[k]._ar={n:AR.cats[k]};
+}
+if(AR_ON())attachAR();
 const visible=p=>active.has(p.cat)&&(!area||p.area===area)&&(!halalOnly||p.halal);
 const SCRIB="M14 34 C 10 12, 70 4, 120 8 C 170 12, 196 26, 186 46 C 176 64, 90 68, 40 60 C 6 54, 4 30, 30 18 C 44 12, 60 10, 78 9";
 const UNDER="M2 6 C 30 2, 60 9, 90 4 S 140 7, 160 3";
@@ -17,7 +58,7 @@ function renderCities(){
   const ks=Object.keys(CITIES).filter(k=>P.some(p=>p.city===k));let h="";
   if(!ks.includes(city))city=ks[0];
   ks.forEach((k,i)=>{const c=CITIES[k],n=P.filter(p=>p.city===k).length;
-    h+=`<button class="cityb" id="city-${k}" data-k="${k}" aria-pressed="${k===city}"><svg viewBox="0 0 200 70" preserveAspectRatio="none" aria-hidden="true"><path d="${SCRIB}"/></svg><b>${c.n}</b><small>${c.jp} · ${n} spots</small></button>`;
+    h+=`<button class="cityb" id="city-${k}" data-k="${k}" aria-pressed="${k===city}"><svg viewBox="0 0 200 70" preserveAspectRatio="none" aria-hidden="true"><path d="${SCRIB}"/></svg><b>${D(c,"n")}</b><small><bdi>${c.jp}</bdi> · <bdi>${NP(n,"spot")}</bdi></small></button>`;
   });
   $("cities").innerHTML=h;
   $("cities").querySelectorAll(".cityb").forEach(b=>b.onclick=()=>{if(b.dataset.k===city)return;city=b.dataset.k;store.set("tabineko-city",city);selected=null;area=null;zoomTo=null;halalOnly=false;renderAll()});
@@ -31,13 +72,13 @@ function closeAreas(){
   pan.hidden=true;$("atrig").setAttribute("aria-expanded","false");$("aq").value="";
 }
 function renderAreas(){
-  const pts=P.filter(p=>p.city===city),cn=CITIES[city].n;
+  const pts=P.filter(p=>p.city===city),cn=D(CITIES[city],"n");
   const c=n=>pts.filter(p=>p.area===n).length;
   const names=[...new Set(pts.map(p=>p.area))].sort((x,y)=>c(y)-c(x)||x.localeCompare(y));
   // "everywhere" carries the empty string so one code path covers clearing too.
-  const opts=[{n:"everywhere",a:"",c:pts.length},...names.map(n=>({n,a:n,c:c(n)}))];
+  const opts=[{n:T("everywhere"),a:"",c:pts.length},...names.map(n=>({n:AREA(n),a:n,c:c(n)}))];
   const sel=opts.find(o=>o.a===(area||""))||opts[0];
-  $("areas").innerHTML=`<span class="lead">in ${esc(cn)}:</span><div class="adrop">`+
+  $("areas").innerHTML=`<span class="lead">${esc(T("in {c}:",{c:cn}))}</span><div class="adrop">`+
     `<button class="atrig" id="atrig" type="button" aria-haspopup="listbox" aria-controls="apanel" aria-expanded="false"${area?' data-on="1"':""}>`+
       `<b>${esc(sel.n)}</b><small>${sel.c}</small>`+
       `<svg viewBox="0 0 16 10" aria-hidden="true"><path d="M1.6 2.2 8 7.8 14.4 2.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`+
@@ -45,9 +86,9 @@ function renderAreas(){
     `<div class="apanel" id="apanel" hidden>`+
       `<div class="asbox">`+
         `<svg class="mag" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.8 15.8 21 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`+
-        `<input id="aq" type="text" autocomplete="off" spellcheck="false" placeholder="which part of ${esc(cn)}?" aria-label="Filter areas" role="combobox" aria-expanded="true" aria-controls="alist" aria-autocomplete="list">`+
+        `<input id="aq" type="text" autocomplete="off" spellcheck="false" placeholder="${esc(T("which part of {c}?",{c:cn}))}" aria-label="${esc(T("Filter areas"))}" role="combobox" aria-expanded="true" aria-controls="alist" aria-autocomplete="list">`+
       `</div>`+
-      `<div class="alist" id="alist" role="listbox" aria-label="Areas in ${esc(cn)}"></div>`+
+      `<div class="alist" id="alist" role="listbox" aria-label="${esc(T("Areas in {c}",{c:cn}))}"></div>`+
     `</div></div>`;
 
   const trig=$("atrig"),pan=$("apanel"),inp=$("aq"),list=$("alist");
@@ -65,7 +106,7 @@ function renderAreas(){
     cur=q&&shown.length?0:-1;
     list.innerHTML=shown.length?shown.map((o,i)=>
       `<button class="ao" id="ao-${i}" type="button" role="option" aria-selected="false" data-a="${esc(o.a)}" data-i="${i}"${o.a===(area||"")?' data-cur="1"':""}><span>${hl(o.n,q?[q]:[])}</span><small>${o.c}</small></button>`
-    ).join(""):`<p class="qnone">No area by that name.</p>`;
+    ).join(""):`<p class="qnone">${T("No area by that name.")}</p>`;
     list.querySelectorAll(".ao").forEach(el=>{
       el.onmouseenter=()=>{cur=+el.dataset.i;mark()};
       el.onclick=()=>pick(el.dataset.a)});
@@ -92,7 +133,7 @@ function renderAreas(){
 // "Halal only" keeps the plain dot — it is not a category and has no sticker.
 const TILT=[-5,4,-3,5.5,-4.5,3,-2.5];
 function renderFilters(){
-  $("filters").innerHTML=`<span class="lead">show me:</span>`+Object.entries(CATS).map(([k,c],i)=>`<button class="f" id="f-${k}" data-k="${k}" aria-pressed="${active.has(k)}" style="--c:var(--${k});--r:${TILT[i%TILT.length]}deg"><img class="fi" src="assets/icons/${k}.png" alt="" width="26" height="26">${c.n}</button>`).join("")+(P.some(p=>p.city===city&&p.halal)?`<button class="f halalf" id="f-halal" aria-pressed="${halalOnly}" style="--c:#4F7A1E"><i></i>Halal only</button>`:"");
+  $("filters").innerHTML=`<span class="lead">${T("show me:")}</span>`+Object.entries(CATS).map(([k,c],i)=>`<button class="f" id="f-${k}" data-k="${k}" aria-pressed="${active.has(k)}" style="--c:var(--${k});--r:${TILT[i%TILT.length]}deg"><img class="fi" src="assets/icons/${k}.png" alt="" width="26" height="26">${D(c,"n")}</button>`).join("")+(P.some(p=>p.city===city&&p.halal)?`<button class="f halalf" id="f-halal" aria-pressed="${halalOnly}" style="--c:#4F7A1E"><i></i>${T("Halal only")}</button>`:"");
   const hb=$("f-halal");if(hb)hb.onclick=()=>{halalOnly=!halalOnly;zoomTo=null;selected=null;renderFilters();renderMap();renderList()};
   $("filters").querySelectorAll(".f[data-k]").forEach(b=>b.onclick=()=>{const k=b.dataset.k,all=Object.keys(CATS);
     if(active.has(k)&&active.size===all.length)active=new Set([k]);
@@ -237,8 +278,8 @@ function renderMap(){
   // A cluster and the district label on top of it say the same thing, so the
   // cluster adopts the nearest unclaimed district name as its caption instead.
   const pool=[];
-  G.areas.forEach(([t,a,b])=>pool.push({t,x:X(a,b),y:Y(a,b),gate:false}));
-  E.labels.forEach(([t,a,b])=>pool.push({t,x:X(a,b),y:Y(a,b),gate:true}));
+  G.areas.forEach(([t,a,b])=>pool.push({t:ML(t),x:X(a,b),y:Y(a,b),gate:false}));
+  E.labels.forEach(([t,a,b])=>pool.push({t:ML(t),x:X(a,b),y:Y(a,b),gate:true}));
   if(!tight)groups.forEach((gr,gi)=>{
     if(gr.m.length<2||gr.off)return; // a clamped tab is not in the district it sits on
     const r=15+Math.min(9,gr.m.length*1.2);let best=null,bd=1e9;
@@ -283,7 +324,7 @@ function renderMap(){
       g+=`<circle cx="${(x+rr*1.15*Math.cos(a2)).toFixed(1)}" cy="${(y+rr*Math.sin(a2)).toFixed(1)}" r="${Math.min(5,Rr*.12).toFixed(1)}" fill="#C4D79C"/>`}});
 
   let lab="";
-  E.streets.forEach(([nm,pt])=>{g+=`<polyline points="${pl(pt)}" fill="none" stroke="#E2D2BC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  E.streets.forEach(([en,pt])=>{const nm=ML(en);g+=`<polyline points="${pl(pt)}" fill="none" stroke="#E2D2BC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
     const a=pt[0],b=pt[pt.length-1],x1=X(a[0],a[1]),y1=Y(a[0],a[1]),x2=X(b[0],b[1]),y2=Y(b[0],b[1]);
     if(Math.hypot(x2-x1,y2-y1)<60)return;
     let ang=Math.atan2(y2-y1,x2-x1)*180/Math.PI;if(ang>90)ang-=180;if(ang<-90)ang+=180;
@@ -293,7 +334,7 @@ function renderMap(){
     rtake(at[0],at[1],nm.length*7.4,15,ang,-5);
     lab+=`<text class="stn" transform="translate(${at[0].toFixed(1)},${at[1].toFixed(1)}) rotate(${ang.toFixed(1)})" text-anchor="middle" dy="-5" stroke="var(--land)" stroke-width="3" paint-order="stroke">${nm}</text>`});
 
-  E.stations.forEach(([nm,a,b])=>{const x=X(a,b),y=Y(a,b);if(x<-20||x>W+20||y<-20||y>H+20)return;
+  E.stations.forEach(([en,a,b])=>{const nm=ML(en);const x=X(a,b),y=Y(a,b);if(x<-20||x>W+20||y<-20||y>H+20)return;
     g+=`<rect x="${(x-5).toFixed(1)}" y="${(y-5).toFixed(1)}" width="10" height="10" rx="2.5" fill="var(--sheet)" stroke="var(--ink)" stroke-width="2"/>`;
     const p2=place(x,y,nm.length*7.4,15,SIDES);
     if(p2)lab+=`<text class="st" x="${p2.x.toFixed(1)}" y="${p2.y.toFixed(1)}" text-anchor="${p2.a}" stroke="var(--land)" stroke-width="4" paint-order="stroke">${nm}</text>`});
@@ -301,17 +342,17 @@ function renderMap(){
   const ICON={tower:'<path d="M0 -20 L5 6 L-5 6 Z M-3 -4 H3 M-4 1 H4" fill="var(--sheet)" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>',
     castle:'<path d="M-10 6 V-1 H10 V6 Z M-12 -1 L0 -8 L12 -1 Z M-7 -8 L0 -14 L7 -8 Z" fill="var(--sheet)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>',
     temple:'<path d="M-11 -9 Q0 -12 11 -9 M-9 -5 H9 M-6 -9 V6 M6 -9 V6" fill="none" stroke="var(--lantern)" stroke-width="2.6" stroke-linecap="round"/>'};
-  E.marks.forEach(([nm,a,b,t])=>{const x=X(a,b),y=Y(a,b);if(x<-20||x>W+20||y<-20||y>H+20)return;
+  E.marks.forEach(([en,a,b,t])=>{const nm=ML(en);const x=X(a,b),y=Y(a,b);if(x<-20||x>W+20||y<-20||y>H+20)return;
     g+=`<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})">${ICON[t]}</g>`;
     const p2=place(x,y,nm.length*7.4,15,[[0,22,"middle"],[0,32,"middle"],...SIDES]);
     if(p2)lab+=`<text class="lm" x="${p2.x.toFixed(1)}" y="${p2.y.toFixed(1)}" text-anchor="${p2.a}" stroke="var(--land)" stroke-width="4" paint-order="stroke">${nm}</text>`});
 
   if(G.loop&&wide){const L=G.loop,x=X(L.at[0],L.at[1]),y=Y(L.at[0],L.at[1]);
-    if(freeAt(x,y,15))lab+=`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" font-family="var(--hand)" font-size="16" fill="${L.c}" stroke="var(--land)" stroke-width="4" paint-order="stroke">${L.name}</text>`}
+    if(freeAt(x,y,15))lab+=`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" font-family="var(--hand)" font-size="16" fill="${L.c}" stroke="var(--land)" stroke-width="4" paint-order="stroke">${ML(L.name)}</text>`}
   // Water names slide along their own axis before giving up: the anchor in the data
   // is a nice spot in the bay, not the only one, and dropping the whole name because
   // one pin landed on it loses more than moving it does.
-  G.wl.forEach(([t,a,b,rot])=>{const x0=X(a,b),y0=Y(a,b),w=t.length*8.5;
+  G.wl.forEach(([en,a,b,rot])=>{const t=ML(en),x0=X(a,b),y0=Y(a,b),w=t.length*8.5;
     const ar=rot*Math.PI/180,dx=Math.cos(ar),dy=Math.sin(ar);
     const at=[0,.5,-.5,1,-1].map(f=>[x0+dx*w*f,y0+dy*w*f])
       .find(([x,y])=>x>10&&x<W-10&&y>10&&y<H-10&&freeAt(x,y,14)&&rfree(x,y,w,16,rot));
@@ -322,10 +363,10 @@ function renderMap(){
     if(p2)lab+=`<text class="ml" x="${p2.x.toFixed(1)}" y="${p2.y.toFixed(1)}" text-anchor="${p2.a}" stroke="var(--land)" stroke-width="4" paint-order="stroke">${q.t}</text>`});
   if(G.sticker){const S=G.sticker,x=X(S.lat,S.lng),y=Y(S.lat,S.lng);
     if(x>S.w/2&&x<W-S.w/2&&y>0&&y<H&&freeAt(x,y,S.w*.55))
-      lab+=`<image href="assets/${S.img}.png" x="${(x-S.w/2).toFixed(1)}" y="${(y-S.w*.8).toFixed(1)}" width="${S.w}" height="${S.w}" preserveAspectRatio="xMidYMid meet" transform="rotate(-6 ${x.toFixed(1)} ${y.toFixed(1)})"/><text x="${x.toFixed(1)}" y="${(y+S.w*.34).toFixed(1)}" text-anchor="middle" font-family="var(--hand)" font-size="16" fill="var(--ink)" stroke="var(--land)" stroke-width="4" paint-order="stroke">${S.note}</text>`}
+      lab+=`<image href="assets/${S.img}.png" x="${(x-S.w/2).toFixed(1)}" y="${(y-S.w*.8).toFixed(1)}" width="${S.w}" height="${S.w}" preserveAspectRatio="xMidYMid meet" transform="rotate(-6 ${x.toFixed(1)} ${y.toFixed(1)})"/><text x="${x.toFixed(1)}" y="${(y+S.w*.34).toFixed(1)}" text-anchor="middle" font-family="var(--hand)" font-size="16" fill="var(--ink)" stroke="var(--land)" stroke-width="4" paint-order="stroke">${ML(S.note)}</text>`}
   g+=lab;
 
-  g+=`<g transform="translate(22,${H-20})"><rect x="0" y="-4" width="${(bar/2).toFixed(1)}" height="8" fill="var(--ink)" stroke="var(--ink)" stroke-width="1"/><rect x="${(bar/2).toFixed(1)}" y="-4" width="${(bar/2).toFixed(1)}" height="8" fill="var(--sheet)" stroke="var(--ink)" stroke-width="1"/><text x="${(bar+8).toFixed(1)}" y="5" font-family="var(--hand)" font-size="16" fill="var(--ink)">${km} km</text></g>`;
+  g+=`<g transform="translate(22,${H-20})"><rect x="0" y="-4" width="${(bar/2).toFixed(1)}" height="8" fill="var(--ink)" stroke="var(--ink)" stroke-width="1"/><rect x="${(bar/2).toFixed(1)}" y="-4" width="${(bar/2).toFixed(1)}" height="8" fill="var(--sheet)" stroke="var(--ink)" stroke-width="1"/><text x="${(bar+8).toFixed(1)}" y="5" font-family="var(--hand)" font-size="16" fill="var(--ink)">${km} ${T("km")}</text></g>`;
   g+=`<g transform="translate(${W-36},42)"><circle r="18" fill="var(--sheet)" opacity=".8"/><circle r="18" fill="none" stroke="var(--rule)" stroke-width="1.3"/><path d="M-13 0H13M0 -13V13" stroke="var(--rule)" stroke-width="1"/><path d="M0 -15L5 0L-5 0Z" fill="var(--lantern)"/><path d="M0 15L5 0L-5 0Z" fill="var(--ink)" opacity=".18"/><path d="M0 -15L5 0L0 15L-5 0Z" fill="none" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/><text y="-20" text-anchor="middle" font-family="var(--hand)" font-weight="700" font-size="15" fill="var(--ink)">N</text></g>`;
 
   // Arrowhead at distance d along angle a, drawn upright then swung into place.
@@ -336,7 +377,7 @@ function renderMap(){
         +`<rect x="${(lx-lw/2).toFixed(1)}" y="${ly.toFixed(1)}" width="${lw.toFixed(1)}" height="25" rx="3" fill="var(--sheet)" stroke="var(--ink)" stroke-width="1.7"/>`
         +`<rect x="${(lx-lw/2).toFixed(1)}" y="${(ly+21).toFixed(1)}" width="${lw.toFixed(1)}" height="4" fill="var(--${p.cat})"/>`
         +`<text x="${lx.toFixed(1)}" y="${(ly+17).toFixed(1)}" text-anchor="middle" font-family="var(--hand)" font-weight="700" font-size="19" fill="var(--ink)">${p.n}</text></g>`}
-    return `<g class="pin${on?" on":""}" data-id="${p.id}" tabindex="0" role="button" aria-label="${p.n}${ang===undefined?"":", further out past the edge"}">${ang===undefined?"":chev(x,y,ang,p.tier==="must"?24:19)}<ellipse cx="${x.toFixed(1)}" cy="${(y+14).toFixed(1)}" rx="7.5" ry="2.6" fill="var(--ink)" opacity=".16"/><g class="b">
+    return `<g class="pin${on?" on":""}" data-id="${p.id}" tabindex="0" role="button" aria-label="${p.n}${ang===undefined?"":T(", further out past the edge")}">${ang===undefined?"":chev(x,y,ang,p.tier==="must"?24:19)}<ellipse cx="${x.toFixed(1)}" cy="${(y+14).toFixed(1)}" rx="7.5" ry="2.6" fill="var(--ink)" opacity=".16"/><g class="b">
       <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="13" fill="var(--${p.cat})" stroke="var(--sheet)" stroke-width="3"/>
       <text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="middle" font-family="var(--body)" font-weight="700" font-size="11" fill="#fff">${+p.num}</text>
       ${p.tier==="must"?`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="19" fill="none" stroke="var(--lantern)" stroke-width="1.8" stroke-dasharray="3 3.5"/>`:""}
@@ -354,7 +395,7 @@ function renderMap(){
     if(ks.length<2)ring=`<circle cx="${gr.x.toFixed(1)}" cy="${gr.y.toFixed(1)}" r="${r.toFixed(1)}" fill="none" stroke="var(--${ks[0]})" stroke-width="5"/>`;
     else{let a0=-Math.PI/2;ks.forEach(q=>{const sw=2*Math.PI*tally[q]/n,gap=Math.min(.11,sw*.3);
       ring+=`<path d="${ARC(gr.x,gr.y,r,a0+gap/2,a0+sw-gap/2)}" fill="none" stroke="var(--${q})" stroke-width="5" stroke-linecap="round"/>`;a0+=sw})}
-    g+=`<g class="clu" data-g="${gi}" tabindex="0" role="button" aria-label="${n} places ${gr.off?"further out past the edge":"here"}, zoom in">${gr.off?chev(gr.x,gr.y,oang(gr),r+(must?14:7)):""}<ellipse cx="${gr.x.toFixed(1)}" cy="${(gr.y+r+1).toFixed(1)}" rx="${(r*.62).toFixed(1)}" ry="3" fill="var(--ink)" opacity=".16"/><g class="b">
+    g+=`<g class="clu" data-g="${gi}" tabindex="0" role="button" aria-label="${esc(T(gr.off?"{n}, further out past the edge, zoom in":"{n} here, zoom in",{n:NP(n,"place")}))}">${gr.off?chev(gr.x,gr.y,oang(gr),r+(must?14:7)):""}<ellipse cx="${gr.x.toFixed(1)}" cy="${(gr.y+r+1).toFixed(1)}" rx="${(r*.62).toFixed(1)}" ry="3" fill="var(--ink)" opacity=".16"/><g class="b">
       ${must?`<circle cx="${gr.x.toFixed(1)}" cy="${gr.y.toFixed(1)}" r="${(r+8).toFixed(1)}" fill="none" stroke="var(--lantern)" stroke-width="1.8" stroke-dasharray="3 3.5"/>`:""}
       <circle cx="${gr.x.toFixed(1)}" cy="${gr.y.toFixed(1)}" r="${r.toFixed(1)}" fill="var(--sheet)" stroke="var(--land)" stroke-width="3"/>
       ${ring}
@@ -367,21 +408,21 @@ function renderMap(){
   $("mapsvg").querySelectorAll(".pin").forEach(el=>{const act=()=>select(el.dataset.id,true);el.onclick=act;el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act()}}});
   $("mapsvg").querySelectorAll(".clu").forEach(el=>{const act=()=>{zoomTo=fitBox(groups[+el.dataset.g].m.map(it=>it.p),W,H,.006);renderMap()};el.onclick=act;el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act()}}});
   $("unzoom").hidden=!zoomTo;$("unzoom").onclick=()=>{zoomTo=null;renderMap()};
-  $("mapTitle").textContent=`${c.n}, ${c.nick}`;
-  $("mapCount").textContent=zoomTo?"tap a pin for details":(groups.some(q=>q.m.length>1)?"tap a ring to zoom in":`${vis.length} spot${vis.length===1?"":"s"}`);
+  $("mapTitle").textContent=`${D(c,"n")}${T(", ")}${D(c,"nick")}`;
+  $("mapCount").textContent=zoomTo?T("tap a pin for details"):(groups.some(q=>q.m.length>1)?T("tap a ring to zoom in"):NP(vis.length,"spot"));
 }
 function renderList(){
   const pts=P.filter(p=>p.city===city&&visible(p));
-  if(!pts.length){$("list").innerHTML=P.some(p=>p.city===city)?`<p class="empty">Nothing here with those filters yet. Try another neighborhood or category ↑</p>`:`<p class="empty">${CITIES[city].n} places are coming soon. Apollo is still taking notes.</p>`;return}
+  if(!pts.length){$("list").innerHTML=P.some(p=>p.city===city)?`<p class="empty">${T("Nothing here with those filters yet. Try another neighborhood or category ↑")}</p>`:`<p class="empty">${T("{c} places are coming soon. Apollo is still taking notes.",{c:D(CITIES[city],"n")})}</p>`;return}
   $("list").innerHTML=pts.map((p,i)=>{const C=CATS[p.cat],q=encodeURIComponent(`${p.n} ${CITIES[p.city].n} Japan`),r=[-3,2.5,-1.5,3.5,-2.5,1.5][i%6];
     return `<article class="entry${p.id===selected?" on":""}" id="e-${p.id}" data-id="${p.id}" style="--c:var(--${p.cat})">
-      <div class="pola" style="--r:${r}deg"><span class="tape${i%2?" pink":""}"></span>${p.photo?`<div class="ph photo"><img src="${p.photo}" alt="${p.n}" loading="lazy"></div>`:`<div class="ph"><img src="${C.img}" alt=""></div>`}<span class="cap">${p.cap}</span></div>
+      <div class="pola" style="--r:${r}deg"><span class="tape${i%2?" pink":""}"></span>${p.photo?`<div class="ph photo"><img src="${p.photo}" alt="${p.n}" loading="lazy"></div>`:`<div class="ph"><img src="${C.img}" alt=""></div>`}<span class="cap">${D(p,"cap")}</span></div>
       <div class="txt">
-        <div class="no">No. ${p.num}</div>
+        <div class="no">${T("No.")} ${p.num}</div>
         <h3>${p.n}<small>${p.jp}</small></h3>
-        <p class="meta"><span class="c"><i></i>${C.n}</span><span>${p.area}</span>${p.halal?`<span class="halal${p.hl==="friendly"?" mf":""}">${p.hl==="friendly"?"Muslim-friendly":"✓ halal"}</span>`:""}<span>${p.t}</span><span>${p.cost}</span><span>${p.dur}</span></p>
-        <p class="note">${p.tip}${p.tier==="must"?` <span class="dontskip">don't skip this<svg viewBox="0 0 162 10" preserveAspectRatio="none"><path d="${UNDER}" fill="none" stroke="#F14E24" stroke-width="2" stroke-linecap="round"/></svg></span>`:""}</p>
-        <a class="go" href="${p.url||"https://www.google.com/maps/search/?api=1&query="+q}" target="_blank" rel="noopener">Open in Google Maps</a>${p.book?`<a class="go book" href="${p.book}" target="_blank" rel="noopener">Book on ${/getyourguide/.test(p.book)?"GetYourGuide":/klook/.test(p.book)?"Klook":"the site"} ↗</a>`:""}${p.also?`<p class="also">also in: ${p.also.map(([l,qq])=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(qq)}" target="_blank" rel="noopener">${l}</a>`).join(" · ")}</p>`:""}
+        <p class="meta"><span class="c"><i></i>${D(C,"n")}</span><span>${AREA(p.area)}</span>${p.halal?`<span class="halal${p.hl==="friendly"?" mf":""}">${p.hl==="friendly"?T("Muslim-friendly"):T("✓ halal")}</span>`:""}<span>${D(p,"t")}</span><span>${D(p,"cost")}</span><span>${D(p,"dur")}</span></p>
+        <p class="note">${D(p,"tip")}${p.tier==="must"?` <span class="dontskip">${T("don't skip this")}<svg viewBox="0 0 162 10" preserveAspectRatio="none"><path d="${UNDER}" fill="none" stroke="#F14E24" stroke-width="2" stroke-linecap="round"/></svg></span>`:""}</p>
+        <a class="go" href="${p.url||"https://www.google.com/maps/search/?api=1&query="+q}" target="_blank" rel="noopener">${T("Open in Google Maps")}</a>${p.book?`<a class="go book" href="${p.book}" target="_blank" rel="noopener">${T("Book on {s} ↗",{s:/getyourguide/.test(p.book)?"GetYourGuide":/klook/.test(p.book)?"Klook":T("the site")})}</a>`:""}${p.also?`<p class="also">${T("also in:")} ${p.also.map(([l,qq])=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(qq)}" target="_blank" rel="noopener">${l}</a>`).join(" · ")}</p>`:""}
       </div>
     </article>`}).join("");
   $("list").querySelectorAll(".entry").forEach(el=>el.onclick=e=>{if(e.target.closest("a"))return;select(el.dataset.id,false)});
@@ -393,11 +434,11 @@ function select(id,fromMap){
 function renderAll(){renderCities();renderAreas();renderFilters();renderMap();renderList()}
 function renderApps(){
   $("appgroups").innerHTML=AGROUPS.map(G=>{const list=APPS.filter(a=>a.g===G.k);
-    return `<section class="agroup${G.k==="halal"?" halal":""}"><div><span class="kicker">${list.length} app${list.length>1?"s":""}</span><h2>${G.t}</h2><p class="why">${G.why}</p></div><div class="apps">${list.map((a,i)=>`<article class="app" style="--c:var(${G.c});--r:${[-4,3,-2,5][i%4]}deg">${a.icon?`<img class="tile ico" src="${a.icon}" alt="" width="52" height="52" loading="lazy">`:`<span class="tile" aria-hidden="true">${a.n.replace(/^(Your |An |Japan Travel by )/,"")[0].toUpperCase()}</span>`}<div><h3>${a.n}<small>${a.tag}</small></h3><p>${a.what}</p><p class="tip">${a.tip}</p>${a.ios||a.android?`<div class="stores">${a.ios?`<a class="store" href="${a.ios}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>App Store</a>`:""}${a.android?`<a class="store" href="${a.android}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Google Play</a>`:`<span class="store off">Not on Android</span>`}</div>`:""}</div></article>`).join("")}</div></section>`}).join("");
+    return `<section class="agroup${G.k==="halal"?" halal":""}"><div><span class="kicker">${NP(list.length,"app")}</span><h2>${D(G,"t")}</h2><p class="why">${D(G,"why")}</p></div><div class="apps">${list.map((a,i)=>`<article class="app" style="--c:var(${G.c});--r:${[-4,3,-2,5][i%4]}deg">${a.icon?`<img class="tile ico" src="${a.icon}" alt="" width="52" height="52" loading="lazy">`:`<span class="tile" aria-hidden="true">${a.n.replace(/^(Your |An |Japan Travel by )/,"")[0].toUpperCase()}</span>`}<div><h3>${a.n}<small>${D(a,"tag")}</small></h3><p>${D(a,"what")}</p><p class="tip">${D(a,"tip")}</p>${a.ios||a.android?`<div class="stores">${a.ios?`<a class="store" href="${a.ios}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>App Store</a>`:""}${a.android?`<a class="store" href="${a.android}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Google Play</a>`:`<span class="store off">${T("Not on Android")}</span>`}</div>`:""}</div></article>`).join("")}</div></section>`}).join("");
 }
 function renderTrips(){
   $("tripgroups").innerHTML=TGROUPS.map(G=>{const list=TRIPS.filter(t=>t.h===G.k);
-    return `<section class="agroup"><div><span class="kicker">${list.length} trips</span><h2>${G.t}</h2><p class="why">${G.why}</p></div><div class="trips">${list.map((t,i)=>`<article class="trip" style="--r:${[-1.2,.9,-.6,1.4][i%4]}deg"><span class="tape"></span><div class="th"><span class="tn">${String(i+1).padStart(2,"0")}</span><h3>${t.n}<small>${t.jp}</small></h3></div><p class="best">${t.best}</p><dl class="facts"><div><dt>getting there</dt><dd>${t.go}</dd></div><div><dt>one way</dt><dd>${t.time} · ${t.cost}</dd></div><div><dt>plan for</dt><dd>${t.day}</dd></div></dl><p class="pass"><b>Pass?</b> ${t.ps}</p><p class="see"><b>Don't miss:</b> ${t.see.join(" · ")}</p><p class="hfood"><b>Halal food:</b> ${t.halal}</p><p class="tip">${t.tip}</p><div class="stores"><a class="store" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(t.q)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>${t.book?`<a class="store" href="${t.book}" target="_blank" rel="noopener">Book a tour on GetYourGuide ↗</a>`:""}${t.city&&CITIES[t.city]&&P.some(p=>p.city===t.city)?`<button class="store go-city" data-c="${t.city}">See our ${CITIES[t.city].n} page →</button>`:""}</div></article>`).join("")}</div></section>`}).join("");
+    return `<section class="agroup"><div><span class="kicker">${NP(list.length,"trip")}</span><h2>${D(G,"t")}</h2><p class="why">${D(G,"why")}</p></div><div class="trips">${list.map((t,i)=>`<article class="trip" style="--r:${[-1.2,.9,-.6,1.4][i%4]}deg"><span class="tape"></span><div class="th"><span class="tn">${String(i+1).padStart(2,"0")}</span><h3>${D(t,"n")}<small>${t.jp}</small></h3></div><p class="best">${D(t,"best")}</p><dl class="facts"><div><dt>${T("getting there")}</dt><dd>${D(t,"go")}</dd></div><div><dt>${T("one way")}</dt><dd>${D(t,"time")} · ${D(t,"cost")}</dd></div><div><dt>${T("plan for")}</dt><dd>${D(t,"day")}</dd></div></dl><p class="pass"><b>${T("Pass?")}</b> ${D(t,"ps")}</p><p class="see"><b>${T("Don't miss:")}</b> ${D(t,"see").join(" · ")}</p><p class="hfood"><b>${T("Halal food:")}</b> ${D(t,"halal")}</p><p class="tip">${D(t,"tip")}</p><div class="stores"><a class="store" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(t.q)}" target="_blank" rel="noopener">${T("Open in Google Maps ↗")}</a>${t.book?`<a class="store" href="${t.book}" target="_blank" rel="noopener">${T("Book a tour on GetYourGuide ↗")}</a>`:""}${t.city&&CITIES[t.city]&&P.some(p=>p.city===t.city)?`<button class="store go-city" data-c="${t.city}">${T("See our {c} page →",{c:D(CITIES[t.city],"n")})}</button>`:""}</div></article>`).join("")}</div></section>`}).join("");
   $("tripgroups").querySelectorAll(".go-city").forEach(b=>b.onclick=()=>{city=b.dataset.c;store.set("tabineko-city",city);selected=null;area=null;zoomTo=null;halalOnly=false;renderAll();show("map")});
 }
 // Initials for a contributor with no photo yet: first letter of the first two
@@ -408,36 +449,42 @@ function renderCrew(){
   // cropped to fill the square, a cutout sticker sits contained on the tinted
   // card the way a place with no photo falls back to its category sticker,
   // and with neither we print the person's initials.
-  $("crewlist").innerHTML=`<section class="agroup"><div><span class="kicker">${CREW.length} so far</span><h2>The crew</h2><p class="why">Everyone who put something into this notebook.</p></div><div class="crew">${CREW.map((m,i)=>{const img=m.photo||m.art;return`<article class="member" style="--c:var(${m.c||"--lantern"});--r:${[-2.4,1.8,-1.2,2.6][i%4]}deg"><div class="pola"><span class="tape${i%2?" pink":""}"></span><div class="ph${m.photo?" photo":""}">${img?`<img src="${esc(img)}" alt="${esc(m.n)}" loading="lazy">`:`<span class="initial" aria-hidden="true">${esc(inits(m.n))}</span>`}</div>${m.cap?`<span class="cap">${esc(m.cap)}</span>`:""}</div><div class="txt"><h3>${esc(m.n)}${m.jp?`<small>${esc(m.jp)}</small>`:""}${m.role?`<em class="role">${esc(m.role)}</em>`:""}</h3><p>${esc(m.what)}</p>${m.tip?`<p class="tip">${esc(m.tip)}</p>`:""}${m.links&&m.links.length?`<div class="stores">${m.links.map(l=>`<a class="store" href="${esc(l[1])}" target="_blank" rel="noopener noreferrer">${esc(l[0])} ↗</a>`).join("")}</div>`:""}</div></article>`}).join("")}</div></section>`;
+  $("crewlist").innerHTML=`<section class="agroup"><div><span class="kicker">${T("{n} so far",{n:CREW.length})}</span><h2>${T("The crew")}</h2><p class="why">${T("Everyone who put something into this notebook.")}</p></div><div class="crew">${CREW.map((m,i)=>{const img=m.photo||m.art;return`<article class="member" style="--c:var(${m.c||"--lantern"});--r:${[-2.4,1.8,-1.2,2.6][i%4]}deg"><div class="pola"><span class="tape${i%2?" pink":""}"></span><div class="ph${m.photo?" photo":""}">${img?`<img src="${esc(img)}" alt="${esc(m.n)}" loading="lazy">`:`<span class="initial" aria-hidden="true">${esc(inits(m.n))}</span>`}</div>${m.cap?`<span class="cap">${esc(D(m,"cap"))}</span>`:""}</div><div class="txt"><h3>${esc(D(m,"n"))}${m.jp?`<small>${esc(m.jp)}</small>`:""}${m.role?`<em class="role">${esc(D(m,"role"))}</em>`:""}</h3><p>${esc(D(m,"what"))}</p>${m.tip?`<p class="tip">${esc(D(m,"tip"))}</p>`:""}${m.links&&m.links.length?`<div class="stores">${m.links.map(l=>`<a class="store" href="${esc(l[1])}" target="_blank" rel="noopener noreferrer">${esc(l[0])} ↗</a>`).join("")}</div>`:""}</div></article>`}).join("")}</div></section>`;
 }
 // The album is one horizontal scroll-snap strip, so a phone swipe turns the
 // page natively and the arrows just scroll the strip by one page width. The
 // counter reads the page back from scrollLeft rather than tracking its own
 // index, so swipes, arrows and the keyboard can never disagree about it.
+// In Arabic the strip runs right to left: page one sits at the right edge and
+// scrollLeft counts down from 0, hence the abs() and the sign on the way back.
+let albumGo=null;
 function renderAlbum(){
   const book=$("albumbook"),n=ALBUM.length;
-  if(!n){book.innerHTML=`<p class="appnote">No pages yet. Apollo is still sorting the photos.</p>`;return}
-  book.innerHTML=`<div class="atrack" id="atrack" tabindex="0">${ALBUM.map((m,i)=>{const ph=m.photos.slice(0,4),c=m.city&&CITIES[m.city];
-    return `<article class="apage" role="group" aria-roledescription="page" aria-label="Page ${i+1} of ${n}"><div class="spread">`+
-      `<div class="pics n${ph.length}">${ph.map(([src,cap],j)=>`<figure class="pola" style="--r:${[-3,2.4,-1.6,3.2][(i+j)%4]}deg"><span class="tape${j%2?" pink":""}"></span><div class="ph photo"><img src="${esc(src)}" alt="${esc(cap||m.t)}" loading="lazy"></div>${cap?`<figcaption class="cap">${esc(cap)}</figcaption>`:""}</figure>`).join("")}</div>`+
-      `<div class="words"><span class="kicker">${esc(m.date)}${m.where?` · ${esc(m.where)}`:""}</span><h2>${esc(m.t)}${m.jp?`<small>${esc(m.jp)}</small>`:""}</h2><p class="memo">${esc(m.note)}</p>`+
-      `${c&&P.some(p=>p.city===m.city)?`<button class="store go-city" data-c="${m.city}">See ${esc(c.n)} on the map →</button>`:""}</div>`+
+  if(!n){book.innerHTML=`<p class="appnote">${T("No pages yet. Apollo is still sorting the photos.")}</p>`;albumGo=null;return}
+  book.innerHTML=`<div class="atrack" id="atrack" tabindex="0">${ALBUM.map((m,i)=>{const ph=m.photos.slice(0,4),c=m.city&&CITIES[m.city],caps=D(m,"caps")||[];
+    return `<article class="apage" role="group" aria-roledescription="${esc(T("page"))}" aria-label="${esc(T("Page {i} of {n}",{i:i+1,n}))}"><div class="spread">`+
+      `<div class="pics n${ph.length}">${ph.map(([src,cap0],j)=>{const cap=isAR()&&caps[j]||cap0;return `<figure class="pola" style="--r:${[-3,2.4,-1.6,3.2][(i+j)%4]}deg"><span class="tape${j%2?" pink":""}"></span><div class="ph photo"><img src="${esc(src)}" alt="${esc(cap||D(m,"t"))}" loading="lazy"></div>${cap?`<figcaption class="cap">${esc(cap)}</figcaption>`:""}</figure>`}).join("")}</div>`+
+      `<div class="words"><span class="kicker">${esc(D(m,"date"))}${m.where?` · ${esc(D(m,"where"))}`:""}</span><h2>${esc(D(m,"t"))}${m.jp?`<small>${esc(m.jp)}</small>`:""}</h2><p class="memo">${esc(D(m,"note"))}</p>`+
+      `${c&&P.some(p=>p.city===m.city)?`<button class="store go-city" data-c="${m.city}">${esc(T("See {c} on the map →",{c:D(c,"n")}))}</button>`:""}</div>`+
     `</div></article>`}).join("")}</div>`+
-    `<div class="actrl"><button class="aturn" id="aprev" type="button" aria-label="Previous page">←</button><span class="acount" id="acount" aria-live="polite"></span><button class="aturn" id="anext" type="button" aria-label="Next page">→</button></div>`;
-  const tr=$("atrack"),prev=$("aprev"),next=$("anext"),cnt=$("acount");
-  const at=()=>Math.round(tr.scrollLeft/(tr.clientWidth||1));
+    `<div class="actrl"><button class="aturn" id="aprev" type="button" aria-label="${esc(T("Previous page"))}">${isAR()?"→":"←"}</button><span class="acount" id="acount" aria-live="polite"></span><button class="aturn" id="anext" type="button" aria-label="${esc(T("Next page"))}">${isAR()?"←":"→"}</button></div>`;
+  const tr=$("atrack"),prev=$("aprev"),next=$("anext"),cnt=$("acount"),sign=isAR()?-1:1;
+  const at=()=>Math.round(Math.abs(tr.scrollLeft)/(tr.clientWidth||1));
   const upd=()=>{const i=at();cnt.textContent=`${i+1} / ${n}`;prev.disabled=i<=0;next.disabled=i>=n-1};
-  const go=d=>tr.scrollTo({left:(at()+d)*tr.clientWidth,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  const go=d=>tr.scrollTo({left:sign*(at()+d)*tr.clientWidth,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  albumGo=go;
   prev.onclick=()=>go(-1);next.onclick=()=>go(1);
   tr.addEventListener("scroll",upd,{passive:true});upd();
   book.querySelectorAll(".go-city").forEach(b=>b.onclick=()=>{city=b.dataset.c;store.set("tabineko-city",city);selected=null;area=null;zoomTo=null;halalOnly=false;renderAll();show("map");try{history.replaceState(null,"","#map")}catch(_){}});
-  // Arrow keys turn the page from anywhere on the album, not only with the
-  // strip focused, but never while the user is typing in a box.
-  addEventListener("keydown",e=>{
-    if($("memories").hidden||(e.key!=="ArrowLeft"&&e.key!=="ArrowRight")||e.metaKey||e.ctrlKey||e.altKey)return;
-    const t=e.target.tagName;if(t==="INPUT"||t==="TEXTAREA"||e.target.isContentEditable)return;
-    e.preventDefault();go(e.key==="ArrowLeft"?-1:1)});
 }
+// Arrow keys turn the page from anywhere on the album, not only with the
+// strip focused, but never while the user is typing in a box. Registered once
+// out here because renderAlbum() reruns on every language switch. The arrow
+// that points forward is ← in Arabic, matching the way the pages run.
+addEventListener("keydown",e=>{
+  if(!albumGo||$("memories").hidden||(e.key!=="ArrowLeft"&&e.key!=="ArrowRight")||e.metaKey||e.ctrlKey||e.altKey)return;
+  const t=e.target.tagName;if(t==="INPUT"||t==="TEXTAREA"||e.target.isContentEditable)return;
+  e.preventDefault();albumGo((e.key==="ArrowRight")!==isAR()?1:-1)});
 // quiet=true swaps the page without moving the viewport, so a search jump can
 // scroll to its own card instead of fighting this function for the scroll.
 const PAGES=["apps","trips","memories","crew"];
@@ -455,6 +502,39 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   a.addEventListener("click",e=>{e.preventDefault();show(t);try{history.replaceState(null,"","#"+t)}catch(_){}});
 });
 
+// ---- language switch ----
+// Fixed text in index.html is tagged data-i18n="key" (swaps its innerHTML) or
+// data-i18n-attr="attr:key,..." (placeholders and labels). The English is read
+// off the page the first time round, so index.html stays the English source.
+const ORIG=new WeakMap();
+function applyStatic(){
+  document.querySelectorAll("[data-i18n],[data-i18n-attr]").forEach(el=>{
+    if(!ORIG.has(el)){const o={html:el.innerHTML,attr:{}};
+      (el.dataset.i18nAttr||"").split(",").filter(Boolean).forEach(pr=>{const a=pr.split(":")[0];o.attr[a]=el.getAttribute(a)});ORIG.set(el,o)}
+    const o=ORIG.get(el);
+    if(el.dataset.i18n)el.innerHTML=isAR()&&AR.html[el.dataset.i18n]||o.html;
+    (el.dataset.i18nAttr||"").split(",").filter(Boolean).forEach(pr=>{const[a,k]=pr.split(":");el.setAttribute(a,isAR()&&AR.html[k]||o.attr[a])});
+  });
+  document.title=T("Tabi Neko");
+  const b=$("langb");b.textContent=isAR()?"English":"عربي";b.lang=isAR()?"en":"ar";
+  b.setAttribute("aria-label",isAR()?"Switch to English":"التبديل إلى العربية");
+}
+// The Arabic lives in two files fetched on first use. async=false keeps them
+// running in order, since content.js adds to the AR object ui.js creates.
+function loadAR(){
+  return Promise.all(["data/ar/ui.js","data/ar/content.js"].map(src=>new Promise((ok,no)=>{
+    const el=document.createElement("script");el.src=src;el.async=false;el.onload=ok;el.onerror=no;document.head.appendChild(el)})))
+    .then(attachAR);
+}
+function setLang(l){
+  if(l==="ar"&&!AR_ON()){loadAR().then(()=>setLang("ar"),()=>{});return}
+  lang=l;store.set("tabineko-lang",l);
+  const h=document.documentElement;h.lang=l;h.dir=l==="ar"?"rtl":"ltr";
+  closeAreas();applyStatic();buildIdx();
+  renderAll();renderApps();renderTrips();renderCrew();renderAlbum();
+}
+$("langb").onclick=()=>setLang(isAR()?"en":"ar");
+applyStatic();
 renderAll();renderApps();renderTrips();renderCrew();renderAlbum();
 (function(){const b=$("tomap"),m=document.querySelector(".mapwrap");if(!b||!m)return;
   b.onclick=()=>m.scrollIntoView({behavior:"smooth",block:"start"});
@@ -464,8 +544,16 @@ renderAll();renderApps();renderTrips();renderCrew();renderAlbum();
 // Search is a jump, not a filter. It looks across every city, because the place
 // you half-remember is rarely in the city you happen to have open, and the rest
 // of the UI is hard-gated to one city at a time.
-const IDX=P.map(p=>({p,name:LOW(p.n),jp:p.jp||"",area:LOW(p.area),
-  cat:LOW(CATS[p.cat].n),cityn:LOW(CITIES[p.city].n),rest:LOW([p.tip,p.cap,p.t].join(" "))}));
+// Once the Arabic is loaded the index holds both languages, so an Arabic
+// reader typing an English name (or the reverse) still finds the place.
+let IDX=[];
+function buildIdx(){
+  const both=(o,f)=>[o[f],o._ar&&o._ar[f]].filter(Boolean);
+  IDX=P.map(p=>({p,name:LOW(p.n),jp:p.jp||"",area:LOW([p.area,AR_ON()&&AR.areas[p.area]].join(" ")),
+    cat:LOW(both(CATS[p.cat],"n").join(" ")),cityn:both(CITIES[p.city],"n").map(LOW),
+    rest:LOW([...both(p,"tip"),...both(p,"cap"),...both(p,"t")].join(" "))}));
+}
+buildIdx();
 
 // Ranked so an exact name beats a word buried in a tip. 0 means "no match",
 // and every typed word has to match something, so "kyoto coffee" narrows.
@@ -473,7 +561,7 @@ function score(e,w){
   if(e.name.startsWith(w))return 100;
   if(e.name.includes(w))return 70;
   if(e.jp.includes(w))return 60;
-  if(e.cityn.startsWith(w))return 45;
+  if(e.cityn.some(c=>c.startsWith(w)))return 45;
   if(e.area.includes(w))return 40;
   if(e.cat.includes(w))return 30;
   if(e.rest.includes(w))return 10;
@@ -515,13 +603,13 @@ function hl(s,terms){
     hits=searchPlaces(box.value);cur=-1;
     if(!box.value.trim()){close();return}
     if(!hits.length){
-      res.innerHTML=`<p class="qnone">Apollo hasn't been there yet.</p>`;
+      res.innerHTML=`<p class="qnone">${T("Apollo hasn't been there yet.")}</p>`;
       res.hidden=false;box.setAttribute("aria-expanded","true");return}
     res.innerHTML=hits.map(({e},i)=>{const p=e.p,C=CATS[p.cat];
       return `<div class="qr" id="qr-${i}" role="option" aria-selected="false" data-i="${i}" style="--c:var(--${p.cat})">
         <i aria-hidden="true"></i>
         <span class="qn">${hl(p.n,terms)}${p.jp&&LOW(p.jp.trim())!==LOW(p.n.trim())?`<small>${esc(p.jp)}</small>`:""}</span>
-        <span class="qm">${esc(CITIES[p.city].n)} · ${esc(p.area)} · ${esc(C.n)}${p.halal?' · <b>halal</b>':""}</span>
+        <span class="qm">${esc(D(CITIES[p.city],"n"))} · ${esc(AREA(p.area))} · ${esc(D(C,"n"))}${p.halal?` · <b>${T("halal")}</b>`:""}</span>
       </div>`}).join("");
     res.hidden=false;box.setAttribute("aria-expanded","true");
     res.querySelectorAll(".qr").forEach(el=>{
