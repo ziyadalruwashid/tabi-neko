@@ -1,4 +1,4 @@
-// Memories album. Shown at #album, rendered by renderAlbum() in js/app.js.
+// Memories album. Shown at #memories, rendered by renderAlbum() in js/app.js.
 // Each entry is one page of the album; swipe or use the arrows to turn them.
 //
 // HEADS UP: this repo is public, so every photo in here ships to the open

@@ -434,13 +434,13 @@ function renderAlbum(){
   // Arrow keys turn the page from anywhere on the album, not only with the
   // strip focused, but never while the user is typing in a box.
   addEventListener("keydown",e=>{
-    if($("album").hidden||(e.key!=="ArrowLeft"&&e.key!=="ArrowRight")||e.metaKey||e.ctrlKey||e.altKey)return;
+    if($("memories").hidden||(e.key!=="ArrowLeft"&&e.key!=="ArrowRight")||e.metaKey||e.ctrlKey||e.altKey)return;
     const t=e.target.tagName;if(t==="INPUT"||t==="TEXTAREA"||e.target.isContentEditable)return;
     e.preventDefault();go(e.key==="ArrowLeft"?-1:1)});
 }
 // quiet=true swaps the page without moving the viewport, so a search jump can
 // scroll to its own card instead of fighting this function for the scroll.
-const PAGES=["apps","trips","album","crew"];
+const PAGES=["apps","trips","memories","crew"];
 function show(target,quiet){
   const pg=PAGES.includes(target)?target:null;
   $("home").hidden=!!pg;PAGES.forEach(k=>$(k).hidden=pg!==k);
