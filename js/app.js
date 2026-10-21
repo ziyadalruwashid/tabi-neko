@@ -410,11 +410,40 @@ function renderCrew(){
   // and with neither we print the person's initials.
   $("crewlist").innerHTML=`<section class="agroup"><div><span class="kicker">${CREW.length} so far</span><h2>The crew</h2><p class="why">Everyone who put something into this notebook.</p></div><div class="crew">${CREW.map((m,i)=>{const img=m.photo||m.art;return`<article class="member" style="--c:var(${m.c||"--lantern"});--r:${[-2.4,1.8,-1.2,2.6][i%4]}deg"><div class="pola"><span class="tape${i%2?" pink":""}"></span><div class="ph${m.photo?" photo":""}">${img?`<img src="${esc(img)}" alt="${esc(m.n)}" loading="lazy">`:`<span class="initial" aria-hidden="true">${esc(inits(m.n))}</span>`}</div>${m.cap?`<span class="cap">${esc(m.cap)}</span>`:""}</div><div class="txt"><h3>${esc(m.n)}${m.jp?`<small>${esc(m.jp)}</small>`:""}${m.role?`<em class="role">${esc(m.role)}</em>`:""}</h3><p>${esc(m.what)}</p>${m.tip?`<p class="tip">${esc(m.tip)}</p>`:""}${m.links&&m.links.length?`<div class="stores">${m.links.map(l=>`<a class="store" href="${esc(l[1])}" target="_blank" rel="noopener noreferrer">${esc(l[0])} ↗</a>`).join("")}</div>`:""}</div></article>`}).join("")}</div></section>`;
 }
+// The album is one horizontal scroll-snap strip, so a phone swipe turns the
+// page natively and the arrows just scroll the strip by one page width. The
+// counter reads the page back from scrollLeft rather than tracking its own
+// index, so swipes, arrows and the keyboard can never disagree about it.
+function renderAlbum(){
+  const book=$("albumbook"),n=ALBUM.length;
+  if(!n){book.innerHTML=`<p class="appnote">No pages yet. Apollo is still sorting the photos.</p>`;return}
+  book.innerHTML=`<div class="atrack" id="atrack" tabindex="0">${ALBUM.map((m,i)=>{const ph=m.photos.slice(0,4),c=m.city&&CITIES[m.city];
+    return `<article class="apage" role="group" aria-roledescription="page" aria-label="Page ${i+1} of ${n}"><div class="spread">`+
+      `<div class="pics n${ph.length}">${ph.map(([src,cap],j)=>`<figure class="pola" style="--r:${[-3,2.4,-1.6,3.2][(i+j)%4]}deg"><span class="tape${j%2?" pink":""}"></span><div class="ph photo"><img src="${esc(src)}" alt="${esc(cap||m.t)}" loading="lazy"></div>${cap?`<figcaption class="cap">${esc(cap)}</figcaption>`:""}</figure>`).join("")}</div>`+
+      `<div class="words"><span class="kicker">${esc(m.date)}${m.where?` · ${esc(m.where)}`:""}</span><h2>${esc(m.t)}${m.jp?`<small>${esc(m.jp)}</small>`:""}</h2><p class="memo">${esc(m.note)}</p>`+
+      `${c&&P.some(p=>p.city===m.city)?`<button class="store go-city" data-c="${m.city}">See ${esc(c.n)} on the map →</button>`:""}</div>`+
+    `</div></article>`}).join("")}</div>`+
+    `<div class="actrl"><button class="aturn" id="aprev" type="button" aria-label="Previous page">←</button><span class="acount" id="acount" aria-live="polite"></span><button class="aturn" id="anext" type="button" aria-label="Next page">→</button></div>`;
+  const tr=$("atrack"),prev=$("aprev"),next=$("anext"),cnt=$("acount");
+  const at=()=>Math.round(tr.scrollLeft/(tr.clientWidth||1));
+  const upd=()=>{const i=at();cnt.textContent=`${i+1} / ${n}`;prev.disabled=i<=0;next.disabled=i>=n-1};
+  const go=d=>tr.scrollTo({left:(at()+d)*tr.clientWidth,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  prev.onclick=()=>go(-1);next.onclick=()=>go(1);
+  tr.addEventListener("scroll",upd,{passive:true});upd();
+  book.querySelectorAll(".go-city").forEach(b=>b.onclick=()=>{city=b.dataset.c;store.set("tabineko-city",city);selected=null;area=null;zoomTo=null;halalOnly=false;renderAll();show("map");try{history.replaceState(null,"","#map")}catch(_){}});
+  // Arrow keys turn the page from anywhere on the album, not only with the
+  // strip focused, but never while the user is typing in a box.
+  addEventListener("keydown",e=>{
+    if($("album").hidden||(e.key!=="ArrowLeft"&&e.key!=="ArrowRight")||e.metaKey||e.ctrlKey||e.altKey)return;
+    const t=e.target.tagName;if(t==="INPUT"||t==="TEXTAREA"||e.target.isContentEditable)return;
+    e.preventDefault();go(e.key==="ArrowLeft"?-1:1)});
+}
 // quiet=true swaps the page without moving the viewport, so a search jump can
 // scroll to its own card instead of fighting this function for the scroll.
+const PAGES=["apps","trips","album","crew"];
 function show(target,quiet){
-  const pg=["apps","trips","crew"].includes(target)?target:null;
-  $("home").hidden=!!pg;$("apps").hidden=pg!=="apps";$("trips").hidden=pg!=="trips";$("crew").hidden=pg!=="crew";
+  const pg=PAGES.includes(target)?target:null;
+  $("home").hidden=!!pg;PAGES.forEach(k=>$(k).hidden=pg!==k);
   document.querySelectorAll(".top nav a").forEach(a=>a.classList.toggle("cur",a.dataset.go===(pg||"map")));
   if(quiet)return;
   if(pg){window.scrollTo(0,0);return}
@@ -426,7 +455,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   a.addEventListener("click",e=>{e.preventDefault();show(t);try{history.replaceState(null,"","#"+t)}catch(_){}});
 });
 
-renderAll();renderApps();renderTrips();renderCrew();
+renderAll();renderApps();renderTrips();renderCrew();renderAlbum();
 (function(){const b=$("tomap"),m=document.querySelector(".mapwrap");if(!b||!m)return;
   b.onclick=()=>m.scrollIntoView({behavior:"smooth",block:"start"});
   const upd=()=>{const r=m.getBoundingClientRect();b.classList.toggle("show",!$("home").hidden&&r.bottom<0)};
@@ -531,4 +560,4 @@ function hl(s,terms){
 })();
 
 addEventListener("hashchange",()=>show(location.hash.slice(1)));
-if(["#apps","#trips","#crew"].includes(location.hash))show(location.hash.slice(1));else document.querySelector('.top nav a[data-go="map"]').classList.add("cur");
+if(PAGES.includes(location.hash.slice(1)))show(location.hash.slice(1));else document.querySelector('.top nav a[data-go="map"]').classList.add("cur");

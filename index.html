@@ -14,7 +14,7 @@
 <div class="wrap" id="top">
   <header class="top">
     <a class="brand" href="#top" aria-label="Tabi Neko home"><img src="assets/logo.png" alt="Tabi Neko"></a>
-    <nav aria-label="Main"><a href="#map">Map</a><a href="#trips">Day trips</a><a href="#apps">Apps</a><a href="#crew">Contributors</a></nav>
+    <nav aria-label="Main"><a href="#map">Map</a><a href="#trips">Day trips</a><a href="#apps">Apps</a><a href="#album">Album</a><a href="#crew">Contributors</a></nav>
   </header>
   <div id="home">
 
@@ -92,6 +92,16 @@
     <div id="appgroups"></div>
     <p class="appnote">App details change often. Last checked October 2026.</p>
   </section>
+  <section id="album" hidden>
+    <div class="apphero">
+      <div>
+        <span class="kicker">the bits between the places</span>
+        <h1>Our album<span class="small">Swipe through the trip.</span></h1>
+        <p>Not tips this time, just the days themselves: the photos we took and what was going on when we took them.</p>
+      </div>
+    </div>
+    <div class="album" id="albumbook" role="region" aria-roledescription="carousel" aria-label="Memories album"></div>
+  </section>
   <section id="crew" hidden>
     <div class="apphero">
       <div>
@@ -107,7 +117,7 @@
   <footer>
     <p class="bye">またね!<small>mata ne, see you in Japan</small></p>
     <div class="links">
-      <a href="#map">Map</a><a href="#trips">Day trips</a><a href="#apps">Apps</a><a href="#crew">Contributors</a>
+      <a href="#map">Map</a><a href="#trips">Day trips</a><a href="#apps">Apps</a><a href="#album">Album</a><a href="#crew">Contributors</a>
       <span>Tabi Neko · made in Riyadh · 2026</span>
     </div>
   </footer>
@@ -118,6 +128,7 @@
 <script src="data/apps.js"></script>
 <script src="data/trips.js"></script>
 <script src="data/crew.js"></script>
+<script src="data/album.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
