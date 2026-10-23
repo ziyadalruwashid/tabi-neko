@@ -94,11 +94,34 @@ img{max-width:100%;display:block}
 .langb:hover{background:var(--ink);color:var(--paper);transform:rotate(0)}
 .top nav a{text-decoration:none;background-image:linear-gradient(var(--yuzu),var(--yuzu));background-size:0 40%;background-position:0 88%;background-repeat:no-repeat;transition:background-size .2s}
 .top nav a:hover{background-size:100% 40%}
-@media (max-width:640px){.top nav{gap:16px;font-size:14.5px}}
+.burger{display:none}
 /* Five links don't fit beside the logo on a small phone, so the nav drops to
    its own row under it and spreads across the width. */
-@media (max-width:480px){.top{flex-wrap:wrap;row-gap:10px;padding-block:16px 12px}.top nav{flex:1 0 100%;order:3;justify-content:space-between;gap:10px;font-size:14px;white-space:nowrap}}
-@media (max-width:359px){.top nav{font-size:12.5px;gap:6px}}
+/* On a phone the links fold into a menu: a three-line button beside the
+   language switch opens them as a taped paper card under the header. */
+@media (max-width:640px){
+  .top{position:relative;padding-block:16px 12px}
+  .langb{margin-inline-start:auto;order:1}
+  .burger{order:2;display:grid;place-content:center;gap:4px;width:42px;height:42px;flex:none;appearance:none;cursor:pointer;
+    background:var(--sheet);border:1.5px solid var(--ink);border-radius:12px;padding:0}
+  .burger span{display:block;width:18px;height:2.2px;border-radius:2px;background:var(--ink);transition:transform .2s,opacity .2s}
+  .burger[aria-expanded="true"]{background:var(--ink)}
+  .burger[aria-expanded="true"] span{background:var(--paper)}
+  .burger[aria-expanded="true"] span:nth-child(1){transform:translateY(6.2px) rotate(45deg)}
+  .burger[aria-expanded="true"] span:nth-child(2){opacity:0}
+  .burger[aria-expanded="true"] span:nth-child(3){transform:translateY(-6.2px) rotate(-45deg)}
+  .top nav{display:none;position:absolute;top:calc(100% + 8px);inset-inline:0;z-index:70;flex-direction:column;gap:0;margin:0;
+    background:var(--sheet);border:2px solid var(--ink);border-radius:14px;padding:8px 6px;font-size:18px;
+    box-shadow:5px 6px 0 rgba(63,33,22,.14),0 18px 34px -16px rgba(63,33,22,.5)}
+  .top nav.open{display:flex;animation:navin .18s ease-out}
+  .top nav::before{content:"";position:absolute;top:-11px;inset-inline-end:28px;width:64px;height:20px;background:var(--tape);transform:rotate(5deg)}
+  .top nav a{padding:12px 14px;border-radius:9px;background-image:none}
+  .top nav a+a{border-top:1.5px dashed var(--rule)}
+  .top nav a:hover{background:var(--paper)}
+  .top nav a.cur{background:var(--paper);color:var(--lantern)}
+  .top nav a.cur::before{content:"🐾 "}
+}
+@keyframes navin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 
 /* hero */
 .hero{position:relative;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:24px;align-items:end;padding-block:56px 40px}

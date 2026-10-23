@@ -25,7 +25,8 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
 <div class="wrap" id="top">
   <header class="top">
     <a class="brand" href="#top" aria-label="Tabi Neko home" data-i18n-attr="aria-label:brand"><img src="assets/logo.png" alt="Tabi Neko" data-i18n-attr="alt:logo"></a>
-    <nav aria-label="Main" data-i18n-attr="aria-label:nav"><a href="#map" data-i18n="nav.map">Map</a><a href="#trips" data-i18n="nav.trips">Day trips</a><a href="#apps" data-i18n="nav.apps">Apps</a><a href="#memories" data-i18n="nav.memories">Memories</a><a href="#crew" data-i18n="nav.crew">Contributors</a></nav>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="mainnav" aria-label="Menu" data-i18n-attr="aria-label:menu"><span></span><span></span><span></span></button>
+    <nav id="mainnav" aria-label="Main" data-i18n-attr="aria-label:nav"><a href="#map" data-i18n="nav.map">Map</a><a href="#trips" data-i18n="nav.trips">Day trips</a><a href="#apps" data-i18n="nav.apps">Apps</a><a href="#memories" data-i18n="nav.memories">Memories</a><a href="#crew" data-i18n="nav.crew">Contributors</a></nav>
     <button class="langb" id="langb" type="button" lang="ar">عربي</button>
   </header>
   <div id="home">
