@@ -90,6 +90,7 @@ AR.ui={
 "You're asking faster than I can walk! Give me a minute, then try again.":"أسئلتك أسرع من خطواتي! أعطني دقيقة ثم حاول مرة أخرى."
 };
 AR.html={
+"menu":"القائمة",
  "brand":"تابي نيكو، الصفحة الرئيسية",
  "logo":"تابي نيكو",
  "nav":"القائمة الرئيسية",

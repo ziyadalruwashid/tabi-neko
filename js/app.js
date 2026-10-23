@@ -519,6 +519,14 @@ function show(target,quiet){
   const el=target&&document.getElementById(target);
   if(el)requestAnimationFrame(()=>el.scrollIntoView({behavior:"smooth",block:"start"}));else window.scrollTo(0,0);
 }
+// Phone menu: the three-line button opens the nav; picking a page, tapping
+// outside or Escape closes it.
+const burger=$("burger"),mainnav=$("mainnav");
+const setMenu=o=>{mainnav.classList.toggle("open",o);burger.setAttribute("aria-expanded",o)};
+burger.onclick=e=>{e.stopPropagation();setMenu(!mainnav.classList.contains("open"))};
+mainnav.addEventListener("click",e=>{if(e.target.closest("a"))setMenu(false)});
+document.addEventListener("click",e=>{if(!e.target.closest("#mainnav"))setMenu(false)});
+addEventListener("keydown",e=>{if(e.key==="Escape"&&mainnav.classList.contains("open")){setMenu(false);burger.focus()}});
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
   const t=a.getAttribute("href").slice(1);a.dataset.go=t;
   a.addEventListener("click",e=>{e.preventDefault();show(t);try{history.replaceState(null,"","#"+t)}catch(_){}});
