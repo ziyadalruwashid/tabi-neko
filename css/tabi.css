@@ -477,6 +477,9 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .apollob span{order:-1;margin-inline-end:-14px;padding-block:7px 8px;padding-inline:16px 22px;background:var(--lantern);color:#fff;
   border:2.5px solid var(--ink);border-radius:999px;box-shadow:0 8px 18px -10px rgba(63,33,22,.6);transform:rotate(-3deg)}
 .apollob:hover img{transform:rotate(-8deg) scale(1.05)}
+/* display:flex above would beat the hidden attribute, which keeps the button
+   off every page but home. */
+.apollob[hidden]{display:none}
 .apollob[aria-expanded="true"] span{display:none}
 .apollo{position:fixed;inset-inline-end:max(18px,env(safe-area-inset-right));bottom:calc(96px + env(safe-area-inset-bottom));z-index:61;
   width:min(390px,calc(100vw - 36px));height:min(580px,calc(100vh - 130px));display:flex;flex-direction:column;
