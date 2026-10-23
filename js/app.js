@@ -44,6 +44,7 @@ function attachAR(){
   TRIPS.forEach(t=>t._ar=AR.trips[t.n]);TGROUPS.forEach(g=>g._ar=AR.tgroups[g.k]);
   APPS.forEach(a=>a._ar=AR.apps[a.n]);AGROUPS.forEach(g=>g._ar=AR.agroups[g.k]);
   CREW.forEach(m=>m._ar=AR.crew[m.n]);ALBUM.forEach(m=>m._ar=AR.album[m.t]);
+  HOODS.forEach(h=>h._ar=AR.hoods&&AR.hoods[h.city+"|"+h.area]);
   for(const k in CITIES)CITIES[k]._ar=AR.cities[k];for(const k in CATS)CATS[k]._ar={n:AR.cats[k]};
 }
 if(AR_ON())attachAR();
@@ -465,6 +466,53 @@ function renderTrips(){
 // Initials for a contributor with no photo yet: first letter of the first two
 // words, so "Apollo" gives A and "Tabi Neko" gives TN.
 const inits=n=>n.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join("").toUpperCase();
+// ---- neighbourhood cards ----
+// One trading card per famous area. The front rates it; tapping flips it to
+// the story and a don't-miss list. The halal count is worked out from the
+// notebook itself, so it stays right as places are added.
+const HSTAT=[["food","🍜","Food"],["shop","🛍️","Shopping"],["culture","⛩️","Culture"],["night","🌙","Nightlife"],["calm","🍃","Calm"]];
+const HCOL={tokyo:"--lantern",kyoto:"--experience",osaka:"--food",nara:"--gem",kobe:"--shinkansen",kamakura:"--coffee"};
+let hoodCity=null;
+function renderHoods(){
+  const cities=[...new Set(HOODS.map(h=>h.city))].filter(k=>CITIES[k]);
+  if(!cities.includes(hoodCity))hoodCity=cities.includes(city)?city:cities[0];
+  $("hcities").innerHTML=cities.map(k=>`<button type="button" role="tab" class="hcity" data-c="${k}" aria-selected="${k===hoodCity}" style="--c:var(${HCOL[k]||"--lantern"})">${esc(D(CITIES[k],"n"))}<small>${HOODS.filter(h=>h.city===k).length}</small></button>`).join("");
+  $("hcities").querySelectorAll(".hcity").forEach(b=>b.onclick=()=>{hoodCity=b.dataset.c;renderHoods()});
+  const list=HOODS.filter(h=>h.city===hoodCity);
+  $("hgrid").innerHTML=list.map((h,i)=>{
+    const here=P.filter(p=>p.city===h.city&&p.area===h.area),halal=here.filter(p=>p.halal).length;
+    const miss=h.miss.map(n=>{const p=P.find(q=>q.n===n&&q.city===h.city);return p?`<li><button type="button" class="hgo" data-id="${p.id}">${esc(n)}</button></li>`:`<li>${esc(n)}</li>`}).join("");
+    return `<article class="hcard" style="--c:var(${HCOL[h.city]||"--lantern"});--r:${[-1.6,1.2,-.8,1.8][i%4]}deg">
+      <div class="hinner">
+        <div class="hface hfront">
+          <div class="htop"><span class="hno">No. ${String(i+1).padStart(2,"0")}<small>/${String(list.length).padStart(2,"0")}</small></span><h3>${esc(D(h,"n"))}<small>${esc(h.jp)}</small></h3></div>
+          <div class="hph"><img src="${esc(h.photo)}" alt="" loading="lazy"><span class="hvibe">${esc(D(h,"vibe"))}</span></div>
+          <ul class="hstats">${HSTAT.map(([k,ic,lb])=>`<li><span class="hl"><i aria-hidden="true">${ic}</i>${T(lb)}</span><span class="hbar" role="img" aria-label="${esc(T("{n} out of 5",{n:h.stats[k]}))}">${[1,2,3,4,5].map(n=>`<b class="${n<=h.stats[k]?"on":""}"></b>`).join("")}</span></li>`).join("")}</ul>
+          <p class="hhalal${halal?"":" none"}">${halal===1?esc(T("✓ 1 halal spot in the notebook")):halal?esc(T("✓ {n} halal spots in the notebook",{n:halal})):esc(T("no halal spots in the notebook yet"))}</p>
+          <p class="hbest"><b>${T("Best time:")}</b> ${esc(D(h,"best"))}</p>
+          <p class="htip">${esc(D(h,"tip"))}</p>
+          <button type="button" class="hflip">${T("Flip for the story")} ↻</button>
+        </div>
+        <div class="hface hback" aria-hidden="true">
+          <h3>${esc(D(h,"n"))}<small>${esc(h.jp)}</small></h3>
+          <p class="hstory">${esc(D(h,"story"))}</p>
+          <p class="hmh">${T("Don't miss:")}</p><ul class="hmiss">${miss}</ul>
+          ${here.length?`<button type="button" class="store harea">${esc(T("See the {n} places here →",{n:here.length}))}</button>`:""}
+          <button type="button" class="hflip">↻ ${T("Back to the card")}</button>
+        </div>
+      </div></article>`}).join("");
+  $("hgrid").querySelectorAll(".hcard").forEach((card,i)=>{
+    const h=list[i],flip=()=>{const on=card.classList.toggle("flipped");
+      card.querySelector(".hfront").setAttribute("aria-hidden",on);card.querySelector(".hback").setAttribute("aria-hidden",!on);
+      const t=card.querySelector(on?".hback .hflip":".hfront .hflip");if(t)t.focus({preventScroll:true})};
+    card.querySelectorAll(".hflip").forEach(b=>b.onclick=e=>{e.stopPropagation();flip()});
+    card.onclick=e=>{if(e.target.closest("button,a"))return;flip()};
+    const ha=card.querySelector(".harea");
+    if(ha)ha.onclick=()=>{city=h.city;store.set("tabineko-city",city);area=h.area;active=new Set(Object.keys(CATS));halalOnly=false;selected=null;zoomTo=null;
+      renderAll();show("map");try{history.replaceState(null,"","#map")}catch(_){}};
+    card.querySelectorAll(".hgo").forEach(b=>b.onclick=()=>{show("map",true);try{history.replaceState(null,"","#map")}catch(_){}goPlace(b.dataset.id)});
+  });
+}
 function renderCrew(){
   // Three ways to fill the polaroid, in order of preference: a real photo is
   // cropped to fill the square, a cutout sticker sits contained on the tinted
@@ -508,7 +556,7 @@ addEventListener("keydown",e=>{
   e.preventDefault();albumGo((e.key==="ArrowRight")!==isAR()?1:-1)});
 // quiet=true swaps the page without moving the viewport, so a search jump can
 // scroll to its own card instead of fighting this function for the scroll.
-const PAGES=["apps","trips","memories","crew"];
+const PAGES=["hoods","apps","trips","memories","crew"];
 function show(target,quiet){
   const pg=PAGES.includes(target)?target:null;
   $("home").hidden=!!pg;PAGES.forEach(k=>$(k).hidden=pg!==k);
@@ -613,12 +661,12 @@ function setLang(l){
   lang=l;store.set("tabineko-lang",l);
   const h=document.documentElement;h.lang=l;h.dir=l==="ar"?"rtl":"ltr";
   closeAreas();applyStatic();buildIdx();setNear();
-  renderAll();renderApps();renderTrips();renderCrew();renderAlbum();
+  renderAll();renderApps();renderTrips();renderCrew();renderAlbum();renderHoods();
   if(typeof renderApollo==="function")renderApollo();
 }
 $("langb").onclick=()=>setLang(isAR()?"en":"ar");
 applyStatic();
-renderAll();renderApps();renderTrips();renderCrew();renderAlbum();
+renderAll();renderApps();renderTrips();renderCrew();renderAlbum();renderHoods();
 (function(){const b=$("tomap"),m=document.querySelector(".mapwrap");if(!b||!m)return;
   b.onclick=()=>m.scrollIntoView({behavior:"smooth",block:"start"});
   const upd=()=>{const r=m.getBoundingClientRect();b.classList.toggle("show",!$("home").hidden&&r.bottom<0)};

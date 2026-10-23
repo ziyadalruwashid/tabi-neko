@@ -380,6 +380,59 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .member p{margin:6px 0 0;font-size:15.5px;line-height:1.5}
 .member .tip{font-family:var(--hand);font-size:20px;line-height:1.25;color:var(--muted);margin-top:6px}
 @media (max-width:520px){.member{grid-template-columns:110px minmax(0,1fr);gap:16px}.member .initial{font-size:34px}}
+/* ---- neighbourhood cards ----
+   Trading cards: a coloured frame per city, photo, a vibe strip, five stat
+   bars, and a back you flip to. Both faces sit in the same grid cell, so
+   the card is as tall as its longer side and nothing jumps when it turns. */
+.hcities{display:flex;flex-wrap:wrap;gap:8px 10px;padding-block:28px 6px}
+.hcity{appearance:none;cursor:pointer;font:400 20px var(--display);color:var(--ink);background:var(--sheet);border:2px solid var(--ink);border-radius:999px;padding:6px 16px 7px;display:inline-flex;align-items:baseline;gap:7px;transition:background .15s,color .15s,transform .15s}
+.hcity small{font:700 12px var(--body);color:var(--muted)}
+.hcity:hover{transform:rotate(-2deg)}
+.hcity[aria-selected="true"]{background:var(--c);border-color:var(--c);color:#fff}
+.hcity[aria-selected="true"] small{color:rgba(255,255,255,.85)}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:34px 28px;padding-block:22px 10px}
+.hcard{perspective:1400px;transform:rotate(var(--r));transition:transform .25s}
+.hcard:hover{transform:rotate(0) translateY(-4px)}
+.hinner{display:grid;transition:transform .6s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d;cursor:pointer}
+.hcard.flipped .hinner{transform:rotateY(180deg)}
+.hface{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;
+  background:var(--sheet);border:3px solid var(--ink);border-radius:16px;padding:12px;outline:6px solid var(--c);outline-offset:-12px;
+  box-shadow:6px 8px 0 rgba(63,33,22,.15),0 20px 34px -22px rgba(63,33,22,.6)}
+.hback{transform:rotateY(180deg);padding:22px 20px 16px}
+.htop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:8px 8px 8px}
+.htop h3,.hback h3{font:400 24px/1.05 var(--display);margin:0;text-align:end}
+.htop h3 small,.hback h3 small{display:block;font:500 13px var(--jp);color:var(--muted);margin-top:3px}
+.hback h3{text-align:start;font-size:26px}
+.hno{font:400 15px var(--display);color:var(--c);white-space:nowrap}
+.hno small{font-size:11px;color:var(--muted)}
+.hph{position:relative;aspect-ratio:4/3;margin:0 6px;border-radius:8px;overflow:hidden;background:color-mix(in srgb,var(--c) 20%,var(--sheet))}
+.hph img{width:100%;height:100%;object-fit:cover}
+.hvibe{position:absolute;inset-inline:0;bottom:0;background:var(--c);color:#fff;font:400 18px var(--hand);text-align:center;padding:3px 8px 4px}
+.hstats{list-style:none;margin:12px 8px 6px;padding:0;display:flex;flex-direction:column;gap:5px}
+.hstats li{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13.5px;font-weight:500}
+.hl{display:inline-flex;gap:7px;align-items:center}
+.hl i{font-style:normal;width:18px;text-align:center}
+.hbar{display:flex;gap:4px}
+.hbar b{width:18px;height:9px;border-radius:5px;background:var(--rule)}
+.hbar b.on{background:var(--c)}
+.hhalal{margin:6px 8px 0;font-size:13.5px;font-weight:700;color:#4F7A1E}
+.hhalal.none{color:var(--muted);font-weight:500}
+.hbest{margin:4px 8px 0;font-size:13.5px;color:var(--muted)}
+.hbest b{color:var(--ink)}
+.htip{margin:8px 8px 4px;font:400 20px/1.25 var(--hand);flex:1}
+.hflip{appearance:none;cursor:pointer;align-self:flex-end;margin:6px 4px 0;border:0;background:none;font:700 13px var(--body);color:var(--c);padding:6px 8px;border-radius:8px}
+.hflip:hover{background:var(--paper)}
+.hstory{font:400 19px/1.4 var(--hand);margin:12px 0 10px;flex:1}
+.hmh{margin:0 0 4px;font-weight:700;font-size:14px}
+.hmiss{margin:0 0 14px;padding-inline-start:18px;font-size:14.5px;line-height:1.6}
+.hgo{appearance:none;border:0;background:none;padding:0;cursor:pointer;font:inherit;color:var(--shinkansen);font-weight:700;text-decoration:underline;text-underline-offset:2px;text-align:start}
+.hgo:hover{color:var(--lantern)}
+.harea{align-self:flex-start}
+.harea:hover{background:var(--ink);color:var(--paper)}
+@media (max-width:640px){.hgrid{grid-template-columns:1fr;gap:28px}.hcard{max-width:420px;justify-self:center;width:100%}}
+@media (prefers-reduced-motion:reduce){.hinner{transition:none}}
+[dir=rtl] .htip,[dir=rtl] .hstory{font-size:17px}
+[dir=rtl] .hvibe{font-size:15.5px}
 /* ---- album ----
    One page per memory, laid out as an open notebook: photos taped to the left
    sheet, words on the right, a soft fold between. The strip scroll-snaps so a
