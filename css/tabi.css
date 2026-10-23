@@ -61,6 +61,16 @@ img{max-width:100%;display:block}
 .qr[aria-selected="true"] .qn mark{background:var(--yuzu)}
 .qnone{margin:0;padding:10px 11px;font-family:var(--hand);font-size:19px;color:var(--muted)}
 @media (max-width:760px){.sbox{max-width:none}}
+/* Near me: a pill beside the search box. Pressed, it turns blue to match the
+   you-are-here dot on the map and the distance tags on the cards. */
+.nearb{appearance:none;cursor:pointer;font:700 14px var(--body);color:var(--ink);background:var(--sheet);border:1.5px solid var(--ink);border-radius:999px;padding:6px 14px 7px 11px;white-space:nowrap;transition:background .15s,color .15s,border-color .15s}
+.nearb:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+.nearb[aria-pressed="true"]{background:var(--shinkansen);border-color:var(--shinkansen);color:#fff}
+.nearb:disabled{cursor:progress;opacity:.7}
+.nearmsg{flex:1 0 100%;margin:0;font-family:var(--hand);font-size:18px;line-height:1.3;color:var(--shinkansen)}
+.meta .dist{font-weight:700;color:var(--shinkansen)}
+.me .ping{transform-box:fill-box;transform-origin:center;animation:ping 2s ease-out infinite}
+@keyframes ping{0%{transform:scale(.5);opacity:.35}100%{transform:scale(1.6);opacity:0}}
 .brand{display:flex;align-items:center;text-decoration:none}
 .brand img{height:64px;width:auto;margin-block:-8px;transition:transform .2s}
 .brand:hover img{transform:rotate(-4deg)}
@@ -404,6 +414,7 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 [dir=rtl] .letter .sig{transform:rotate(3deg);transform-origin:right}
 [dir=rtl] footer .links{text-align:left}
 [dir=rtl] .store{padding:5px 9px 5px 12px}
+[dir=rtl] .nearb{padding:6px 11px 7px 14px}
 /* The map is drawn in its own coordinates and its labels are placed by
    measuring from their start, so it stays left-to-right; Arabic labels inside
    it still read right to left. */
@@ -447,6 +458,7 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 [dir=rtl] .member .tip{font-size:17.2px}
 [dir=rtl] .memo{font-size:19.8px}
 [dir=rtl] .acount{font-size:18.9px}
+[dir=rtl] .nearmsg{font-size:15.5px}
 @media (max-width:640px){[dir=rtl] .note{font-size:15.9px} [dir=rtl] .pola .cap{font-size:12px} [dir=rtl] .hero p .turn{font-size:18.1px} [dir=rtl] .hero-side .note{font-size:16.3px} [dir=rtl] .memo{font-size:18.1px}}
 @media (max-width:640px){
   [dir=rtl] .filters{mask-image:linear-gradient(270deg,#000 88%,transparent)}
