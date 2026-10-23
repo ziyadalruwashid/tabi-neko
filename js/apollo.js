@@ -4,7 +4,7 @@
 // Apollo's answers come from Claude through the small proxy in
 // worker/ask-apollo.js, which holds the API key. APOLLO_API is that Worker's
 // address; while it's empty Apollo answers with a friendly "coming soon".
-const APOLLO_API="";
+const APOLLO_API="https://ask-apollo.ziyadalruwashid.workers.dev/";
 
 const SUGGEST=["Halal ramen in Tokyo?","Plan a day in Kyoto for me","Best coffee near Shibuya?","Where can I pray in Osaka?"];
 // The conversation survives a reload or a trip to another page, but only for
