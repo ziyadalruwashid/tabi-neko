@@ -18,7 +18,7 @@
 
 const MODEL = "claude-opus-5-5";
 const DATA = "https://raw.githubusercontent.com/ziyadalruwashid/tabi-neko/main/data/";
-const DEFAULT_ORIGINS = ["https://ziyadalruwashid.github.io", "http://localhost:8000"];
+const DEFAULT_ORIGINS = ["https://tabi-neko.vercel.app", "http://localhost:8000"];
 
 // Guard rails. The spend limit in the Claude Console is the real backstop;
 // these keep any one visitor, or a bored script, from running up the bill.
