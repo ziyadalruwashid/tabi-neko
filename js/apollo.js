@@ -66,7 +66,7 @@ function renderChat(){
 // Messages flagged skip (the coming-soon note, errors, and the question that
 // got one) stay on screen but aren't sent back as history, so the turns the
 // API sees always alternate question, answer, question.
-const history=()=>chat.filter(m=>!m.skip&&m.text).map(m=>({role:m.role,content:m.text}));
+const chatHistory=()=>chat.filter(m=>!m.skip&&m.text).map(m=>({role:m.role,content:m.text}));
 const SAY={
   refusal:"I can't help with that one. Ask me something about your trip to Japan!",
   slow:"You're asking faster than I can walk! Give me a minute, then try again.",
@@ -86,7 +86,7 @@ async function send(text){
     chat.push({role:"assistant",text:T("I'm still learning to talk! My chat opens very soon. Until then, the map and the search box above have everything in my notebook."),skip:true});
   }else{
     try{
-      const res=await fetch(APOLLO_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:history()})});
+      const res=await fetch(APOLLO_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:chatHistory()})});
       if(!res.ok||!res.body)fail(res.status===429?"slow":"error");
       else{
         // The Worker streams plain text. Words appear as they arrive; a lone
