@@ -83,7 +83,9 @@ AR.ui={
 "Best coffee near Shibuya?":"أفضل قهوة قرب شيبويا؟",
 "Where can I pray in Osaka?":"أين أصلّي في أوساكا؟",
 "I'm still learning to talk! My chat opens very soon. Until then, the map and the search box above have everything in my notebook.":"ما زلت أتعلّم الكلام! المحادثة ستفتح قريبًا جدًا. حتى ذلك الحين، الخريطة ومربع البحث في الأعلى فيهما كل ما في دفتري.",
-"Something went wrong on my side. Try again in a moment.":"حدث خطأ من جهتي. حاول مرة أخرى بعد قليل."
+"Something went wrong on my side. Try again in a moment.":"حدث خطأ من جهتي. حاول مرة أخرى بعد قليل.",
+"I can't help with that one. Ask me something about your trip to Japan!":"لا أستطيع المساعدة في هذا. اسألني عن رحلتك إلى اليابان!",
+"You're asking faster than I can walk! Give me a minute, then try again.":"أسئلتك أسرع من خطواتي! أعطني دقيقة ثم حاول مرة أخرى."
 };
 AR.html={
  "brand":"تابي نيكو، الصفحة الرئيسية",

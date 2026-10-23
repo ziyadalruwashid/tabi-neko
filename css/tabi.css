@@ -499,6 +499,11 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}
 .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
 @keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.msg p b{font-weight:700}
+/* A place Apollo names that's on the map: tap to jump to its card. */
+.msg .pl{appearance:none;border:0;background:none;padding:0;font:inherit;font-weight:700;color:var(--shinkansen);cursor:pointer;
+  text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:2px}
+.msg .pl:hover{color:var(--lantern)}
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
 .chip{appearance:none;cursor:pointer;font:500 13.5px var(--body);color:var(--ink);background:var(--sheet);border:1.5px dashed var(--muted);border-radius:999px;padding:5px 12px 6px;text-align:start}
 .chip:hover{border-style:solid;border-color:var(--ink);background:var(--paper)}
