@@ -59,6 +59,8 @@ AR.ui={
  "{c} places are coming soon. Apollo is still taking notes.":"أماكن {c} قادمة قريبًا. أبولو ما زال يدوّن ملاحظاته.",
  "{n} so far":"{n} حتى الآن",
  "✓ halal":"✓ حلال",
+"Show more":"أظهر المزيد",
+"{n} more places":"المتبقّي: {n}",
 "Near me":"قريب مني",
 "finding you…":"أبحث عنك…",
 "you are here":"أنت هنا",

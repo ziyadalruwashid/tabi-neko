@@ -415,9 +415,19 @@ function renderMap(){
   $("mapTitle").textContent=`${D(c,"n")}${T(", ")}${D(c,"nick")}`;
   $("mapCount").textContent=zoomTo?T("tap a pin for details"):(groups.some(q=>q.m.length>1)?T("tap a ring to zoom in"):NP(vis.length,"spot"));
 }
+// The list shows ten cards, then a "show more" button adds ten at a time.
+// Any change to what's listed (city, area, categories, halal, Near me) starts
+// back at ten, and a selected card that's further down always gets shown, so
+// a pin, a search hit or a place Apollo names never lands on a hidden card.
+const PAGE=10;let listMax=PAGE,listKey="";
 function renderList(){
   let pts=P.filter(p=>p.city===city&&visible(p));
   if(near)pts=pts.map(p=>[p,KM(near,p)]).sort((a,b)=>a[1]-b[1]).map(a=>a[0]);
+  const key=[city,area,[...active].sort().join(),halalOnly,!!near].join("|");
+  if(key!==listKey){listKey=key;listMax=PAGE}
+  const at=selected?pts.findIndex(p=>p.id===selected):-1;
+  if(at>=listMax)listMax=Math.ceil((at+1)/PAGE)*PAGE;
+  const total=pts.length;pts=pts.slice(0,listMax);
   if(!pts.length){$("list").innerHTML=P.some(p=>p.city===city)?`<p class="empty">${T("Nothing here with those filters yet. Try another neighborhood or category ↑")}</p>`:`<p class="empty">${T("{c} places are coming soon. Apollo is still taking notes.",{c:D(CITIES[city],"n")})}</p>`;return}
   $("list").innerHTML=pts.map((p,i)=>{const C=CATS[p.cat],q=encodeURIComponent(`${p.n} ${CITIES[p.city].n} Japan`),r=[-3,2.5,-1.5,3.5,-2.5,1.5][i%6];
     return `<article class="entry${p.id===selected?" on":""}" id="e-${p.id}" data-id="${p.id}" style="--c:var(--${p.cat})">
@@ -430,6 +440,12 @@ function renderList(){
         <a class="go" href="${p.url||"https://www.google.com/maps/search/?api=1&query="+q}" target="_blank" rel="noopener">${T("Open in Google Maps")}</a>${p.book?`<a class="go book" href="${p.book}" target="_blank" rel="noopener">${T("Book on {s} ↗",{s:/getyourguide/.test(p.book)?"GetYourGuide":/klook/.test(p.book)?"Klook":T("the site")})}</a>`:""}${p.also?`<p class="also">${T("also in:")} ${p.also.map(([l,qq])=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(qq)}" target="_blank" rel="noopener">${l}</a>`).join(" · ")}</p>`:""}
       </div>
     </article>`}).join("");
+  const left=total-pts.length;
+  if(left>0)$("list").insertAdjacentHTML("beforeend",`<button class="more" id="more" type="button">${T("Show more")}<small>${esc(T("{n} more places",{n:left}))}</small></button>`);
+  if($("more"))$("more").onclick=()=>{
+    // Keep the reader's place: focus moves to the first new card.
+    const first=pts.length;listMax+=PAGE;renderList();
+    const el=$("list").querySelectorAll(".entry")[first];if(el){el.setAttribute("tabindex","-1");el.focus({preventScroll:true})}};
   $("list").querySelectorAll(".entry").forEach(el=>el.onclick=e=>{if(e.target.closest("a"))return;select(el.dataset.id,false)});
 }
 function select(id,fromMap){
