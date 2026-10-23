@@ -595,6 +595,7 @@ function applyStatic(){
 // The Arabic lives in two files fetched on first use. async=false keeps them
 // running in order, since content.js adds to the AR object ui.js creates.
 function loadAR(){
+  if(!document.querySelector('link[href="'+AR_FONTS+'"]')){const l=document.createElement("link");l.rel="stylesheet";l.href=AR_FONTS;document.head.appendChild(l)}
   return Promise.all(["data/ar/ui.js","data/ar/content.js"].map(src=>new Promise((ok,no)=>{
     const el=document.createElement("script");el.src=src;el.async=false;el.onload=ok;el.onerror=no;document.head.appendChild(el)})))
     .then(attachAR);

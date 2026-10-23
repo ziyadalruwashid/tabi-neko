@@ -5,15 +5,17 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Tabi Neko</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Gaegu:wght@400;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Zen+Maru+Gothic:wght@500;700&family=Baloo+Bhaijaan+2:wght@800&family=Marhey:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap">
+<link rel="preload" href="assets/fonts/bagel-fat-one-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/gaegu-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/tabi.css">
 <script>
+// The Arabic fonts are only fetched for someone reading in Arabic.
+var AR_FONTS="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@800&family=Marhey:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap";
 // Someone who picked Arabic last time gets it before the first paint: the
 // page flips to RTL here and the Arabic text loads ahead of js/app.js.
 try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.lang="ar";document.documentElement.dir="rtl";
-  document.write('<script src="data/ar/ui.js"><\/script><script src="data/ar/content.js"><\/script>')}}catch(e){}
+  document.write('<link rel="stylesheet" href="'+AR_FONTS+'"><script src="data/ar/ui.js"><\/script><script src="data/ar/content.js"><\/script>')}}catch(e){}
 </script>
 </head>
 <body>
