@@ -132,6 +132,21 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
   </footer>
 </div>
 
+<!-- Ask Apollo: floating chat, home page only. Filled in by js/apollo.js. -->
+<button class="apollob" id="apollob" type="button" aria-expanded="false" aria-controls="apollo"></button>
+<section class="apollo" id="apollo" role="dialog" aria-label="Chat with Apollo" hidden>
+  <header class="apohead">
+    <img src="assets/cat.png" alt="">
+    <div><b id="apollotitle"></b><small id="apollosub"></small></div>
+    <button class="apox" id="apollox" type="button">×</button>
+  </header>
+  <div class="apolog" id="apollolog" aria-live="polite"></div>
+  <form class="apoform" id="apolloform">
+    <textarea id="apolloq" rows="1" maxlength="500" autocomplete="off"></textarea>
+    <button id="apollosend" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m0 0-6 6m6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </form>
+</section>
+
 <script src="data/map.js"></script>
 <script src="data/places.js"></script>
 <script src="data/apps.js"></script>
@@ -139,5 +154,6 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
 <script src="data/crew.js"></script>
 <script src="data/album.js"></script>
 <script src="js/app.js"></script>
+<script src="js/apollo.js"></script>
 </body>
 </html>

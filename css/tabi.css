@@ -465,6 +465,62 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
   [dir=rtl] .tomap{right:auto;left:14px}
   [dir=rtl] footer .links{text-align:right}
 }
+/* ---- Ask Apollo ----
+   A cat sticker with a pill label floats in the bottom corner of the home page;
+   it opens a chat card above it. On a phone the chat takes the whole screen.
+   All positions are logical (inset-inline-end), so Arabic mirrors for free. */
+.apollob{position:fixed;inset-inline-end:max(18px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));z-index:60;
+  appearance:none;cursor:pointer;display:flex;align-items:center;gap:0;padding:0;border:0;background:none;font:700 15px var(--body);color:var(--ink)}
+.apollob img{width:64px;height:64px;object-fit:cover;object-position:50% 8%;border-radius:50%;background:var(--sheet);border:2.5px solid var(--ink);
+  box-shadow:0 8px 18px -8px rgba(63,33,22,.6);transition:transform .2s;position:relative;z-index:1}
+/* The label sits before the cat and tucks under it. */
+.apollob span{order:-1;margin-inline-end:-14px;padding-block:7px 8px;padding-inline:16px 22px;background:var(--lantern);color:#fff;
+  border:2.5px solid var(--ink);border-radius:999px;box-shadow:0 8px 18px -10px rgba(63,33,22,.6);transform:rotate(-3deg)}
+.apollob:hover img{transform:rotate(-8deg) scale(1.05)}
+.apollob[aria-expanded="true"] span{display:none}
+.apollo{position:fixed;inset-inline-end:max(18px,env(safe-area-inset-right));bottom:calc(96px + env(safe-area-inset-bottom));z-index:61;
+  width:min(390px,calc(100vw - 36px));height:min(580px,calc(100vh - 130px));display:flex;flex-direction:column;
+  background:var(--sheet);border:2px solid var(--ink);border-radius:16px;box-shadow:6px 8px 0 rgba(63,33,22,.14),0 24px 50px -20px rgba(63,33,22,.5);overflow:hidden}
+.apollo[hidden]{display:none}
+.apohead{display:flex;align-items:center;gap:11px;padding:12px 12px 11px 14px;border-bottom:1.5px dashed var(--rule);background:var(--paper)}
+.apohead img{width:44px;height:44px;object-fit:cover;object-position:50% 8%;border-radius:50%;border:2px solid var(--ink);background:var(--sheet);flex:none}
+.apohead div{flex:1;min-width:0;line-height:1.15}
+.apohead b{display:block;font-family:var(--display);font-weight:400;font-size:21px}
+.apohead small{display:block;font-family:var(--hand);font-size:16px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.apox{appearance:none;border:0;background:none;cursor:pointer;font-size:28px;line-height:1;color:var(--muted);padding:2px 8px 6px;border-radius:8px}
+.apox:hover{color:var(--ink);background:var(--rule)}
+.apolog{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:16px 14px 8px;display:flex;flex-direction:column;gap:10px}
+.msg{display:flex}
+.msg p{margin:0;max-width:85%;padding:9px 13px 10px;font-size:15px;line-height:1.5;border-radius:14px;overflow-wrap:anywhere}
+.msg.apo p{background:var(--paper);border:1.5px solid var(--rule);border-end-start-radius:4px}
+.msg.you{justify-content:flex-end}
+.msg.you p{background:var(--ink);color:var(--paper);border-end-end-radius:4px}
+.typing p{display:flex;gap:5px;padding:13px 15px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.chip{appearance:none;cursor:pointer;font:500 13.5px var(--body);color:var(--ink);background:var(--sheet);border:1.5px dashed var(--muted);border-radius:999px;padding:5px 12px 6px;text-align:start}
+.chip:hover{border-style:solid;border-color:var(--ink);background:var(--paper)}
+.apoform{display:flex;align-items:flex-end;gap:8px;padding:10px 10px 12px;border-top:1.5px dashed var(--rule)}
+.apoform textarea{flex:1;resize:none;font:inherit;font-size:16px;line-height:1.4;color:var(--ink);background:var(--paper);border:1.5px solid var(--rule);border-radius:12px;padding:9px 12px;max-height:132px}
+.apoform textarea:focus{outline:none;border-color:var(--ink)}
+.apoform textarea::placeholder{font-family:var(--hand);font-size:18px;color:var(--muted)}
+.apoform button{flex:none;width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;background:var(--lantern);color:#fff;display:grid;place-items:center}
+.apoform button:hover{background:var(--ink)}
+.apoform svg{width:20px;height:20px}
+@media (max-width:640px){
+  .apollob img{width:56px;height:56px}
+  .apollob span{font-size:14px;padding-block:6px 7px;padding-inline:13px 20px}
+  /* Full screen on a phone, and the page behind stops scrolling. */
+  .apollo{inset:0;width:auto;height:auto;height:100dvh;border:0;border-radius:0;box-shadow:none;bottom:auto}
+  .chat-open,.chat-open body{overflow:hidden}
+  .chat-open .apollob{display:none}
+  /* The back-to-map pill moves up out of the button's way. */
+  .tomap{bottom:calc(88px + env(safe-area-inset-bottom))!important}
+}
+[dir=rtl] .apollob span{transform:rotate(3deg)}
+[dir=rtl] .apohead small,[dir=rtl] .apoform textarea::placeholder{font-size:14px}
 /* ---- phone layout ---- */
 .tomap{display:none}
 @media (max-width:640px){
