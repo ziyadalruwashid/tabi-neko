@@ -469,7 +469,7 @@ function renderAlbum(){
   book.innerHTML=`<div class="atrack" id="atrack" tabindex="0">${ALBUM.map((m,i)=>{const ph=m.photos.slice(0,4),c=m.city&&CITIES[m.city],caps=D(m,"caps")||[];
     return `<article class="apage" role="group" aria-roledescription="${esc(T("page"))}" aria-label="${esc(T("Page {i} of {n}",{i:i+1,n}))}"><div class="spread">`+
       `<div class="pics n${ph.length}">${ph.map(([src,cap0],j)=>{const cap=isAR()&&caps[j]||cap0;return `<figure class="pola" style="--r:${[-3,2.4,-1.6,3.2][(i+j)%4]}deg"><span class="tape${j%2?" pink":""}"></span><div class="ph photo"><img src="${esc(src)}" alt="${esc(cap||D(m,"t"))}" loading="lazy"></div>${cap?`<figcaption class="cap">${esc(cap)}</figcaption>`:""}</figure>`}).join("")}</div>`+
-      `<div class="words"><span class="kicker">${esc(D(m,"date"))}${m.where?` · ${esc(D(m,"where"))}`:""}</span><h2>${esc(D(m,"t"))}${m.jp?`<small>${esc(m.jp)}</small>`:""}</h2><p class="memo">${esc(D(m,"note"))}</p>`+
+      `<div class="words"><span class="kicker">${[D(m,"date"),D(m,"where")].filter(Boolean).map(esc).join(" · ")}</span><h2>${esc(D(m,"t"))}${m.jp?`<small>${esc(m.jp)}</small>`:""}</h2><p class="memo">${esc(D(m,"note"))}</p>`+
       `${c&&P.some(p=>p.city===m.city)?`<button class="store go-city" data-c="${m.city}">${esc(T("See {c} on the map →",{c:D(c,"n")}))}</button>`:""}</div>`+
     `</div></article>`}).join("")}</div>`+
     `<div class="actrl"><button class="aturn" id="aprev" type="button" aria-label="${esc(T("Previous page"))}">${isAR()?"→":"←"}</button><span class="acount" id="acount" aria-live="polite"></span><button class="aturn" id="anext" type="button" aria-label="${esc(T("Next page"))}">${isAR()?"←":"→"}</button></div>`;
