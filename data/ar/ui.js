@@ -58,7 +58,18 @@ AR.ui={
  "which part of {c}?":"أي جزء من {c}؟",
  "{c} places are coming soon. Apollo is still taking notes.":"أماكن {c} قادمة قريبًا. أبولو ما زال يدوّن ملاحظاته.",
  "{n} so far":"{n} حتى الآن",
- "✓ halal":"✓ حلال"
+ "✓ halal":"✓ حلال",
+"Near me":"قريب مني",
+"finding you…":"أبحث عنك…",
+"you are here":"أنت هنا",
+"{n} m":"{n} م",
+"{n} km":"{n} كم",
+"~{n} min walk":"~{n} دقيقة مشيًا",
+"Nearest first. Your location stays on your phone.":"الأقرب أولًا. موقعك يبقى على هاتفك ولا يُرسل لأي مكان.",
+"You're {n} km from the nearest place. Apollo will find what's near you once you're in Japan.":"أنت على بُعد {n} كم من أقرب مكان. أبولو سيجد ما حولك حين تصل إلى اليابان.",
+"Location is blocked for this site. Allow it in your browser settings, then try again.":"الموقع محظور لهذا الموقع. اسمح به من إعدادات المتصفح، ثم حاول مرة أخرى.",
+"Couldn't find you just now. Try again in a moment.":"لم أستطع تحديد موقعك الآن. حاول بعد قليل.",
+"Your browser can't share your location.":"متصفحك لا يستطيع مشاركة موقعك."
 };
 AR.html={
  "brand":"تابي نيكو، الصفحة الرئيسية",

@@ -173,7 +173,9 @@ function renderMap(){
   const pl=a=>a.map(q=>X(q[0],q[1]).toFixed(1)+","+Y(q[0],q[1]).toFixed(1)).join(" ");
   const span=B.n-B.s,wide=span>.05,tight=span<.012;
   // Measured up here so the pin pass below can keep clear of the scale bar.
-  const kmPx=s/111,km=kmPx>70?1:(kmPx>28?2:5),bar=km*kmPx;
+  // Zoomed right in (a tight cluster, or Near me) a kilometre is wider than the
+  // sheet, so the bar steps down to 500 m and 200 m.
+  const kmPx=s/111,km=kmPx>350?.2:kmPx>140?.5:kmPx>70?1:(kmPx>28?2:5),bar=km*kmPx;
 
   // Pins are grouped first so every label below can dodge them.
   // A place the trimmed frame left outside the sheet is pulled onto the margin and
@@ -366,7 +368,7 @@ function renderMap(){
       lab+=`<image href="assets/${S.img}.png" x="${(x-S.w/2).toFixed(1)}" y="${(y-S.w*.8).toFixed(1)}" width="${S.w}" height="${S.w}" preserveAspectRatio="xMidYMid meet" transform="rotate(-6 ${x.toFixed(1)} ${y.toFixed(1)})"/><text x="${x.toFixed(1)}" y="${(y+S.w*.34).toFixed(1)}" text-anchor="middle" font-family="var(--hand)" font-size="16" fill="var(--ink)" stroke="var(--land)" stroke-width="4" paint-order="stroke">${ML(S.note)}</text>`}
   g+=lab;
 
-  g+=`<g transform="translate(22,${H-20})"><rect x="0" y="-4" width="${(bar/2).toFixed(1)}" height="8" fill="var(--ink)" stroke="var(--ink)" stroke-width="1"/><rect x="${(bar/2).toFixed(1)}" y="-4" width="${(bar/2).toFixed(1)}" height="8" fill="var(--sheet)" stroke="var(--ink)" stroke-width="1"/><text x="${(bar+8).toFixed(1)}" y="5" font-family="var(--hand)" font-size="16" fill="var(--ink)">${km} ${T("km")}</text></g>`;
+  g+=`<g transform="translate(22,${H-20})"><rect x="0" y="-4" width="${(bar/2).toFixed(1)}" height="8" fill="var(--ink)" stroke="var(--ink)" stroke-width="1"/><rect x="${(bar/2).toFixed(1)}" y="-4" width="${(bar/2).toFixed(1)}" height="8" fill="var(--sheet)" stroke="var(--ink)" stroke-width="1"/><text x="${(bar+8).toFixed(1)}" y="5" font-family="var(--hand)" font-size="16" fill="var(--ink)">${km<1?T("{n} m",{n:km*1000}):T("{n} km",{n:km})}</text></g>`;
   g+=`<g transform="translate(${W-36},42)"><circle r="18" fill="var(--sheet)" opacity=".8"/><circle r="18" fill="none" stroke="var(--rule)" stroke-width="1.3"/><path d="M-13 0H13M0 -13V13" stroke="var(--rule)" stroke-width="1"/><path d="M0 -15L5 0L-5 0Z" fill="var(--lantern)"/><path d="M0 15L5 0L-5 0Z" fill="var(--ink)" opacity=".18"/><path d="M0 -15L5 0L0 15L-5 0Z" fill="none" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/><text y="-20" text-anchor="middle" font-family="var(--hand)" font-weight="700" font-size="15" fill="var(--ink)">N</text></g>`;
 
   // Arrowhead at distance d along angle a, drawn upright then swung into place.
@@ -403,6 +405,8 @@ function renderMap(){
     </g>${gr.tag?`<text class="ml" x="${gr.tagX.toFixed(1)}" y="${gr.tagY.toFixed(1)}" text-anchor="middle" stroke="var(--land)" stroke-width="4" paint-order="stroke">${gr.tag}</text>`:""}</g>`;
   });
   g+=top;
+  if(near){const x=X(near.lat,near.lng),y=Y(near.lat,near.lng);
+    if(x>=0&&x<=W&&y>=0&&y<=H)g+=`<g class="me" transform="translate(${x.toFixed(1)},${y.toFixed(1)})" aria-hidden="true"><circle class="ping" r="18" fill="var(--shinkansen)" opacity=".18"/><circle r="7.5" fill="var(--shinkansen)" stroke="var(--sheet)" stroke-width="3"/><text y="-15" text-anchor="middle" font-family="var(--hand)" font-weight="700" font-size="16" fill="var(--shinkansen)" stroke="var(--land)" stroke-width="4" paint-order="stroke">${T("you are here")}</text></g>`}
   g+=`</g>`;
   $("mapsvg").innerHTML=g;
   $("mapsvg").querySelectorAll(".pin").forEach(el=>{const act=()=>select(el.dataset.id,true);el.onclick=act;el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act()}}});
@@ -412,7 +416,8 @@ function renderMap(){
   $("mapCount").textContent=zoomTo?T("tap a pin for details"):(groups.some(q=>q.m.length>1)?T("tap a ring to zoom in"):NP(vis.length,"spot"));
 }
 function renderList(){
-  const pts=P.filter(p=>p.city===city&&visible(p));
+  let pts=P.filter(p=>p.city===city&&visible(p));
+  if(near)pts=pts.map(p=>[p,KM(near,p)]).sort((a,b)=>a[1]-b[1]).map(a=>a[0]);
   if(!pts.length){$("list").innerHTML=P.some(p=>p.city===city)?`<p class="empty">${T("Nothing here with those filters yet. Try another neighborhood or category ↑")}</p>`:`<p class="empty">${T("{c} places are coming soon. Apollo is still taking notes.",{c:D(CITIES[city],"n")})}</p>`;return}
   $("list").innerHTML=pts.map((p,i)=>{const C=CATS[p.cat],q=encodeURIComponent(`${p.n} ${CITIES[p.city].n} Japan`),r=[-3,2.5,-1.5,3.5,-2.5,1.5][i%6];
     return `<article class="entry${p.id===selected?" on":""}" id="e-${p.id}" data-id="${p.id}" style="--c:var(--${p.cat})">
@@ -420,7 +425,7 @@ function renderList(){
       <div class="txt">
         <div class="no">${T("No.")} ${p.num}</div>
         <h3>${p.n}<small>${p.jp}</small></h3>
-        <p class="meta"><span class="c"><i></i>${D(C,"n")}</span><span>${AREA(p.area)}</span>${p.halal?`<span class="halal${p.hl==="friendly"?" mf":""}">${p.hl==="friendly"?T("Muslim-friendly"):T("✓ halal")}</span>`:""}<span>${D(p,"t")}</span><span>${D(p,"cost")}</span><span>${D(p,"dur")}</span></p>
+        <p class="meta">${near?`<span class="dist">${distText(KM(near,p))}</span>`:""}<span class="c"><i></i>${D(C,"n")}</span><span>${AREA(p.area)}</span>${p.halal?`<span class="halal${p.hl==="friendly"?" mf":""}">${p.hl==="friendly"?T("Muslim-friendly"):T("✓ halal")}</span>`:""}<span>${D(p,"t")}</span><span>${D(p,"cost")}</span><span>${D(p,"dur")}</span></p>
         <p class="note">${D(p,"tip")}${p.tier==="must"?` <span class="dontskip">${T("don't skip this")}<svg viewBox="0 0 162 10" preserveAspectRatio="none"><path d="${UNDER}" fill="none" stroke="#F14E24" stroke-width="2" stroke-linecap="round"/></svg></span>`:""}</p>
         <a class="go" href="${p.url||"https://www.google.com/maps/search/?api=1&query="+q}" target="_blank" rel="noopener">${T("Open in Google Maps")}</a>${p.book?`<a class="go book" href="${p.book}" target="_blank" rel="noopener">${T("Book on {s} ↗",{s:/getyourguide/.test(p.book)?"GetYourGuide":/klook/.test(p.book)?"Klook":T("the site")})}</a>`:""}${p.also?`<p class="also">${T("also in:")} ${p.also.map(([l,qq])=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(qq)}" target="_blank" rel="noopener">${l}</a>`).join(" · ")}</p>`:""}
       </div>
@@ -502,6 +507,57 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   a.addEventListener("click",e=>{e.preventDefault();show(t);try{history.replaceState(null,"","#"+t)}catch(_){}});
 });
 
+// ---- near me ----
+// Your position comes from the browser and never leaves the phone: it is only
+// used here to measure straight-line distances to the coordinates each place
+// already has. watchPosition keeps them fresh while you walk; the list only
+// re-sorts once you've moved 50 m, so it doesn't jitter under your thumb.
+let near=null,nearWatch=null,nearNote=null;
+const KM=(a,b)=>{const R=6371,r=Math.PI/180,dLa=(b.lat-a.lat)*r,dLo=(b.lng-a.lng)*r,
+  h=Math.sin(dLa/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
+// Walking time assumes 4.8 km/h plus a quarter for streets not being straight
+// lines, and is only offered up to 3 km; past that you're taking a train.
+function distText(km){
+  const d=km<1?T("{n} m",{n:Math.max(10,Math.round(km*100)*10)}):T("{n} km",{n:km<10?km.toFixed(1):Math.round(km)});
+  const t=km<=3?d+" · "+T("~{n} min walk",{n:Math.max(1,Math.round(km*1.25/4.8*60))}):d;
+  return isAR()?iso(t):t;
+}
+function setNear(){
+  const b=$("nearb");b.setAttribute("aria-pressed",!!near);b.disabled=nearWatch!==null&&!near;
+  b.innerHTML=`<span aria-hidden="true">📍</span> ${nearWatch!==null&&!near?T("finding you…"):T("Near me")}`;
+  const m=$("nearmsg");m.hidden=!nearNote;if(nearNote)m.textContent=T(nearNote[0],nearNote[1]);
+}
+function stopNear(note){
+  if(nearWatch!==null)navigator.geolocation.clearWatch(nearWatch);
+  const was=!!near;nearWatch=null;near=null;nearNote=note||null;
+  if(was){zoomTo=null;renderMap();renderList()}
+  setNear();
+}
+function startNear(){
+  if(!navigator.geolocation){stopNear(["Your browser can't share your location."]);return}
+  nearNote=null;
+  nearWatch=navigator.geolocation.watchPosition(pos=>{
+    const me={lat:pos.coords.latitude,lng:pos.coords.longitude};
+    if(near){if(KM(near,me)<.05)return;near=me;renderMap();renderList();return}
+    // First fix: from home everything is ~8,000 km off, so rather than sort by
+    // silly numbers, say so and switch the feature back off.
+    const best=P.reduce((a,p)=>KM(me,p)<KM(me,a)?p:a),far=KM(me,best);
+    if(far>50){stopNear(["You're {n} km from the nearest place. Apollo will find what's near you once you're in Japan.",{n:Math.round(far).toLocaleString("en")}]);return}
+    near=me;nearNote=["Nearest first. Your location stays on your phone."];
+    if(best.city!==city){city=best.city;store.set("tabineko-city",city);area=null}
+    selected=null;
+    // Frame you and the closest handful of places, rather than the whole city.
+    const close=P.filter(p=>p.city===city&&visible(p)&&!p.nomap).sort((a,b)=>KM(me,a)-KM(me,b)).slice(0,6);
+    zoomTo=fitBox([me,...close],600,480,.008);
+    renderAll();setNear();
+    document.querySelector(".mapwrap").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
+  },err=>stopNear([err.code===1?"Location is blocked for this site. Allow it in your browser settings, then try again.":"Couldn't find you just now. Try again in a moment."]),
+  {enableHighAccuracy:true,maximumAge:30000,timeout:20000});
+  setNear();
+}
+$("nearb").onclick=()=>nearWatch!==null?stopNear():startNear();
+setNear();
+
 // ---- language switch ----
 // Fixed text in index.html is tagged data-i18n="key" (swaps its innerHTML) or
 // data-i18n-attr="attr:key,..." (placeholders and labels). The English is read
@@ -530,7 +586,7 @@ function setLang(l){
   if(l==="ar"&&!AR_ON()){loadAR().then(()=>setLang("ar"),()=>{});return}
   lang=l;store.set("tabineko-lang",l);
   const h=document.documentElement;h.lang=l;h.dir=l==="ar"?"rtl":"ltr";
-  closeAreas();applyStatic();buildIdx();
+  closeAreas();applyStatic();buildIdx();setNear();
   renderAll();renderApps();renderTrips();renderCrew();renderAlbum();
 }
 $("langb").onclick=()=>setLang(isAR()?"en":"ar");
