@@ -496,6 +496,7 @@ const PAGES=["apps","trips","memories","crew"];
 function show(target,quiet){
   const pg=PAGES.includes(target)?target:null;
   $("home").hidden=!!pg;PAGES.forEach(k=>$(k).hidden=pg!==k);
+  if(typeof syncApollo==="function")syncApollo();
   document.querySelectorAll(".top nav a").forEach(a=>a.classList.toggle("cur",a.dataset.go===(pg||"map")));
   if(quiet)return;
   if(pg){window.scrollTo(0,0);return}
@@ -588,6 +589,7 @@ function setLang(l){
   const h=document.documentElement;h.lang=l;h.dir=l==="ar"?"rtl":"ltr";
   closeAreas();applyStatic();buildIdx();setNear();
   renderAll();renderApps();renderTrips();renderCrew();renderAlbum();
+  if(typeof renderApollo==="function")renderApollo();
 }
 $("langb").onclick=()=>setLang(isAR()?"en":"ar");
 applyStatic();

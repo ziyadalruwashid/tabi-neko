@@ -69,7 +69,21 @@ AR.ui={
 "You're {n} km from the nearest place. Apollo will find what's near you once you're in Japan.":"أنت على بُعد {n} كم من أقرب مكان. أبولو سيجد ما حولك حين تصل إلى اليابان.",
 "Location is blocked for this site. Allow it in your browser settings, then try again.":"الموقع محظور لهذا الموقع. اسمح به من إعدادات المتصفح، ثم حاول مرة أخرى.",
 "Couldn't find you just now. Try again in a moment.":"لم أستطع تحديد موقعك الآن. حاول بعد قليل.",
-"Your browser can't share your location.":"متصفحك لا يستطيع مشاركة موقعك."
+"Your browser can't share your location.":"متصفحك لا يستطيع مشاركة موقعك.",
+"Ask Apollo":"اسأل أبولو",
+"Chat with Apollo":"محادثة مع أبولو",
+"Close chat":"أغلق المحادثة",
+"your travel cat 🐾":"قطّك المسافر 🐾",
+"Ask me anything about Japan…":"اسألني أي شيء عن اليابان…",
+"Send":"أرسل",
+"Apollo is typing":"أبولو يكتب",
+"Meow! I'm Apollo. Ask me where to eat halal, what to see, or how to get around, and I'll answer from my notebook.":"مياو! أنا أبولو. اسألني أين تأكل حلالًا، وماذا تزور، وكيف تتنقّل، وسأجيبك من دفتري.",
+"Halal ramen in Tokyo?":"رامن حلال في طوكيو؟",
+"Plan a day in Kyoto for me":"خطّط لي يومًا في كيوتو",
+"Best coffee near Shibuya?":"أفضل قهوة قرب شيبويا؟",
+"Where can I pray in Osaka?":"أين أصلّي في أوساكا؟",
+"I'm still learning to talk! My chat opens very soon. Until then, the map and the search box above have everything in my notebook.":"ما زلت أتعلّم الكلام! المحادثة ستفتح قريبًا جدًا. حتى ذلك الحين، الخريطة ومربع البحث في الأعلى فيهما كل ما في دفتري.",
+"Something went wrong on my side. Try again in a moment.":"حدث خطأ من جهتي. حاول مرة أخرى بعد قليل."
 };
 AR.html={
  "brand":"تابي نيكو، الصفحة الرئيسية",
