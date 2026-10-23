@@ -486,7 +486,7 @@ function renderHoods(){
       <div class="hinner">
         <div class="hface hfront">
           <div class="htop"><span class="hno">No. ${String(i+1).padStart(2,"0")}<small>/${String(list.length).padStart(2,"0")}</small></span><h3>${esc(D(h,"n"))}<small>${esc(h.jp)}</small></h3></div>
-          <div class="hph"><img src="${esc(h.photo)}" alt="" loading="lazy"><span class="hvibe">${esc(D(h,"vibe"))}</span></div>
+          <div class="hph"><img src="${esc(h.photo)}" alt="" loading="lazy"${h.pos?` style="object-position:${esc(h.pos)}"`:""}><span class="hvibe">${esc(D(h,"vibe"))}</span></div>
           <ul class="hstats">${HSTAT.map(([k,ic,lb])=>`<li><span class="hl"><i aria-hidden="true">${ic}</i>${T(lb)}</span><span class="hbar" role="img" aria-label="${esc(T("{n} out of 5",{n:h.stats[k]}))}">${[1,2,3,4,5].map(n=>`<b class="${n<=h.stats[k]?"on":""}"></b>`).join("")}</span></li>`).join("")}</ul>
           <p class="hhalal${halal?"":" none"}">${halal===1?esc(T("✓ 1 halal spot in the notebook")):halal?esc(T("✓ {n} halal spots in the notebook",{n:halal})):esc(T("no halal spots in the notebook yet"))}</p>
           <p class="hbest"><b>${T("Best time:")}</b> ${esc(D(h,"best"))}</p>
