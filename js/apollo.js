@@ -14,11 +14,13 @@ let chat=[],chatBusy=false;
 try{chat=JSON.parse(sessionStorage.getItem(CHAT_KEY))||[]}catch(e){chat=[]}
 const saveChat=()=>{try{sessionStorage.setItem(CHAT_KEY,JSON.stringify(chat.slice(-40)))}catch(e){}};
 
-// Plain text in, safe HTML out: escaped, line breaks kept, and **bold**
+// Plain text in, safe HTML out: numbers and price ranges kept left-to-right
+// (so "¥3,000–4,000" doesn't flip inside Arabic), escaped, line breaks kept,
+// and **bold**
 // honoured. Apollo bolds every place he recommends; one whose name matches a
 // place on the site becomes a link that jumps to it on the map.
 const PLACE_BY_NAME=new Map(P.map(p=>[LOW(p.n),p]));
-const chatHTML=s=>esc(s).replace(/\*\*(.+?)\*\*/g,(m,t)=>{
+const chatHTML=s=>esc(s.replace(LTR_RUN,"\u2066$&\u2069")).replace(/\*\*(.+?)\*\*/g,(m,t)=>{
   const p=PLACE_BY_NAME.get(LOW(t.replace(/&amp;/g,"&")));
   return p?`<button type="button" class="pl" data-id="${p.id}">${t}</button>`:`<b>${t}</b>`;
 }).replace(/\n/g,"<br>");
@@ -48,7 +50,9 @@ function renderApollo(){
 function renderChat(){
   const log=$("apollolog");
   let h=`<div class="msg apo"><p>${chatHTML(T("Meow! I'm Apollo. Ask me where to eat halal, what to see, or how to get around, and I'll answer from my notebook."))}</p></div>`;
-  h+=chat.map(m=>`<div class="msg ${m.role==="user"?"you":"apo"}"><p>${chatHTML(m.text)}</p></div>`).join("");
+  // Each bubble takes its direction from its own first words, so an Arabic
+  // question or answer reads right to left even on the English page.
+  h+=chat.map(m=>`<div class="msg ${m.role==="user"?"you":"apo"}"><p dir="auto">${chatHTML(m.text)}</p></div>`).join("");
   // The dots show until Apollo's first words arrive.
   if(chatBusy&&!(chat.length&&chat[chat.length-1].role==="assistant"))h+=`<div class="msg apo typing" aria-label="${esc(T("Apollo is typing"))}"><p><i></i><i></i><i></i></p></div>`;
   // Starter questions only until the first message, so they don't nag.
@@ -102,7 +106,9 @@ async function send(text){
 }
 
 // The box grows with what you type, up to about five lines.
-function fitInput(){const q=$("apolloq");q.style.height="auto";q.style.height=Math.min(q.scrollHeight,132)+"px"}
+// The scrollbar only appears once it's that tall, not on an empty box.
+function fitInput(){const q=$("apolloq");q.style.height="auto";const h=q.scrollHeight;
+  q.style.height=Math.min(h,132)+"px";q.style.overflowY=h>132?"auto":"hidden"}
 
 function openApollo(){
   const p=$("apollo");if(!p.hidden)return;
@@ -127,6 +133,7 @@ $("apollob").onclick=()=>$("apollo").hidden?openApollo():closeApollo();
 $("apollox").onclick=closeApollo;
 $("apolloform").onsubmit=e=>{e.preventDefault();send($("apolloq").value)};
 $("apolloq").oninput=fitInput;
+$("apolloq").dir="auto";
 // Enter sends, Shift+Enter starts a new line, Escape closes.
 $("apolloq").onkeydown=e=>{
   if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send($("apolloq").value)}
