@@ -77,7 +77,7 @@ AR.ui={
 "Ask me anything about Japan…":"اسألني أي شيء عن اليابان…",
 "Send":"أرسل",
 "Apollo is typing":"أبولو يكتب",
-"Hey hey! 😺 I'm Apollo. Ask me where to eat halal, what to see or how to get around, and I'll dig it out of my notebook for you!":"هلا والله! 😺 أنا أبولو. اسألني وين تاكل حلال، وش تزور، وكيف تتنقّل، وأطلّعها لك من دفتري!",
+"Meow! I'm Apollo. Ask me where to eat halal, what to see, or how to get around, and I'll answer from my notebook.":"مياو! أنا أبولو. اسألني أين تأكل حلالًا، وماذا تزور، وكيف تتنقّل، وسأجيبك من دفتري.",
 "Halal ramen in Tokyo?":"رامن حلال في طوكيو؟",
 "Plan a day in Kyoto for me":"خطّط لي يومًا في كيوتو",
 "Best coffee near Shibuya?":"أفضل قهوة قرب شيبويا؟",

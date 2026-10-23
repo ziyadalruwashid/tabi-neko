@@ -49,7 +49,7 @@ function renderApollo(){
 }
 function renderChat(){
   const log=$("apollolog");
-  let h=`<div class="msg apo"><p>${chatHTML(T("Hey hey! 😺 I'm Apollo. Ask me where to eat halal, what to see or how to get around, and I'll dig it out of my notebook for you!"))}</p></div>`;
+  let h=`<div class="msg apo"><p>${chatHTML(T("Meow! I'm Apollo. Ask me where to eat halal, what to see, or how to get around, and I'll answer from my notebook."))}</p></div>`;
   // Each bubble takes its direction from its own first words, so an Arabic
   // question or answer reads right to left even on the English page.
   h+=chat.map(m=>`<div class="msg ${m.role==="user"?"you":"apo"}"><p dir="auto">${chatHTML(m.text)}</p></div>`).join("");
