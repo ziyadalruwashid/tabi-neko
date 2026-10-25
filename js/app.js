@@ -162,6 +162,9 @@ function fitBox(list,W,H,min=.03,trim=0){
 }
 const ARC=(cx,cy,r,a0,a1)=>{const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
   return `M${x0.toFixed(1)} ${y0.toFixed(1)} A${r.toFixed(1)} ${r.toFixed(1)} 0 ${a1-a0>Math.PI?1:0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`};
+// The last map drawn, kept so a tap on it can be turned back into a lat/lng
+// (dropping a pin for where you're staying, in js/trip.js).
+let MAPP=null;
 function renderMap(){
   const pts=P.filter(p=>p.city===city),W=600,H=480,G=GEO[city],c=CITIES[city];
   const vis=pts.filter(p=>visible(p)&&!p.nomap);
@@ -171,6 +174,7 @@ function renderMap(){
   const k=Math.cos(((B.n+B.s)/2)*Math.PI/180),s=Math.min(W/((B.e-B.w)*k),H/(B.n-B.s));
   const ox=(W-(B.e-B.w)*k*s)/2,oy=(H-(B.n-B.s)*s)/2;
   const X=(a,b)=>ox+(b-B.w)*k*s,Y=(a,b)=>oy+(B.n-a)*s;
+  MAPP={B,k,s,ox,oy};
   const pl=a=>a.map(q=>X(q[0],q[1]).toFixed(1)+","+Y(q[0],q[1]).toFixed(1)).join(" ");
   const span=B.n-B.s,wide=span>.05,tight=span<.012;
   // Measured up here so the pin pass below can keep clear of the scale bar.
@@ -406,7 +410,10 @@ function renderMap(){
     </g>${gr.tag?`<text class="ml" x="${gr.tagX.toFixed(1)}" y="${gr.tagY.toFixed(1)}" text-anchor="middle" stroke="var(--land)" stroke-width="4" paint-order="stroke">${gr.tag}</text>`:""}</g>`;
   });
   g+=top;
-  if(near){const x=X(near.lat,near.lng),y=Y(near.lat,near.lng);
+  // Where you're staying, from My trip: a little house with its name.
+  (typeof tripHomes==="function"?tripHomes(city):[]).forEach(h=>{const x=X(h.lat,h.lng),y=Y(h.lat,h.lng);
+    if(x>=0&&x<=W&&y>=0&&y<=H)g+=`<g class="homepin" transform="translate(${x.toFixed(1)},${y.toFixed(1)})" aria-hidden="true"><rect x="-14" y="-14" width="28" height="28" rx="8" fill="var(--sheet)" stroke="var(--ink)" stroke-width="2.2"/><text y="5.5" text-anchor="middle" font-size="15">🏠</text><text y="-21" text-anchor="middle" font-family="var(--hand)" font-weight="700" font-size="16" fill="var(--ink)" stroke="var(--land)" stroke-width="4" paint-order="stroke">${esc(h.n||T("your stay"))}</text></g>`});
+  if(near&&nearKind==="me"){const x=X(near.lat,near.lng),y=Y(near.lat,near.lng);
     if(x>=0&&x<=W&&y>=0&&y<=H)g+=`<g class="me" transform="translate(${x.toFixed(1)},${y.toFixed(1)})" aria-hidden="true"><circle class="ping" r="18" fill="var(--shinkansen)" opacity=".18"/><circle r="7.5" fill="var(--shinkansen)" stroke="var(--sheet)" stroke-width="3"/><text y="-15" text-anchor="middle" font-family="var(--hand)" font-weight="700" font-size="16" fill="var(--shinkansen)" stroke="var(--land)" stroke-width="4" paint-order="stroke">${T("you are here")}</text></g>`}
   g+=`</g>`;
   $("mapsvg").innerHTML=g;
@@ -586,7 +593,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
 // used here to measure straight-line distances to the coordinates each place
 // already has. watchPosition keeps them fresh while you walk; the list only
 // re-sorts once you've moved 50 m, so it doesn't jitter under your thumb.
-let near=null,nearWatch=null,nearNote=null;
+let near=null,nearWatch=null,nearNote=null,nearKind=null; // nearKind: "me", or "home" for Near my stay
 const KM=(a,b)=>{const R=6371,r=Math.PI/180,dLa=(b.lat-a.lat)*r,dLo=(b.lng-a.lng)*r,
   h=Math.sin(dLa/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
 // Walking time assumes 4.8 km/h plus a quarter for streets not being straight
@@ -597,27 +604,30 @@ function distText(km){
   return isAR()?iso(t):t;
 }
 function setNear(){
-  const b=$("nearb");b.setAttribute("aria-pressed",!!near);b.disabled=nearWatch!==null&&!near;
+  const b=$("nearb");b.setAttribute("aria-pressed",!!near&&nearKind==="me");b.disabled=nearWatch!==null&&!near;
+  if(typeof homeBtn==="function")homeBtn();
   b.innerHTML=`<span aria-hidden="true">📍</span> ${nearWatch!==null&&!near?T("finding you…"):T("Near me")}`;
   const m=$("nearmsg");m.hidden=!nearNote;if(nearNote)m.textContent=T(nearNote[0],nearNote[1]);
 }
 function stopNear(note){
   if(nearWatch!==null)navigator.geolocation.clearWatch(nearWatch);
-  const was=!!near;nearWatch=null;near=null;nearNote=note||null;
+  const was=!!near;nearWatch=null;near=null;nearKind=null;nearNote=note||null;
   if(was){zoomTo=null;renderMap();renderList()}
   setNear();
 }
 function startNear(){
   if(!navigator.geolocation){stopNear(["Your browser can't share your location."]);return}
+  // Switching over from Near my stay starts from scratch.
+  if(nearKind==="home"){near=null;nearKind=null}
   nearNote=null;
   nearWatch=navigator.geolocation.watchPosition(pos=>{
     const me={lat:pos.coords.latitude,lng:pos.coords.longitude};
-    if(near){if(KM(near,me)<.05)return;near=me;renderMap();renderList();return}
+    if(near&&nearKind==="me"){if(KM(near,me)<.05)return;near=me;renderMap();renderList();return}
     // First fix: from home everything is ~8,000 km off, so rather than sort by
     // silly numbers, say so and switch the feature back off.
     const best=P.reduce((a,p)=>KM(me,p)<KM(me,a)?p:a),far=KM(me,best);
     if(far>50){stopNear(["You're {n} km from the nearest place. Apollo will find what's near you once you're in Japan.",{n:Math.round(far).toLocaleString("en")}]);return}
-    near=me;nearNote=["Nearest first. Your location stays on your phone."];
+    near=me;nearKind="me";nearNote=["Nearest first. Your location stays on your phone."];
     if(best.city!==city){city=best.city;store.set("tabineko-city",city);area=null}
     selected=null;
     // Frame you and the closest handful of places, rather than the whole city.
@@ -630,6 +640,19 @@ function startNear(){
   setNear();
 }
 $("nearb").onclick=()=>nearWatch!==null?stopNear():startNear();
+// Near my stay: the same nearest-first list, measured from where you're
+// staying (set in My trip) rather than from your phone, so it works while
+// you're still planning at home.
+function startHome(h){
+  if(nearWatch!==null)navigator.geolocation.clearWatch(nearWatch);
+  nearWatch=null;near={lat:h.lat,lng:h.lng};nearKind="home";nearNote=["Nearest to where you're staying first."];
+  if(h.city!==city){city=h.city;store.set("tabineko-city",city);area=null}
+  selected=null;
+  const close=P.filter(p=>p.city===city&&visible(p)&&!p.nomap).sort((a,b)=>KM(near,a)-KM(near,b)).slice(0,6);
+  zoomTo=fitBox([near,...close],600,480,.008);
+  renderAll();setNear();
+  document.querySelector(".mapwrap").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
+}
 setNear();
 
 // ---- language switch ----

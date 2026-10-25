@@ -15,6 +15,11 @@
 //
 // What Apollo knows comes from the repo's own data files, fetched from GitHub
 // and kept for an hour, so a new place reaches the chat without touching this.
+//
+// It also does one small job for My trip: a short Google Maps share link
+// (maps.app.goo.gl/...) only reveals where it points when it's opened, which
+// a browser on another site isn't allowed to look at. Sent {resolve: link},
+// this follows it and answers {url: where it leads}. No Claude call, no key.
 
 const MODEL = "claude-opus-5-5";
 const DATA = "https://raw.githubusercontent.com/ziyadalruwashid/tabi-neko/main/data/";
@@ -121,6 +126,7 @@ export default {
 
     let body;
     try { body = JSON.parse((await request.text()).slice(0, 40000)); } catch { return fail(400, "bad json", h); }
+    if (body && typeof body.resolve === "string") return resolveLink(body.resolve, h);
     const messages = cleanMessages(body);
     if (!messages) return fail(400, "bad messages", h);
 
@@ -164,6 +170,27 @@ export default {
     return new Response(readable, { headers: { ...h, "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
   },
 };
+
+// ---- short map links, for My trip ----
+// Only Google's own short-link hosts are followed, and only through Google
+// hosts, at most five hops, stopping at the first address with coordinates.
+const SHORT_LINK = /^https:\/\/(maps\.app\.goo\.gl|goo\.gl|g\.co)\//;
+const GOOGLE = /^https:\/\/([a-z0-9-]+\.)*(google\.[a-z.]+|goo\.gl|g\.co)\//;
+const HAS_COORDS = /!3d-?\d|@-?\d+\.\d+,-?\d|[?&](q|ll|query|center)=-?\d/;
+async function resolveLink(link, h) {
+  if (link.length > 300 || !SHORT_LINK.test(link)) return fail(400, "bad link", h);
+  let url = link;
+  try {
+    for (let i = 0; i < 5; i++) {
+      const r = await fetch(url, { redirect: "manual", headers: { "User-Agent": "Mozilla/5.0 (TabiNeko link check)" } });
+      const next = r.headers.get("Location");
+      if (!next) break;
+      url = new URL(next, url).href;
+      if (HAS_COORDS.test(decodeURIComponent(url)) || !GOOGLE.test(url)) break;
+    }
+  } catch { return fail(502, "link", h); }
+  return new Response(JSON.stringify({ url }), { headers: { ...h, "Content-Type": "application/json" } });
+}
 
 async function relay(sse, writable) {
   const w = writable.getWriter(), enc = new TextEncoder(), reader = sse.pipeThrough(new TextDecoderStream()).getReader();

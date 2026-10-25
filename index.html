@@ -57,6 +57,7 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
       <div class="qres" id="qres" role="listbox" aria-label="Search results" data-i18n-attr="aria-label:search.results" hidden></div>
     </div>
     <button class="nearb" id="nearb" type="button" aria-pressed="false"><span aria-hidden="true">📍</span> Near me</button>
+    <button class="nearb homeb" id="homeb" type="button" aria-pressed="false" hidden></button>
     <p class="nearmsg" id="nearmsg" role="status" hidden></p>
   </div>
   <div class="filters" id="filters"></div>
@@ -111,8 +112,8 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
     <div class="apphero">
       <div>
         <span class="kicker" data-i18n="trip.kicker">your own notebook</span>
-        <h1 data-i18n="trip.h1">My trip<span class="small">Pick places, sort them into days.</span></h1>
-        <p data-i18n="trip.p">Add places from the map, then drag them into days. Apollo works out the distances between stops and finds halal food near each day. Your plan stays on this phone, and you can share it with a link.</p>
+        <h1 data-i18n="trip.h1">My trip<span class="small">Pick a city, a place to stay, then your days.</span></h1>
+        <p data-i18n="trip.p">Choose your cities, add where you're staying, then fill each day with places, nearest first. Apollo draws the route from your door and back, works out the distances, and finds halal food nearby. Your plan stays on this phone, and you can share it with a link.</p>
       </div>
     </div>
     <div id="tripbook"></div>
