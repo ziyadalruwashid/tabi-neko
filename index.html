@@ -26,7 +26,7 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
   <header class="top">
     <a class="brand" href="#top" aria-label="Tabi Neko home" data-i18n-attr="aria-label:brand"><img src="assets/logo.png" alt="Tabi Neko" data-i18n-attr="alt:logo"></a>
     <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="mainnav" aria-label="Menu" data-i18n-attr="aria-label:menu"><span></span><span></span><span></span></button>
-    <nav id="mainnav" aria-label="Main" data-i18n-attr="aria-label:nav"><a href="#map" data-i18n="nav.map">Map</a><a href="#hoods" data-i18n="nav.hoods">Areas</a><a href="#trips" data-i18n="nav.trips">Day trips</a><a href="#apps" data-i18n="nav.apps">Apps</a><a href="#memories" data-i18n="nav.memories">Memories</a><a href="#crew" data-i18n="nav.crew">Contributors</a></nav>
+    <nav id="mainnav" aria-label="Main" data-i18n-attr="aria-label:nav"><a href="#map" data-i18n="nav.map">Map</a><a href="#trip" data-i18n="nav.trip">My trip</a><a href="#hoods" data-i18n="nav.hoods">Areas</a><a href="#trips" data-i18n="nav.trips">Day trips</a><a href="#apps" data-i18n="nav.apps">Apps</a><a href="#memories" data-i18n="nav.memories">Memories</a><a href="#crew" data-i18n="nav.crew">Contributors</a></nav>
     <button class="langb" id="langb" type="button" lang="ar">عربي</button>
   </header>
   <div id="home">
@@ -107,6 +107,16 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
     <div id="appgroups"></div>
     <p class="appnote" data-i18n="apps.note">App details change often. Last checked October 2026.</p>
   </section>
+  <section id="trip" hidden>
+    <div class="apphero">
+      <div>
+        <span class="kicker" data-i18n="trip.kicker">your own notebook</span>
+        <h1 data-i18n="trip.h1">My trip<span class="small">Pick places, sort them into days.</span></h1>
+        <p data-i18n="trip.p">Add places from the map, then drag them into days. Apollo works out the distances between stops and finds halal food near each day. Your plan stays on this phone, and you can share it with a link.</p>
+      </div>
+    </div>
+    <div id="tripbook"></div>
+  </section>
   <section id="hoods" hidden>
     <div class="apphero">
       <div>
@@ -143,7 +153,7 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
   <footer>
     <p class="bye">またね!<small data-i18n="footer.bye">mata ne, see you in Japan</small></p>
     <div class="links">
-      <a href="#map" data-i18n="nav.map">Map</a><a href="#hoods" data-i18n="nav.hoods">Areas</a><a href="#trips" data-i18n="nav.trips">Day trips</a><a href="#apps" data-i18n="nav.apps">Apps</a><a href="#memories" data-i18n="nav.memories">Memories</a><a href="#crew" data-i18n="nav.crew">Contributors</a>
+      <a href="#map" data-i18n="nav.map">Map</a><a href="#trip" data-i18n="nav.trip">My trip</a><a href="#hoods" data-i18n="nav.hoods">Areas</a><a href="#trips" data-i18n="nav.trips">Day trips</a><a href="#apps" data-i18n="nav.apps">Apps</a><a href="#memories" data-i18n="nav.memories">Memories</a><a href="#crew" data-i18n="nav.crew">Contributors</a>
       <span data-i18n="footer.made">Tabi Neko · made in Riyadh · 2026</span>
     </div>
   </footer>
@@ -173,5 +183,6 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
 <script src="data/hoods.js"></script>
 <script src="js/app.js"></script>
 <script src="js/apollo.js"></script>
+<script src="js/trip.js"></script>
 </body>
 </html>

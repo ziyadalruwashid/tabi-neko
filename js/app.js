@@ -439,6 +439,7 @@ function renderList(){
         <p class="meta">${near?`<span class="dist">${distText(KM(near,p))}</span>`:""}<span class="c"><i></i>${D(C,"n")}</span><span>${AREA(p.area)}</span>${p.halal?`<span class="halal${p.hl==="friendly"?" mf":""}">${p.hl==="friendly"?T("Muslim-friendly"):T("✓ halal")}</span>`:""}<span>${D(p,"t")}</span><span>${D(p,"cost")}</span><span>${D(p,"dur")}</span></p>
         <p class="note">${D(p,"tip")}${p.tier==="must"?` <span class="dontskip">${T("don't skip this")}<svg viewBox="0 0 162 10" preserveAspectRatio="none"><path d="${UNDER}" fill="none" stroke="#F14E24" stroke-width="2" stroke-linecap="round"/></svg></span>`:""}</p>
         <a class="go" href="${p.url||"https://www.google.com/maps/search/?api=1&query="+q}" target="_blank" rel="noopener">${T("Open in Google Maps")}</a>${p.book?`<a class="go book" href="${p.book}" target="_blank" rel="noopener">${T("Book on {s} ↗",{s:/getyourguide/.test(p.book)?"GetYourGuide":/klook/.test(p.book)?"Klook":T("the site")})}</a>`:""}${p.also?`<p class="also">${T("also in:")} ${p.also.map(([l,qq])=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(qq)}" target="_blank" rel="noopener">${l}</a>`).join(" · ")}</p>`:""}
+        ${typeof tripBtn==="function"?tripBtn(p):""}
       </div>
     </article>`}).join("");
   const left=total-pts.length;
@@ -556,7 +557,7 @@ addEventListener("keydown",e=>{
   e.preventDefault();albumGo((e.key==="ArrowRight")!==isAR()?1:-1)});
 // quiet=true swaps the page without moving the viewport, so a search jump can
 // scroll to its own card instead of fighting this function for the scroll.
-const PAGES=["hoods","apps","trips","memories","crew"];
+const PAGES=["trip","hoods","apps","trips","memories","crew"];
 function show(target,quiet){
   const pg=PAGES.includes(target)?target:null;
   $("home").hidden=!!pg;PAGES.forEach(k=>$(k).hidden=pg!==k);
@@ -663,6 +664,7 @@ function setLang(l){
   closeAreas();applyStatic();buildIdx();setNear();
   renderAll();renderApps();renderTrips();renderCrew();renderAlbum();renderHoods();
   if(typeof renderApollo==="function")renderApollo();
+  if(typeof renderTrip==="function")renderTrip();
 }
 $("langb").onclick=()=>setLang(isAR()?"en":"ar");
 applyStatic();
