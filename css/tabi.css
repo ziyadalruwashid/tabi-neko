@@ -530,6 +530,121 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 [dir=rtl] .tnum{direction:ltr}
 [dir=rtl] .tday-t,[dir=rtl] .tnone,[dir=rtl] .tleg,[dir=rtl] .tideas h2 small{font-size:15px}
 @media (max-width:640px){[dir=rtl] .tleg{padding-right:40px}}
+/* stays: a city stamp, where you're staying, then that city's days */
+.tcitypick h2{font:400 clamp(24px,3vw,32px)/1.1 var(--display);margin:0 0 6px}
+.tcitypick p{margin:0 0 14px;max-width:48ch}
+.tchips{display:flex;flex-wrap:wrap;gap:10px}
+.tchip{appearance:none;cursor:pointer;display:inline-flex;align-items:baseline;gap:8px;font:700 15px var(--body);color:var(--ink);background:var(--sheet);
+  border:1.5px solid var(--ink);border-radius:12px;padding:8px 14px;box-shadow:3px 3px 0 rgba(63,33,22,.12);transition:transform .15s,background .15s}
+.tchip b{font:700 15px var(--jp);color:var(--lantern)}
+.tchip:hover{transform:translateY(-2px) rotate(-1.5deg);background:var(--paper)}
+.tempty .tcitypick{flex:1}
+.tstay{margin:0 0 44px}
+.tstay-h{display:flex;align-items:center;gap:16px;margin:0 0 14px}
+.tstay-h h2{font:400 clamp(30px,4vw,42px)/1 var(--display);margin:0}
+.tstay-h small{font:400 20px var(--hand);color:var(--muted)}
+.tstamp{flex:none;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;border:3px solid var(--lantern);color:var(--lantern);
+  font:700 19px/1 var(--jp);transform:rotate(-12deg);opacity:.9;box-shadow:inset 0 0 0 3px var(--paper),inset 0 0 0 4.5px var(--lantern)}
+.tstayx{margin-inline-start:auto}
+.thome,.thome-add,.thome-ed{margin:0 0 22px;border-radius:14px}
+.thome{display:flex;align-items:center;gap:14px;background:var(--sheet);border:2px solid var(--ink);padding:12px 14px;max-width:640px;
+  box-shadow:4px 4px 0 rgba(63,33,22,.12);position:relative}
+.thome::before{content:"";position:absolute;inset-inline-start:-8px;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:50%;background:var(--paper);border:2px solid var(--ink)}
+.ticon{font-size:28px;flex:none;margin-inline-start:6px}
+.thome-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.thome-b small{font:400 16px var(--hand);color:var(--muted);line-height:1}
+.thome-n{font:700 17px var(--body);color:var(--ink);background:none;border:0;border-bottom:1.5px dashed transparent;padding:1px 0;min-width:0;width:100%}
+.thome-n:hover,.thome-n:focus{outline:none;border-bottom-color:var(--rule)}
+.thome-l{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px}
+.thome-b a{font-size:13px;color:var(--shinkansen);text-underline-offset:3px;white-space:nowrap}
+.thome-edit{appearance:none;cursor:pointer;font:700 13px var(--body);color:var(--ink);background:none;border:0;padding:0;text-decoration:underline;text-underline-offset:3px}
+.thome-edit:hover{color:var(--lantern)}
+.thome-add{appearance:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;width:100%;max-width:640px;text-align:start;
+  font:700 17px var(--body);color:var(--ink);background:none;border:2px dashed var(--ink);padding:14px 16px;transition:background .15s}
+.thome-add small{font:400 17px var(--hand);color:var(--muted)}
+.thome-add:hover{background:var(--sheet)}
+.thome-ed{max-width:640px;background:var(--sheet);border:2px solid var(--ink);padding:16px 18px;box-shadow:4px 4px 0 rgba(63,33,22,.12)}
+.thome-ed h3{font:400 24px var(--display);margin:0 0 10px}
+.thome-f{display:flex;gap:8px}
+.thome-q{flex:1;min-width:0;font:500 16px var(--body);color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:9px 12px}
+.thome-q:focus{outline:2px solid var(--yuzu);outline-offset:1px}
+.thome-f .store{cursor:pointer}
+.thome-f .store:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+.thome-msg{margin:10px 0 0;font:400 18px/1.3 var(--hand);color:var(--shinkansen)}
+.thome-res{list-style:none;margin:8px 0 0;padding:0;border:1.5px solid var(--rule);border-radius:10px;overflow:hidden}
+.thome-res li+li{border-top:1.5px dashed var(--rule)}
+.thome-r{appearance:none;cursor:pointer;display:block;width:100%;text-align:start;background:var(--sheet);border:0;padding:9px 12px;font:600 15px var(--body);color:var(--ink)}
+.thome-r small{display:block;font-weight:400;font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.thome-r:hover{background:var(--paper)}
+.thome-osm{margin:4px 0 0;font-size:11.5px;color:var(--muted)}
+.thome-alt{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
+.thome-pin{appearance:none;cursor:pointer;font:700 14px var(--body);color:var(--ink);background:none;border:1.5px dashed var(--ink);border-radius:999px;padding:6px 13px}
+.thome-pin:hover{background:var(--paper);border-style:solid}
+.thome-tip{margin:12px 0 0;padding-top:10px;border-top:1.5px dashed var(--rule);font-size:13.5px;color:var(--muted)}
+.tshareask{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;justify-content:flex-end;margin:-10px 0 22px}
+.tshareask p{margin:0;font:400 18px var(--hand);color:var(--muted)}
+.tshareask .store{cursor:pointer}
+.tshareask .store:hover{background:var(--ink);color:var(--paper)}
+.tpickb{appearance:none;cursor:pointer;display:block;width:100%;margin:10px 0 2px;font:700 14.5px var(--body);color:var(--lantern);
+  background:none;border:1.5px dashed var(--lantern);border-radius:12px;padding:9px}
+.tpickb:hover{background:color-mix(in srgb,var(--lantern) 8%,var(--sheet));border-style:solid}
+.taddday,.tnextb{appearance:none;cursor:pointer;font:700 15px var(--body);color:var(--muted);background:none;border:2px dashed var(--rule);border-radius:10px;transition:color .15s,border-color .15s}
+.taddday{min-height:120px;align-self:start;width:100%}
+.taddday:hover,.tnextb:hover{color:var(--ink);border-color:var(--ink)}
+.tnextb{width:100%;padding:18px;font-size:17px}
+.tnext{border:2px dashed var(--ink);border-radius:14px;padding:18px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px}
+.thomeleg{color:color-mix(in srgb,var(--ink) 70%,var(--muted));padding-left:6px!important}
+/* the add-places sheet */
+html.tpick-open{overflow:hidden}
+.tpick{position:fixed;inset:0;z-index:95;background:rgba(40,22,14,.45);display:flex;align-items:center;justify-content:center;padding:20px}
+.tpick[hidden]{display:none}
+/* The sheet is redrawn on every tap, so only the backdrop animates, once. */
+.tpick:not([hidden]){animation:tfade .18s ease-out}
+@keyframes tfade{from{opacity:0}to{opacity:1}}
+.tpick-sheet{width:min(640px,100%);max-height:min(86vh,820px);display:flex;flex-direction:column;background:var(--paper);border:2px solid var(--ink);border-radius:18px;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,.5);overflow:hidden}
+.tpick-sheet header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px 10px}
+.tpick-sheet h2{font:400 26px/1.05 var(--display);margin:0}
+.tpick-sheet header small{font:400 17px var(--hand);color:var(--muted)}
+.tpick-x{cursor:pointer;flex:none;background:var(--ink)!important;color:var(--paper)!important}
+.tpick-f{display:flex;gap:6px;overflow-x:auto;padding:2px 18px 12px;scrollbar-width:none;border-bottom:1.5px dashed var(--rule)}
+.tpick-f::-webkit-scrollbar{display:none}
+.tchip2{appearance:none;cursor:pointer;flex:none;display:inline-flex;align-items:center;gap:6px;font:600 13.5px var(--body);color:var(--ink);background:var(--sheet);
+  border:1.5px solid var(--rule);border-radius:999px;padding:5px 11px;white-space:nowrap}
+.tchip2 i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.tchip2.on{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.tchip2.thal.on{background:#4F7A1E;border-color:#4F7A1E}
+.tpick-list{list-style:none;margin:0;padding:8px 10px 14px;overflow-y:auto;overscroll-behavior:contain}
+.tprow{appearance:none;cursor:pointer;width:100%;display:grid;grid-template-columns:52px minmax(0,1fr) auto auto;align-items:center;gap:12px;text-align:start;
+  background:none;border:1.5px solid transparent;border-radius:12px;padding:7px 8px;font:inherit;color:var(--ink)}
+.tprow:hover{background:var(--sheet)}
+.tprow img{width:52px;height:52px;border-radius:9px;object-fit:cover;background:color-mix(in srgb,var(--c) 20%,var(--sheet))}
+.tpinfo b{display:block;font:700 15px var(--body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tpinfo small{display:block;font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tpinfo em{font-style:normal;font-weight:700;color:#4F7A1E}
+.tpdist{font:700 12.5px var(--body);color:var(--shinkansen);white-space:nowrap}
+.tpadd{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--ink);font:700 17px var(--body);background:var(--sheet)}
+.tprow.on{background:color-mix(in srgb,var(--wasabi) 14%,var(--sheet));border-color:color-mix(in srgb,var(--wasabi) 50%,transparent)}
+.tprow.on .tpadd{background:var(--wasabi);border-color:var(--wasabi);color:#fff}
+.tpick-more{margin:10px auto 0}
+/* the map: where you're staying, and dropping a pin for it */
+.homeb[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+html.picking #mapsvg{cursor:crosshair}
+html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
+.tpickbar{z-index:96}
+@media (max-width:640px){
+  .tstamp{width:52px;height:52px;font-size:16px}
+  .tpick{padding:0;align-items:flex-end}
+  .tpick-sheet{width:100%;max-height:88vh;border-radius:18px 18px 0 0;border-bottom:0}
+  .tprow{grid-template-columns:46px minmax(0,1fr) auto;gap:10px}
+  .tprow img{width:46px;height:46px}
+  .tpdist{grid-column:2;grid-row:2;margin-top:-6px}
+  .tpadd{grid-column:3;grid-row:1/3}
+  .taddday{min-height:64px}
+  .thome-f .store{padding-inline:12px}
+}
+[dir=rtl] .thomeleg{padding-left:0!important;padding-right:6px!important}
+[dir=rtl] .tstamp{transform:rotate(12deg)}
 /* ---- album ----
    One page per memory, laid out as an open notebook: photos taped to the left
    sheet, words on the right, a soft fold between. The strip scroll-snaps so a
