@@ -607,6 +607,12 @@ html.tpick-open{overflow:hidden}
 .tpick-sheet h2{font:400 26px/1.05 var(--display);margin:0}
 .tpick-sheet header small{font:400 17px var(--hand);color:var(--muted)}
 .tpick-x{cursor:pointer;flex:none;background:var(--ink)!important;color:var(--paper)!important}
+.tpick-sheet>header,.tpick-s,.tpick-f{flex:none}
+.tpick-s{position:relative;margin:0 18px 10px}
+.tpick-s svg{position:absolute;inset-inline-start:12px;top:50%;width:17px;height:17px;margin-top:-8.5px;color:var(--muted);pointer-events:none}
+.tpick-q{width:100%;font:500 16px var(--body);color:var(--ink);background:var(--sheet);border:1.5px solid var(--ink);border-radius:12px;padding:9px 12px 9px 38px}
+[dir=rtl] .tpick-q{padding:9px 38px 9px 12px}
+.tpick-q:focus{outline:2px solid var(--yuzu);outline-offset:1px}
 .tpick-f{display:flex;gap:6px;overflow-x:auto;padding:2px 18px 12px;scrollbar-width:none;border-bottom:1.5px dashed var(--rule)}
 .tpick-f::-webkit-scrollbar{display:none}
 .tchip2{appearance:none;cursor:pointer;flex:none;display:inline-flex;align-items:center;gap:6px;font:600 13.5px var(--body);color:var(--ink);background:var(--sheet);

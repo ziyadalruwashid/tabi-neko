@@ -407,11 +407,11 @@ addEventListener("hashchange",()=>{if(picking!==null&&location.hash!=="#map")end
 // A sheet that lists the stay's city, nearest first: to the day's last stop
 // once it has one, else to where you're staying. Tapping adds or removes.
 // The order holds while it's open, so rows don't jump under your thumb.
-let pk=null; // {ref, cat, halal, max, from, order}
+let pk=null; // {ref, cat, halal, q, max, from, city}
 function openPicker(ref){
   const[a,b]=ref.split(".").map(Number),s=trip.stays[a],ids=s.days[b].ids;
   const last=ids.length?BYKEY.get(ids[ids.length-1]):null;
-  pk={ref,cat:"",halal:false,max:20,from:last?{p:last,n:last.n}:s.home?{p:s.home,n:T("your stay")}:null,city:s.city};
+  pk={ref,cat:"",halal:false,q:"",max:20,from:last?{p:last,n:last.n}:s.home?{p:s.home,n:T("your stay")}:null,city:s.city};
   let el=$("tpick");
   if(!el){el=document.createElement("div");el.id="tpick";el.className="tpick";document.body.appendChild(el);
     el.addEventListener("click",e=>{if(e.target===el)closePicker()});
@@ -424,7 +424,10 @@ function renderPicker(keepScroll){
   const el=$("tpick"),[a,b]=pk.ref.split(".").map(Number);
   const num=trip.stays.slice(0,a).reduce((n,s)=>n+s.days.length,0)+b+1;
   const here=trip.stays[a].days[b].ids;
-  let ps=P.filter(p=>p.city===pk.city&&(!pk.cat||p.cat===pk.cat)&&(!pk.halal||p.halal));
+  // The search uses the same index and scoring as the main search box, so
+  // names, Japanese, areas, dishes and Arabic all match; every word must hit.
+  const words=LOW(pk.q).trim().split(/\s+/).filter(Boolean),hit=new Set(IDX.filter(e=>words.every(w=>score(e,w))).map(e=>e.p));
+  let ps=P.filter(p=>p.city===pk.city&&(!pk.cat||p.cat===pk.cat)&&(!pk.halal||p.halal)&&(!words.length||hit.has(p)));
   ps=pk.from?ps.map(p=>[p,KM(pk.from.p,p)]).sort((x,y)=>x[1]-y[1]):ps.map(p=>[p,null]).sort((x,y)=>(y[0].tier==="must")-(x[0].tier==="must"));
   const total=ps.length,cats=Object.keys(CATS).filter(c=>P.some(p=>p.city===pk.city&&p.cat===c));
   const sc=keepScroll&&el.querySelector(".tpick-list")?el.querySelector(".tpick-list").scrollTop:0;
@@ -432,6 +435,8 @@ function renderPicker(keepScroll){
     <header><div><h2 id="tpick-h">${T("Add places to Day {n}",{n:num})}</h2>
       <small>${esc(cityName(pk.city))} · ${esc(pk.from?T("nearest to {p} first",{p:pk.from.n}):T("Apollo's must-sees first"))}</small></div>
       <button type="button" class="store tpick-x">${T("Done")}</button></header>
+    <div class="tpick-s"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.8 15.8 21 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="search" class="tpick-q" value="${esc(pk.q)}" placeholder="${esc(T("Search {c}: a name, an area, a dish…",{c:cityName(pk.city)}))}" aria-label="${esc(T("Search places"))}" autocomplete="off" spellcheck="false" dir="auto"></div>
     <div class="tpick-f"><button type="button" class="tchip2${pk.cat?"":" on"}" data-c="">${T("All")}</button>${cats.map(c=>`<button type="button" class="tchip2${pk.cat===c?" on":""}" data-c="${c}" style="--c:var(--${c})"><i></i>${esc(D(CATS[c],"n"))}</button>`).join("")}
       <button type="button" class="tchip2 thal${pk.halal?" on":""}" aria-pressed="${pk.halal}">✓ ${T("halal only")}</button></div>
     <ul class="tpick-list">${ps.slice(0,pk.max).map(([p,km])=>{const k=PKEY(p),on=here.includes(k),other=!on&&inTrip(k);
@@ -441,11 +446,15 @@ function renderPicker(keepScroll){
         ${km!==null?`<span class="tpdist">${esc(distText(km))}</span>`:""}
         <span class="tpadd" aria-hidden="true">${on?"✓":"＋"}</span></button></li>`}).join("")}
       ${total>pk.max?`<li><button type="button" class="more tpick-more">${T("Show more")}<small>${esc(T("{n} more places",{n:total-pk.max}))}</small></button></li>`:""}
-      ${total?"":`<li class="tnone">${T("Nothing here with those filters.")}</li>`}</ul></div>`;
+      ${total?"":`<li class="tnone">${T(words.length?"Nothing matches that search.":"Nothing here with those filters.")}</li>`}</ul></div>`;
   if(sc)el.querySelector(".tpick-list").scrollTop=sc;
   el.querySelector(".tpick-x").onclick=closePicker;
   el.querySelectorAll(".tchip2[data-c]").forEach(x=>x.onclick=()=>{pk.cat=x.dataset.c;pk.max=20;renderPicker()});
   el.querySelector(".thal").onclick=()=>{pk.halal=!pk.halal;pk.max=20;renderPicker()};
+  // The sheet is redrawn as you type, so the box takes its focus and caret back.
+  const qi=el.querySelector(".tpick-q");
+  qi.oninput=()=>{pk.q=qi.value.slice(0,60);pk.max=20;const at=qi.selectionStart;renderPicker();
+    const n=$("tpick").querySelector(".tpick-q");n.focus();n.setSelectionRange(at,at)};
   if(el.querySelector(".tpick-more"))el.querySelector(".tpick-more").onclick=()=>{pk.max+=20;renderPicker(true)};
   // removeKey swaps in new arrays, so the day's list is looked up after it.
   el.querySelectorAll(".tprow").forEach(x=>x.onclick=()=>{const k=x.dataset.k,had=dayList(pk.ref).includes(k);
