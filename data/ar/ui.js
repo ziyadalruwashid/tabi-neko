@@ -60,6 +60,7 @@ AR.ui={
  "{n} so far":"{n} حتى الآن",
  "✓ halal":"✓ حلال",
 "Show more":"أظهر المزيد",
+"Your account ({e})":"حسابك ({e})",
 "Delete your account?":"تحذف حسابك؟",
 "This deletes your account and the trip saved in it. The trip on this phone stays. Type your password to confirm.":"سيُحذف حسابك والرحلة المحفوظة فيه. الرحلة على هذا الهاتف تبقى. اكتب كلمة المرور للتأكيد.",
 "That password isn't right.":"كلمة المرور غير صحيحة.",

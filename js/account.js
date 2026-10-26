@@ -20,7 +20,7 @@ const AUTH_KEY="tabineko-auth",SYNC_KEY="tabineko-sync";
 let auth=null,sync={at:"",dirty:false},syncState="";
 try{auth=JSON.parse(store.get(AUTH_KEY))||null}catch(e){auth=null}
 try{sync={...sync,...JSON.parse(store.get(SYNC_KEY))}}catch(e){}
-const saveAuth=()=>store.set(AUTH_KEY,auth?JSON.stringify(auth):"");
+const saveAuth=()=>{store.set(AUTH_KEY,auth?JSON.stringify(auth):"");userBtn()};
 const saveSync=()=>store.set(SYNC_KEY,JSON.stringify(sync));
 
 // fetch with JSON in and out; anything that isn't a 2xx throws
@@ -224,6 +224,18 @@ function acctBar(){
   if(!auth)return `<div class="tacct"><span>📱 ${T("Saved on this phone only.")}</span><button type="button" class="store tacct-in">☁️ ${T("Log in to keep it safe")}</button></div>`;
   return `<div class="tacct on"><span>☁️ ${T("Saved to your account")} <small class="tacct-s" role="status">${esc(syncText())}</small></span><button type="button" class="tclear tacct-me" dir="ltr">${esc(auth.email)}</button></div>`;
 }
+// The header button: "Log in", or once you are, a circle with your initial.
+// It opens the same sheet as the bar on My trip, from any page.
+const PERSON=`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 20.5c1.2-4 4.2-6 7.5-6s6.3 2 7.5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+function userBtn(){
+  const b=$("userb");if(!b)return;
+  b.hidden=!FB_ON;if(!FB_ON)return;
+  b.classList.toggle("on",!!auth);
+  b.innerHTML=auth?`<span class="ini" aria-hidden="true">${esc((auth.email||"?")[0].toUpperCase())}</span>`:`${PERSON}<span class="lbl">${T("Log in")}</span>`;
+  b.setAttribute("aria-label",auth?T("Your account ({e})",{e:auth.email}):T("Log in"));
+  b.title=auth?auth.email:"";
+  b.onclick=()=>openAcct(auth?"me":"login");
+}
 function wireAcct(box){
   const i=box.querySelector(".tacct-in"),m=box.querySelector(".tacct-me");
   if(i)i.onclick=()=>openAcct("login");if(m)m.onclick=()=>openAcct("me");
@@ -232,5 +244,5 @@ function wireAcct(box){
 // Start: a saved login from the old setup (or a broken one) is dropped;
 // otherwise check for changes made on another device.
 if(auth&&!auth.refresh){auth=null;saveAuth()}
-renderTrip();
+userBtn();renderTrip();
 if(FB_ON&&auth)pull();
