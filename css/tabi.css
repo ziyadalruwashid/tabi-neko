@@ -670,6 +670,8 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .acct-f .store:disabled{opacity:.6;cursor:progress}
 .acct-sheet .thome-msg{color:var(--lantern)}
 .acct-sheet .thome-msg.ok{color:#4F7A1E}
+.acct-danger .store{background:var(--lantern)!important;border-color:var(--lantern)!important}
+.acct-danger .store:hover:not(:disabled){background:var(--ink)!important;border-color:var(--ink)!important}
 .acct-code{font:700 24px var(--body)!important;letter-spacing:.3em;text-align:center}
 .acct-small{margin:14px 0 0!important;font-size:13px;color:var(--muted)}
 .acct-small .tclear{font-size:13px;padding:0}
