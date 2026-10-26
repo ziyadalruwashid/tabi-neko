@@ -4,10 +4,13 @@ rules_version = '2';
 // "data". The owner can turn on an invite link: anyone signed in who knows
 // the trip's "code" can add themselves (and only themselves) to "members",
 // and members can then read the trip and change its "data". Members can
-// also leave. users/<id> remembers which trip someone is planning.
+// also leave. users/<id> remembers which trip someone is planning. The
+// site owner (ADMIN_UID) can read everything, for the dashboard.
 service cloud.firestore {
   match /databases/{database}/documents {
     function me() { return request.auth.uid; }
+    // The site owner's account, which can read everything for the dashboard.
+    function admin() { return request.auth != null && request.auth.uid == 'ngmNqVpxwkbL3SHdXJpmHkAoUO22'; }
     function members() { return resource.data.get('members', []); }
     function newMembers() { return request.resource.data.get('members', []); }
     function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
@@ -17,14 +20,15 @@ service cloud.firestore {
     }
     function goodShape() {
       let d = request.resource.data;
-      return d.keys().hasOnly(['data', 'members', 'emails', 'code', 'join'])
+      return d.keys().hasOnly(['data', 'email', 'members', 'emails', 'code', 'join'])
         && d.data is string && d.data.size() < 200000
         && d.get('members', []) is list && d.get('members', []).size() <= 20
-        && d.get('emails', {}) is map && d.get('code', '') is string;
+        && d.get('emails', {}) is map && d.get('code', '') is string
+        && d.get('email', '') is string;
     }
 
     match /trips/{owner} {
-      allow read: if request.auth != null && (me() == owner || me() in members());
+      allow read: if admin() || (request.auth != null && (me() == owner || me() in members()));
       allow create: if request.auth != null && me() == owner && goodShape();
       allow delete: if request.auth != null && me() == owner;
       allow update: if request.auth != null && goodShape() && (
@@ -48,7 +52,8 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
-      allow read, delete: if request.auth != null && me() == uid;
+      allow read: if admin() || (request.auth != null && me() == uid);
+      allow delete: if request.auth != null && me() == uid;
       allow create, update: if request.auth != null && me() == uid
         && request.resource.data.keys().hasOnly(['active'])
         && request.resource.data.active is string;

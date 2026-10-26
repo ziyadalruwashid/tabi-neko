@@ -564,7 +564,7 @@ addEventListener("keydown",e=>{
   e.preventDefault();albumGo((e.key==="ArrowRight")!==isAR()?1:-1)});
 // quiet=true swaps the page without moving the viewport, so a search jump can
 // scroll to its own card instead of fighting this function for the scroll.
-const PAGES=["trip","hoods","apps","trips","memories","crew","privacy"];
+const PAGES=["trip","hoods","apps","trips","memories","crew","privacy","admin"];
 function show(target,quiet){
   const pg=PAGES.includes(target)?target:null;
   $("home").hidden=!!pg;PAGES.forEach(k=>$(k).hidden=pg!==k);

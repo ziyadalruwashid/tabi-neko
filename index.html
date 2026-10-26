@@ -140,6 +140,16 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
     </div>
     <div class="album" id="albumbook" role="region" aria-roledescription="carousel" aria-label="Memories album" data-i18n-attr="aria-label:memories.aria,aria-roledescription:carousel"></div>
   </section>
+  <section id="admin" hidden>
+    <div class="apphero">
+      <div>
+        <span class="kicker">for the owner</span>
+        <h1>Dashboard<span class="small">Who's planning what.</span></h1>
+      </div>
+    </div>
+    <div id="adminbox"></div>
+  </section>
+
   <section id="privacy" hidden>
     <div class="apphero">
       <div>
@@ -153,6 +163,7 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
       <h2>With an account</h2>
       <p>Logging in is optional. If you do, we keep two things: your email and password, so you can log in, and your trip, so it's the same on every device. Your password is stored scrambled, so nobody can read it, not even us. That includes where you're staying, if you added it. Nobody else can see your trip unless you share a link to it.</p>
       <p>If you plan a trip together, everyone in it can see and edit the trip and see each other's email address. The trip's owner can remove people or turn the invite link off, and anyone can leave.</p>
+      <p>The site's owner can see totals (like how many trips include a place) and a list of accounts with their email, cities and when they last saved, to run and improve the site. That list never includes your trip itself or where you're staying.</p>
       <p>Your account and trip are stored with Google Firebase, which runs the server for us. We don't sell it, share it or use it for ads, and the site has no ads or tracking scripts.</p>
       <h2>Deleting it</h2>
       <p>Open My trip, tap your email at the top, then <b>Delete my account and trip</b>. Both are removed straight away. The copy on your phone stays until you tap Start over.</p>
@@ -208,5 +219,6 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
 <script src="js/apollo.js"></script>
 <script src="js/trip.js"></script>
 <script src="js/account.js"></script>
+<script src="js/admin.js"></script>
 </body>
 </html>
