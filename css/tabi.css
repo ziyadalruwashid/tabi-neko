@@ -760,6 +760,10 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .acol b{font-size:12px;margin-bottom:3px}
 .acol span{position:absolute;top:100%;margin-top:6px;font-size:11px;color:var(--muted);white-space:nowrap}
 .acols+.atable{margin-top:30px}
+.avisits{margin-bottom:30px}
+.acols.a30{grid-template-columns:repeat(30,1fr);height:150px;padding-top:6px}
+.a30 .acol i{width:72%;min-height:1px}
+.atiles+.atiles{margin-top:-12px}
 .atable summary{cursor:pointer;font-size:13px;color:var(--muted)}
 .acard table{width:100%;border-collapse:collapse;font-size:14px}
 .acard th{text-align:start;font-size:12px;font-weight:700;color:var(--muted);padding:6px 8px;border-bottom:1.5px solid var(--rule)}

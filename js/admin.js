@@ -7,6 +7,10 @@
 // them. It shows totals, popular places and a list of accounts, and never
 // shows anyone's trip itself or where they're staying.
 //
+// Visits are counted by countVisit below: one number per day in
+// visits/<YYYY-MM-DD> (Riyadh time), plus one per browser tab, and nothing
+// about who visited. The rules let anyone add 1 and only the owner read.
+//
 // Without a server there's no list of sign-ups to read here, only accounts
 // that have saved a trip; the full list is in the Firebase console under
 // Authentication → Users.
@@ -26,6 +30,29 @@ async function allTrips(){
 }
 
 const DAY=864e5;
+const riyadhDay=d=>new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Riyadh"}).format(d);
+
+// Count this visit: once per browser tab, never on a test copy of the site,
+// and not for the owner. Failure is silent; it's only a counter.
+function countVisit(){
+  if(!FB_ON||isAdmin()||/^(localhost|127\.)/.test(location.hostname))return;
+  try{if(sessionStorage.getItem("tabineko-visit"))return;sessionStorage.setItem("tabineko-visit","1")}catch(e){return}
+  fetch(`${FS}:commit?key=${FIREBASE.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({writes:[{transform:{document:`${FS_PATH}/visits/${riyadhDay(new Date())}`,fieldTransforms:[{fieldPath:"n",increment:{integerValue:"1"}}]}}]})}).catch(()=>{});
+}
+// The last 60 days of visits, as a Map of "YYYY-MM-DD" to a count.
+async function visitDays(){
+  const r=await call(`${FS}/visits?pageSize=60&orderBy=${encodeURIComponent("__name__ desc")}`,{token:await token()});
+  return new Map((r.documents||[]).map(d=>[d.name.split("/").pop(),+(d.fields&&d.fields.n&&d.fields.n.integerValue||0)]));
+}
+// Visits per day for the last 30 days, as columns.
+function daily(v){
+  const days=[...Array(30)].map((_,i)=>{const d=new Date(Date.now()-(29-i)*DAY);return {d,n:v.get(riyadhDay(d))||0}});
+  const top=Math.max(1,...days.map(x=>x.n));
+  return `<div class="acols a30" role="img" aria-label="Visits per day, last 30 days">${days.map((x,i)=>`<div class="acol" tabindex="0" data-tip="${esc(fmtDay(x.d)+": "+x.n+" visit"+(x.n===1?"":"s"))}">
+      <i style="height:${(x.n/top*100).toFixed(1)}%"></i>${i%5===4||i===29?`<span>${fmtDay(x.d)}</span>`:""}</div>`).join("")}</div>
+    <details class="atable"><summary>Show as a table</summary><table><tr><th>Day</th><th>Visits</th></tr>${[...days].reverse().map(x=>`<tr><td>${fmtDay(x.d)}</td><td>${x.n}</td></tr>`).join("")}</table></details>`;
+}
 const fmtDay=d=>d.toLocaleDateString(isAR()?"ar":"en-GB",{day:"numeric",month:"short"});
 const ago=d=>{const n=Math.floor((Date.now()-d)/DAY);return n<1?"today":n<2?"yesterday":n<30?n+" days ago":fmtDay(d)};
 // One bar chart in the notebook's style: a single colour, rounded data ends,
@@ -53,6 +80,8 @@ async function renderAdmin(){
   if(!isAdmin()){box.innerHTML=`<p class="anote">This page is only for the site's owner.</p><p class="anote small">Your account ID: <code>${esc(auth.uid)}</code></p>`;return}
   adminBusy=true;box.innerHTML=`<p class="anote">Counting trips…</p>`;
   let trips;
+  // Visits are read separately, so a problem there doesn't hide the rest.
+  let visits=null;try{visits=await visitDays()}catch(e){}
   try{trips=await allTrips()}catch(e){adminBusy=false;box.innerHTML=`<p class="anote">Couldn't load the trips (${esc(String(e&&e.code||e&&e.status||"no connection"))}). Check that the latest firestore.rules are published.</p>`;return}
   adminBusy=false;
   const planned=trips.filter(t=>hasTrip(cleanTrip(t.data))),wk=Date.now()-7*DAY;
@@ -69,7 +98,12 @@ async function renderAdmin(){
     const email=t.email||t.emails[t.uid]||"";
     return `<tr><td dir="ltr">${email?esc(email):`<span class="amuted">not saved yet</span>`}</td><td>${c.stays.map(s=>esc(D(CITIES[s.city],"n"))).join(", ")||"—"}</td><td>${allIds(c).length}</td>
       <td>${t.members.length?`owner · ${t.members.length+1} people`:inT?`member of ${esc(inT.email||inT.emails[inT.uid]||"a trip")}`:"—"}</td><td>${fmtDay(t.created)}</td><td>${ago(t.updated)}</td></tr>`}).join("");
+  const vsum=k=>{let n=0;for(let i=0;i<k;i++)n+=visits.get(riyadhDay(new Date(Date.now()-i*DAY)))||0;return n};
   box.innerHTML=`
+    ${visits?`<div class="atiles">${tile(vsum(1),"visits today")}${tile(vsum(7),"visits, last 7 days")}${tile(vsum(30),"visits, last 30 days")}</div>
+    <section class="acard wide avisits"><span class="tape"></span><h2>Visits per day</h2>${daily(visits)}
+      <p class="amuted">One visit = someone opening the site in a browser tab. Your own visits aren't counted. Days are Riyadh time.</p></section>`
+    :`<p class="anote">Visits aren't available yet. Check that the latest firestore.rules are published.</p>`}
     <div class="atiles">${tile(trips.length,"accounts with a trip",`${planned.length} with something planned`)}
       ${tile(trips.filter(t=>t.created>wk).length,"new this week")}
       ${tile(trips.filter(t=>t.updated>wk).length,"active this week","saved a change")}
@@ -93,3 +127,4 @@ async function renderAdmin(){
 }
 addEventListener("hashchange",()=>{if(location.hash==="#admin")renderAdmin()});
 if(location.hash==="#admin"){show("admin");renderAdmin()}
+countVisit();
