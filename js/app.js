@@ -688,6 +688,7 @@ function setLang(l){
   renderAll();renderApps();renderTrips();renderCrew();renderAlbum();renderHoods();
   if(typeof renderApollo==="function")renderApollo();
   if(typeof renderTrip==="function")renderTrip();
+  if(typeof userBtn==="function")userBtn();
 }
 $("langb").onclick=()=>setLang(isAR()?"en":"ar");
 applyStatic();
