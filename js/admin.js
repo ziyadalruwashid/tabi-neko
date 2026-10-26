@@ -40,10 +40,17 @@ function countVisit(){
   fetch(`${FS}:commit?key=${FIREBASE.apiKey}`,{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({writes:[{transform:{document:`${FS_PATH}/visits/${riyadhDay(new Date())}`,fieldTransforms:[{fieldPath:"n",increment:{integerValue:"1"}}]}}]})}).catch(()=>{});
 }
-// The last 60 days of visits, as a Map of "YYYY-MM-DD" to a count.
+// Every day's visits, as a Map of "YYYY-MM-DD" to a count. Read in pages
+// with no sort order (sorting backwards would need its own Firestore index);
+// there's one small document per day, so even years of them are quick.
 async function visitDays(){
-  const r=await call(`${FS}/visits?pageSize=60&orderBy=${encodeURIComponent("__name__ desc")}`,{token:await token()});
-  return new Map((r.documents||[]).map(d=>[d.name.split("/").pop(),+(d.fields&&d.fields.n&&d.fields.n.integerValue||0)]));
+  const m=new Map();let next="";
+  do{
+    const r=await call(`${FS}/visits?pageSize=300${next?"&pageToken="+encodeURIComponent(next):""}`,{token:await token()});
+    (r.documents||[]).forEach(d=>m.set(d.name.split("/").pop(),+(d.fields&&d.fields.n&&d.fields.n.integerValue||0)));
+    next=r.nextPageToken||"";
+  }while(next);
+  return m;
 }
 // Visits per day for the last 30 days, as columns.
 function daily(v){
@@ -81,7 +88,7 @@ async function renderAdmin(){
   adminBusy=true;box.innerHTML=`<p class="anote">Counting trips…</p>`;
   let trips;
   // Visits are read separately, so a problem there doesn't hide the rest.
-  let visits=null;try{visits=await visitDays()}catch(e){}
+  let visits=null,visitErr="";try{visits=await visitDays()}catch(e){visitErr=String(e&&(e.code||e.status)||"no connection")}
   try{trips=await allTrips()}catch(e){adminBusy=false;box.innerHTML=`<p class="anote">Couldn't load the trips (${esc(String(e&&e.code||e&&e.status||"no connection"))}). Check that the latest firestore.rules are published.</p>`;return}
   adminBusy=false;
   const planned=trips.filter(t=>hasTrip(cleanTrip(t.data))),wk=Date.now()-7*DAY;
@@ -103,7 +110,7 @@ async function renderAdmin(){
     ${visits?`<div class="atiles">${tile(vsum(1),"visits today")}${tile(vsum(7),"visits, last 7 days")}${tile(vsum(30),"visits, last 30 days")}</div>
     <section class="acard wide avisits"><span class="tape"></span><h2>Visits per day</h2>${daily(visits)}
       <p class="amuted">One visit = someone opening the site in a browser tab. Your own visits aren't counted. Days are Riyadh time.</p></section>`
-    :`<p class="anote">Visits aren't available yet. Check that the latest firestore.rules are published.</p>`}
+    :`<p class="anote">Visits aren't available yet (${esc(visitErr)}). Check that the latest firestore.rules are published.</p>`}
     <div class="atiles">${tile(trips.length,"accounts with a trip",`${planned.length} with something planned`)}
       ${tile(trips.filter(t=>t.created>wk).length,"new this week")}
       ${tile(trips.filter(t=>t.updated>wk).length,"active this week","saved a change")}
