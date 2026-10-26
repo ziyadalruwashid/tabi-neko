@@ -139,6 +139,26 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
     </div>
     <div class="album" id="albumbook" role="region" aria-roledescription="carousel" aria-label="Memories album" data-i18n-attr="aria-label:memories.aria,aria-roledescription:carousel"></div>
   </section>
+  <section id="privacy" hidden>
+    <div class="apphero">
+      <div>
+        <span class="kicker" data-i18n="priv.kicker">the short version</span>
+        <h1 data-i18n="priv.h1">Privacy<span class="small">What Tabi Neko keeps, and what it doesn't.</span></h1>
+      </div>
+    </div>
+    <div class="privtext" data-i18n="priv.body">
+      <h2>Without an account</h2>
+      <p>Your trip, where you're staying and your language are saved in this browser only. Near me uses your location on the phone to measure distances and never sends it anywhere. When you search for where you're staying, what you type goes to OpenStreetMap's free search to find it.</p>
+      <h2>With an account</h2>
+      <p>Logging in is optional. If you do, we keep two things: your email address, so we can send you a login code, and your trip, so it's the same on every device. That includes where you're staying, if you added it. Nobody else can see your trip unless you share a link to it.</p>
+      <p>Your data is stored with PocketHost, which runs the server for us. We don't sell it, share it or use it for ads, and the site has no ads or tracking scripts.</p>
+      <h2>Deleting it</h2>
+      <p>Open My trip, tap your email at the top, then <b>Delete my account and trip</b>. Both are removed straight away. The copy on your phone stays until you tap Start over.</p>
+      <h2>Ask Apollo</h2>
+      <p>Questions you ask Apollo are sent to Anthropic's Claude to write the answer, under Anthropic's own privacy policy. They aren't linked to your account, and we don't keep them.</p>
+    </div>
+  </section>
+
   <section id="crew" hidden>
     <div class="apphero">
       <div>
@@ -154,7 +174,7 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
   <footer>
     <p class="bye">またね!<small data-i18n="footer.bye">mata ne, see you in Japan</small></p>
     <div class="links">
-      <a href="#map" data-i18n="nav.map">Map</a><a href="#trip" data-i18n="nav.trip">My trip</a><a href="#hoods" data-i18n="nav.hoods">Areas</a><a href="#trips" data-i18n="nav.trips">Day trips</a><a href="#apps" data-i18n="nav.apps">Apps</a><a href="#memories" data-i18n="nav.memories">Memories</a><a href="#crew" data-i18n="nav.crew">Contributors</a>
+      <a href="#map" data-i18n="nav.map">Map</a><a href="#trip" data-i18n="nav.trip">My trip</a><a href="#hoods" data-i18n="nav.hoods">Areas</a><a href="#trips" data-i18n="nav.trips">Day trips</a><a href="#apps" data-i18n="nav.apps">Apps</a><a href="#memories" data-i18n="nav.memories">Memories</a><a href="#crew" data-i18n="nav.crew">Contributors</a><a href="#privacy" data-i18n="nav.privacy">Privacy</a>
       <span data-i18n="footer.made">Tabi Neko · made in Riyadh · 2026</span>
     </div>
   </footer>
@@ -185,5 +205,6 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
 <script src="js/app.js"></script>
 <script src="js/apollo.js"></script>
 <script src="js/trip.js"></script>
+<script src="js/account.js"></script>
 </body>
 </html>
