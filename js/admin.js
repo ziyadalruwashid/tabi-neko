@@ -10,7 +10,7 @@
 // Without a server there's no list of sign-ups to read here, only accounts
 // that have saved a trip; the full list is in the Firebase console under
 // Authentication → Users.
-const ADMIN_UID="";
+const ADMIN_UID="ngmNqVpxwkbL3SHdXJpmHkAoUO22";
 const isAdmin=()=>!!(auth&&ADMIN_UID&&auth.uid===ADMIN_UID);
 
 // Every trip document, page by page.
