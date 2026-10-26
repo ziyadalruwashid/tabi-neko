@@ -13,7 +13,7 @@
 // the site loads nothing extra. Each account has one trip, in the document
 // trips/<user id>, saved as a JSON string. Every change is sent a moment
 // later; the copy edited most recently wins.
-const FIREBASE={apiKey:"",projectId:""};
+const FIREBASE={apiKey:"AIzaSyCDpZenpMYnCsck56GgBk3jyn-BHZUbiwE",projectId:"tabi-neko-52eae"};
 const FB_ON=!!(FIREBASE.apiKey&&FIREBASE.projectId);
 
 const AUTH_KEY="tabineko-auth",SYNC_KEY="tabineko-sync";
