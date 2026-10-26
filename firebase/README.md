@@ -9,6 +9,11 @@ trips stay on the phone only.
   "Forgot password?" email.
 - **Firestore** keeps one document per person, `trips/<user id>`, with the
   trip as a JSON string in the field `data`.
+- **Planning together:** the owner can add an invite code (`code`) to their
+  trip. Whoever opens the invite link and logs in adds themselves to
+  `members` (with their email in `emails`) and can then edit `data`.
+  `users/<user id>` holds `active`, the trip that person is planning, so all
+  their devices open the same one.
 
 The free (Spark) plan is far more than this site needs; no card is required.
 
@@ -30,7 +35,8 @@ The free (Spark) plan is far more than this site needs; no card is required.
    `js/account.js`.
 
 The `apiKey` is not a secret: it only says which project to talk to. The
-rules in step 5 are what keep each person's trip private.
+rules in step 5 are what keep each person's trip private. Whenever
+`firestore.rules` changes, paste it into Firestore → *Rules* again and *Publish*.
 
 ## Optional
 
