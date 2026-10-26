@@ -1,0 +1,15 @@
+rules_version = '2';
+
+// Tabi Neko: each account has one trip, at trips/<user id>, and only that
+// person can read, save or delete it. Everything else is closed.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /trips/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['data'])
+        && request.resource.data.data is string
+        && request.resource.data.data.size() < 200000;
+    }
+  }
+}
