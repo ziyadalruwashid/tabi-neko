@@ -6,6 +6,7 @@ rules_version = '2';
 // and members can then read the trip and change its "data". Members can
 // also leave. users/<id> remembers which trip someone is planning. The
 // site owner (ADMIN_UID) can read everything, for the dashboard.
+// visits/<day> counts visits to the site, with nothing about the visitor.
 service cloud.firestore {
   match /databases/{database}/documents {
     function me() { return request.auth.uid; }
@@ -49,6 +50,16 @@ service cloud.firestore {
             && newMembers().toSet() == members().toSet().difference([me()].toSet())
             && onlyMyEmailChanged())
       );
+    }
+
+    // The visit counter: one document per day holding a number. Anyone can
+    // add exactly 1; only the owner can read it.
+    match /visits/{day} {
+      allow read: if admin();
+      allow create: if day.matches('^20[0-9]{2}-[0-9]{2}-[0-9]{2}$')
+        && request.resource.data.keys().hasOnly(['n']) && request.resource.data.n == 1;
+      allow update: if request.resource.data.keys().hasOnly(['n'])
+        && request.resource.data.n == resource.data.n + 1;
     }
 
     match /users/{uid} {
