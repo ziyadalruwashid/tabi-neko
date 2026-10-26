@@ -1,15 +1,57 @@
 rules_version = '2';
 
-// Tabi Neko: each account has one trip, at trips/<user id>, and only that
-// person can read, save or delete it. Everything else is closed.
+// Tabi Neko. trips/<owner id> is one person's trip, as a JSON string in
+// "data". The owner can turn on an invite link: anyone signed in who knows
+// the trip's "code" can add themselves (and only themselves) to "members",
+// and members can then read the trip and change its "data". Members can
+// also leave. users/<id> remembers which trip someone is planning.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /trips/{uid} {
-      allow read, delete: if request.auth != null && request.auth.uid == uid;
-      allow create, update: if request.auth != null && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['data'])
-        && request.resource.data.data is string
-        && request.resource.data.data.size() < 200000;
+    function me() { return request.auth.uid; }
+    function members() { return resource.data.get('members', []); }
+    function newMembers() { return request.resource.data.get('members', []); }
+    function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
+    function onlyMyEmailChanged() {
+      return request.resource.data.get('emails', {}).diff(resource.data.get('emails', {}))
+        .affectedKeys().hasOnly([me()]);
+    }
+    function goodShape() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['data', 'members', 'emails', 'code', 'join'])
+        && d.data is string && d.data.size() < 200000
+        && d.get('members', []) is list && d.get('members', []).size() <= 20
+        && d.get('emails', {}) is map && d.get('code', '') is string;
+    }
+
+    match /trips/{owner} {
+      allow read: if request.auth != null && (me() == owner || me() in members());
+      allow create: if request.auth != null && me() == owner && goodShape();
+      allow delete: if request.auth != null && me() == owner;
+      allow update: if request.auth != null && goodShape() && (
+        // the owner can change anything
+        me() == owner
+        // members can change the trip itself
+        || (me() in members() && changed().hasOnly(['data']))
+        // joining with the invite code adds only yourself
+        || (resource.data.get('code', '') != ''
+            && request.resource.data.get('join', '') == resource.data.code
+            && changed().hasOnly(['members', 'emails', 'join'])
+            && newMembers().toSet() == members().toSet().union([me()].toSet())
+            && onlyMyEmailChanged()
+            && request.resource.data.emails[me()] == request.auth.token.email)
+        // leaving removes only yourself
+        || (me() in members()
+            && changed().hasOnly(['members', 'emails'])
+            && newMembers().toSet() == members().toSet().difference([me()].toSet())
+            && onlyMyEmailChanged())
+      );
+    }
+
+    match /users/{uid} {
+      allow read, delete: if request.auth != null && me() == uid;
+      allow create, update: if request.auth != null && me() == uid
+        && request.resource.data.keys().hasOnly(['active'])
+        && request.resource.data.active is string;
     }
   }
 }

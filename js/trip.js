@@ -201,7 +201,7 @@ function renderTrip(){
   if(!ro&&typeof acctBar==="function")h+=acctBar();
   h+=`<div class="ttop">
     <input class="tname-in" id="tripname" value="${esc(t.name)}" placeholder="${esc(T(ro?"My Japan trip":"Name your trip…"))}" maxlength="60"${ro?" readonly":""} aria-label="${esc(T("Trip name"))}">
-    ${ro||!(n||t.stays.length)?"":`<div class="tbtns"><button type="button" class="store" id="tshare">${T("Share")} ↗</button><button type="button" class="tclear" id="tclear">${T("Start over")}</button></div>`}
+    ${ro||!(n||t.stays.length)?"":`<div class="tbtns"><button type="button" class="store" id="tshare">${T("Share")} ↗</button>${typeof isShared==="function"&&isShared()&&tripOwner()!==me()?"":`<button type="button" class="tclear" id="tclear">${T("Start over")}</button>`}</div>`}
   </div>`;
   if(shareAsk&&!ro)h+=`<div class="tshareask"><p>${T("Include where you're staying? Anyone with the link will see it.")}</p>
     <button type="button" class="store" data-home="0">${T("Share without it")}</button><button type="button" class="store" data-home="1">${T("Include it")}</button></div>`;

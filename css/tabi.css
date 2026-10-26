@@ -703,6 +703,29 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .privtext h2:first-child{margin-top:0}
 .privtext p{margin:0 0 12px;line-height:1.65}
 @media (max-width:640px){.acct{padding:16px!important}.acct-sheet{border-radius:18px!important;border-bottom:2px solid var(--ink)!important}}
+/* planning together */
+.tacct-r{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.tacct-pt{cursor:pointer}
+.tinvite{display:flex;gap:16px;align-items:center;margin:0 0 20px;padding:16px 18px;border:2px solid var(--ink);border-radius:14px;
+  background:color-mix(in srgb,var(--yuzu) 35%,var(--sheet));box-shadow:4px 4px 0 rgba(63,33,22,.12)}
+.tinvite img{width:72px;flex:none;transform:rotate(-6deg)}
+.tinvite b{font:400 22px/1.15 var(--display)}
+.tinvite p{margin:4px 0 10px;font-size:14.5px}
+.tinvite .store{cursor:pointer;background:var(--ink);color:var(--paper)}
+.tinvite .store:hover{background:var(--lantern);border-color:var(--lantern)}
+.acct-link{display:flex;gap:8px}
+.acct-link input{flex:1;min-width:0;font:500 13px var(--body);color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:9px 10px}
+.acct-link .store{cursor:pointer;flex:none;background:var(--ink);color:var(--paper)}
+.acct-link .store:hover{background:var(--lantern);border-color:var(--lantern)}
+.acct-h3{font:400 18px var(--display);margin:18px 0 8px}
+.acct-people{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.acct-people li{display:flex;align-items:center;gap:10px;font-size:14.5px;padding:6px 8px;border-radius:10px;background:var(--sheet)}
+.acct-people li>span[dir]{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.acct-people small{font:400 15px var(--hand);color:var(--muted)}
+.acct-av{width:28px;height:28px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--lantern);color:#fff;font:400 14px var(--display)}
+.acct-people li:nth-child(3n+2) .acct-av{background:var(--shinkansen)}
+.acct-people li:nth-child(3n) .acct-av{background:var(--wasabi)}
+@media (max-width:640px){.tinvite{align-items:flex-start}.tinvite img{width:52px}}
 /* ---- album ----
    One page per memory, laid out as an open notebook: photos taped to the left
    sheet, words on the right, a soft fold between. The strip scroll-snaps so a
