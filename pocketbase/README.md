@@ -5,8 +5,8 @@ saved to this server so it's the same on every device. The site talks to it
 from `js/account.js`; while `PB_URL` there is empty, accounts are switched off
 and the site keeps trips on the phone only.
 
-Login is by a code sent to the person's email (PocketBase "OTP"), so there are
-no passwords. Each account has one trip, stored as JSON.
+Login is by email and password, PocketBase's built-in way. Each account has
+one trip, stored as JSON.
 
 ## Setup
 
@@ -14,14 +14,10 @@ no passwords. Each account has one trip, stored as JSON.
    create an instance (e.g. `tabineko`), open its admin dashboard and create
    the superuser (admin) account. Keep that password to yourself.
 
-2. **Email codes.** Collections → `users` → the ⚙ (edit) button → *Options*:
-   - turn on **OTP**, set the code length to **6** and the duration to **300**
-     seconds;
-   - optional: under *Mail templates → OTP*, set the subject to
-     "Your Tabi Neko code".
-
-   Leave the `users` API rules as PocketBase sets them (anyone can create an
-   account; people can only see, change or delete their own).
+2. **Users.** Nothing to change: the `users` collection already allows
+   logging in with email and password. Leave its API rules as PocketBase sets
+   them (anyone can create an account; people can only see, change or delete
+   their own).
 
 3. **The `trips` collection.** New collection → *Base*, named `trips`:
    - field `owner`: **Relation** to `users`, single, **required**, with
@@ -40,14 +36,16 @@ no passwords. Each account has one trip, stored as JSON.
    | Update | `owner = @request.auth.id && @request.body.owner:isset = false` |
    | Delete | `owner = @request.auth.id` |
 
-4. **Sending email.** Settings → *Mail settings* → use an SMTP server. Without
+4. **Sending email (optional, for "Forgot password?").** Without it, everything
+   works except the password reset email. Settings → *Mail settings* → use an
+   SMTP server. Without
    a domain of our own, Gmail works: host `smtp.gmail.com`, port `587`, your
    Gmail address as the username, and an **app password** (Google Account →
    Security → 2-Step Verification → App passwords) as the password. Sender
    name "Tabi Neko". Press *Send test email* to check it.
 
 5. **Rate limits.** Settings → *Rate limits*: turn them on (the defaults are
-   fine). This stops anyone using the login form to spam an inbox.
+   fine). This stops anyone guessing passwords through the login form.
 
 6. **Switch it on.** Put the instance address in `PB_URL` at the top of
    `js/account.js`, e.g. `https://tabineko.pockethost.io`.
