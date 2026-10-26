@@ -135,7 +135,9 @@ async function push(again){
   pushing=true;
   const sent=tripJSON(trip);
   try{
-    const d=await fsPatch("trips/"+tripOwner(),{data:S(sent)},["data"],sync.at?"&currentDocument.updateTime="+encodeURIComponent(sync.at):"");
+    // Your own trip also carries your email, for the site owner's account list.
+    const own=tripOwner()===me();
+    const d=await fsPatch("trips/"+tripOwner(),own?{data:S(sent),email:S(auth.email)}:{data:S(sent)},own?["data","email"]:["data"],sync.at?"&currentDocument.updateTime="+encodeURIComponent(sync.at):"");
     sync={...sync,at:d.updateTime,base:sent,dirty:tripJSON(trip)!==sent};saveSync();
     if(sync.dirty)syncSoon();else setSync("saved");
     pushing=false;
@@ -192,7 +194,7 @@ async function afterLogin(){
   let active="";try{active=await getActive()}catch(e){}
   if(active&&active!==me()){
     // Whatever is on this phone goes into your own trip first, if that's empty.
-    try{if(hasTrip(trip)&&!(await serverTrip(me())))await fsPatch("trips/"+me(),{data:S(tripJSON(trip))},["data"])}catch(e){}
+    try{if(hasTrip(trip)&&!(await serverTrip(me())))await fsPatch("trips/"+me(),{data:S(tripJSON(trip)),email:S(auth.email)},["data","email"])}catch(e){}
     sync={...SYNC0,owner:active};
     try{const rec=await serverTrip();if(rec){applyServer(rec);setSync("saved");closeAcct();return joinIfAsked()}}catch(e){}
     try{await setActive("")}catch(e){}
@@ -254,7 +256,7 @@ async function setCode(on){
   acct.busy=true;renderAcct();
   try{
     const code=on?Array.from(crypto.getRandomValues(new Uint8Array(12)),b=>(b%36).toString(36)).join(""):"";
-    const d=await fsPatch("trips/"+me(),{data:S(tripJSON(trip)),code:S(code),emails:{mapValue:{fields:{[me()]:S(auth.email)}}}},["data","code","emails."+KEYP(me())]);
+    const d=await fsPatch("trips/"+me(),{data:S(tripJSON(trip)),email:S(auth.email),code:S(code),emails:{mapValue:{fields:{[me()]:S(auth.email)}}}},["data","email","code","emails."+KEYP(me())]);
     sync={...sync,at:d.updateTime,base:tripJSON(trip),dirty:false};setShare(readTrip(d));setSync("saved");
     acct.busy=false;renderAcct();
   }catch(e){acctFail(e)}
@@ -293,7 +295,8 @@ function openAcct(step){
   el.hidden=false;document.documentElement.classList.add("tpick-open");
   renderAcct();
 }
-function closeAcct(){const el=$("acct");if(el)el.hidden=true;document.documentElement.classList.remove("tpick-open");acct=null;renderTrip()}
+function closeAcct(){const el=$("acct");if(el)el.hidden=true;document.documentElement.classList.remove("tpick-open");acct=null;renderTrip();
+  if(typeof renderAdmin==="function"&&!$("admin").hidden)renderAdmin()}
 const acctFail=e=>{if(e&&e.status===401)return loggedOut(true);if(acct){acct.busy=false;say(failMsg(e))}else toast(failMsg(e))};
 function renderAcct(){
   const el=$("acct"),a=acct;if(!el||!a)return;
@@ -335,7 +338,7 @@ function renderAcct(){
   }
   else h=`<h2 id="acct-h">${T("Your account")}</h2>
     <p>${T("Logged in as {e}. Your trip is saved to your account.",{e:`<b dir="ltr">${esc(auth&&auth.email||"")}</b>`})}</p>
-    <div class="acct-two"><button type="button" class="store acct-pt">👨‍👩‍👧 ${T("Plan together")}</button><button type="button" class="store acct-out">${T("Log out")}</button></div>
+    <div class="acct-two">${typeof isAdmin==="function"&&isAdmin()?`<button type="button" class="store acct-admin">📊 ${T("Admin dashboard")}</button>`:""}<button type="button" class="store acct-pt">👨‍👩‍👧 ${T("Plan together")}</button><button type="button" class="store acct-out">${T("Log out")}</button></div>
     <p class="acct-small"><button type="button" class="tclear acct-del">${T("Delete my account and trip")}</button> · <a href="#privacy" class="acct-priv">${T("Privacy")}</a></p>`;
   el.innerHTML=`<div class="tpick-sheet acct-sheet" role="dialog" aria-modal="true" aria-labelledby="acct-h">
     ${a.step==="choose"?"":`<button type="button" class="tdel acct-x" aria-label="${esc(T("Close"))}">×</button>`}
@@ -353,6 +356,7 @@ function renderAcct(){
     closeAcct();joinIfAsked()});
   if(a.step==="me"){q(".acct-out").onclick=()=>{loggedOut(false);closeAcct();toast(T("Logged out. Your trip stays on this phone."))};
     q(".acct-pt").onclick=openShare;
+    if(q(".acct-admin"))q(".acct-admin").onclick=()=>{closeAcct();show("admin");history.replaceState(null,"","#admin");renderAdmin()};
     q(".acct-del").onclick=()=>{acct={step:"delete",msg:""};renderAcct()}}
   if(a.step==="delete"){q(".acct-f").onsubmit=e=>{e.preventDefault();deleteAccount(q("#acct-pw").value)};
     q(".acct-back").onclick=()=>{acct={step:"me",msg:""};renderAcct()};if(!a.busy)q("#acct-pw").focus()}

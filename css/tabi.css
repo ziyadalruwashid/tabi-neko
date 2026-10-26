@@ -726,6 +726,48 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .acct-people li:nth-child(3n+2) .acct-av{background:var(--shinkansen)}
 .acct-people li:nth-child(3n) .acct-av{background:var(--wasabi)}
 @media (max-width:640px){.tinvite{align-items:flex-start}.tinvite img{width:52px}}
+/* the owner's dashboard */
+#adminbox{padding-block:24px 10px}
+.anote{font-size:15px;color:var(--muted)}
+.anote.small{font-size:13px}
+.anote code{font-size:13px;background:var(--sheet);padding:2px 6px;border-radius:6px;user-select:all}
+.atiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:26px}
+.atile{background:var(--sheet);border:2px solid var(--ink);border-radius:14px;padding:14px 16px;box-shadow:4px 4px 0 rgba(63,33,22,.12);display:flex;flex-direction:column}
+.atile b{font:400 44px/1 var(--display);color:var(--ink)}
+.atile span{font-weight:700;font-size:14px;margin-top:6px}
+.atile small{font:400 15px var(--hand);color:var(--muted)}
+.agrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 26px}
+.acard{position:relative;background:var(--sheet);border-radius:8px;padding:22px 20px 18px;box-shadow:0 1px 1px rgba(63,33,22,.08),0 16px 30px -20px rgba(63,33,22,.5);min-width:0}
+.acard.wide{grid-column:1/-1}
+.acard .tape{top:-12px;left:40%}
+.acard h2{font:400 24px var(--display);margin:0 0 14px}
+.amuted{color:var(--muted);font-size:13.5px}
+.abars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.abars li{display:grid;grid-template-columns:minmax(80px,30%) 1fr 34px;align-items:center;gap:10px;font-size:14px}
+.abl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.abars b{font-size:13.5px;text-align:end;color:var(--ink)}
+.abt{position:relative;display:block;height:14px;outline:none}
+.abt i{display:block;height:100%;background:var(--lantern);border-radius:0 4px 4px 0}
+[dir=rtl] .abt i{border-radius:4px 0 0 4px}
+.abt.mini{display:inline-block;width:90px;height:10px;margin-inline-end:8px;vertical-align:middle}
+.abt[data-tip]:hover::after,.abt[data-tip]:focus-visible::after,.acol[data-tip]:hover::after,.acol[data-tip]:focus-visible::after{
+  content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);white-space:nowrap;z-index:5;
+  background:var(--ink);color:var(--paper);font:600 12.5px var(--body);padding:5px 9px;border-radius:8px;pointer-events:none}
+.abt:focus-visible,.acol:focus-visible{outline:2px solid var(--yuzu);outline-offset:2px}
+.acols{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;align-items:end;height:170px;padding-top:20px;border-bottom:1.5px solid var(--rule)}
+.acol{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;outline:none}
+.acol i{display:block;width:62%;background:var(--lantern);border-radius:4px 4px 0 0;min-height:0}
+.acol b{font-size:12px;margin-bottom:3px}
+.acol span{position:absolute;top:100%;margin-top:6px;font-size:11px;color:var(--muted);white-space:nowrap}
+.acols+.atable{margin-top:30px}
+.atable summary{cursor:pointer;font-size:13px;color:var(--muted)}
+.acard table{width:100%;border-collapse:collapse;font-size:14px}
+.acard th{text-align:start;font-size:12px;font-weight:700;color:var(--muted);padding:6px 8px;border-bottom:1.5px solid var(--rule)}
+.acard td{padding:7px 8px;border-bottom:1px dashed var(--rule);vertical-align:middle}
+.aplaces td small{display:block;font-size:12px;color:var(--muted)}
+.ascroll{overflow-x:auto}
+.aaccts{min-width:640px}
+@media (max-width:760px){.agrid{grid-template-columns:minmax(0,1fr)}.atile b{font-size:36px}}
 /* ---- album ----
    One page per memory, laid out as an open notebook: photos taped to the left
    sheet, words on the right, a soft fold between. The strip scroll-snaps so a
