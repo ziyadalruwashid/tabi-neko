@@ -53,7 +53,7 @@ function cleanTrip(t){
 let trip=freshTrip();
 try{const s=store.get(TRIP_KEY);if(s)trip=cleanTrip(JSON.parse(s))}catch(e){}
 let shared=null; // a trip opened from someone's link, shown read-only until saved
-const saveTrip=()=>{store.set(TRIP_KEY,JSON.stringify(trip));tripBadge();homeBtn()};
+const saveTrip=()=>{store.set(TRIP_KEY,JSON.stringify(trip));tripBadge();homeBtn();if(typeof syncSoon==="function")syncSoon()};
 const allIds=t=>[...t.ideas,...t.stays.flatMap(s=>s.days.flatMap(d=>d.ids))];
 const inTrip=k=>allIds(trip).includes(k);
 const tripCount=t=>allIds(t).length;
@@ -198,6 +198,7 @@ function renderTrip(){
   if(shared)h+=`<div class="tshared"><p>${esc(T("Someone shared a trip with you:"))} <b>${esc(shared.name||T("My Japan trip"))}</b></p>
     <button type="button" class="store tsave">${T("Save it as my trip")}</button><button type="button" class="tcancel">${T("Close")}</button>
     ${tripCount(trip)||trip.stays.length?`<small>${T("Saving replaces the trip you have now.")}</small>`:""}</div>`;
+  if(!ro&&typeof acctBar==="function")h+=acctBar();
   h+=`<div class="ttop">
     <input class="tname-in" id="tripname" value="${esc(t.name)}" placeholder="${esc(T(ro?"My Japan trip":"Name your trip…"))}" maxlength="60"${ro?" readonly":""} aria-label="${esc(T("Trip name"))}">
     ${ro||!(n||t.stays.length)?"":`<div class="tbtns"><button type="button" class="store" id="tshare">${T("Share")} ↗</button><button type="button" class="tclear" id="tclear">${T("Start over")}</button></div>`}
@@ -248,6 +249,7 @@ function renderTrip(){
 function wireTrip(){
   const box=$("tripbook"),q=s=>box.querySelectorAll(s);
   const redo=()=>{saveTrip();renderTrip();renderList()};
+  if(typeof wireAcct==="function")wireAcct(box);
   q(".tname").forEach(b=>b.onclick=()=>{show("map",true);history.replaceState(null,"","#map");goPlace(b.dataset.id)});
   if(shared){
     box.querySelector(".tsave").onclick=()=>{trip=cleanTrip(shared);shared=null;saveTrip();renderTrip();renderList();renderMap();toast(T("Saved as your trip ✓"))};

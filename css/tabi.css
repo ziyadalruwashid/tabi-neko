@@ -651,6 +651,39 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 }
 [dir=rtl] .thomeleg{padding-left:0!important;padding-right:6px!important}
 [dir=rtl] .tstamp{transform:rotate(12deg)}
+/* accounts: the bar on My trip and the login sheet */
+.tacct{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin:0 0 20px;padding:10px 14px;
+  border:1.5px dashed var(--rule);border-radius:12px;font-size:14.5px;color:var(--muted)}
+.tacct .store{cursor:pointer}
+.tacct .store:hover{background:var(--ink);color:var(--paper)}
+.tacct.on{border-style:solid;border-color:color-mix(in srgb,var(--wasabi) 55%,transparent);background:color-mix(in srgb,var(--wasabi) 10%,var(--sheet));color:var(--ink)}
+.tacct-s{font:400 16px var(--hand);color:#4F7A1E;margin-inline-start:6px}
+.tacct-me{font-size:13.5px}
+.acct-sheet{position:relative;width:min(460px,100%);padding:26px 24px 22px;overflow:visible}
+.acct-sheet h2{font:400 28px/1.1 var(--display);margin:0 0 8px;padding-inline-end:30px}
+.acct-sheet>p{margin:0 0 16px;line-height:1.5}
+.acct-cat{position:absolute;top:-46px;inset-inline-end:22px;width:76px;transform:rotate(8deg)}
+.acct-x{position:absolute;top:10px;inset-inline-end:10px}
+.acct-f{display:flex;flex-direction:column;gap:10px}
+.acct-f .store{cursor:pointer;justify-content:center;padding-block:10px;background:var(--ink);color:var(--paper)}
+.acct-f .store:hover:not(:disabled){background:var(--lantern);border-color:var(--lantern)}
+.acct-f .store:disabled{opacity:.6;cursor:progress}
+.acct-sheet .thome-msg{color:var(--lantern)}
+.acct-code{font:700 24px var(--body)!important;letter-spacing:.3em;text-align:center}
+.acct-small{margin:14px 0 0!important;font-size:13px;color:var(--muted)}
+.acct-small .tclear{font-size:13px;padding:0}
+.acct-small a{color:var(--shinkansen)}
+.acct-two{display:flex;flex-direction:column;gap:10px}
+.acct-two .store{cursor:pointer;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 16px;text-align:start}
+.acct-two .store small{font:400 16px var(--hand);color:var(--muted)}
+.acct-two .store:hover{background:var(--ink);color:var(--paper)}
+.acct-two .store:hover small{color:var(--paper)}
+.acct{align-items:center!important}
+.privtext{max-width:62ch;padding:26px 0 10px}
+.privtext h2{font:400 26px var(--display);margin:26px 0 8px}
+.privtext h2:first-child{margin-top:0}
+.privtext p{margin:0 0 12px;line-height:1.65}
+@media (max-width:640px){.acct{padding:16px!important}.acct-sheet{border-radius:18px!important;border-bottom:2px solid var(--ink)!important}}
 /* ---- album ----
    One page per memory, laid out as an open notebook: photos taped to the left
    sheet, words on the right, a soft fold between. The strip scroll-snaps so a
