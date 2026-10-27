@@ -341,7 +341,7 @@ function renderAcct(){
   }
   else h=`<h2 id="acct-h">${T("Your account")}</h2>
     <p>${T("Logged in as {e}. Your trip is saved to your account.",{e:`<b dir="ltr">${esc(auth&&auth.email||"")}</b>`})}</p>
-    <div class="acct-two">${typeof isAdmin==="function"&&isAdmin()?`<button type="button" class="store acct-admin">📊 ${T("Admin dashboard")}</button>`:""}<button type="button" class="store acct-pt">👨‍👩‍👧 ${T("Plan together")}</button><button type="button" class="store acct-out">${T("Log out")}</button></div>
+    <div class="acct-two">${typeof isAdmin==="function"&&isAdmin()?`<button type="button" class="store acct-admin">📊 ${T("Admin dashboard")}</button>`:""}<button type="button" class="store acct-out">${T("Log out")}</button></div>
     <p class="acct-small"><button type="button" class="tclear acct-del">${T("Delete my account and trip")}</button> · <a href="#privacy" class="acct-priv">${T("Privacy")}</a></p>`;
   el.innerHTML=`<div class="tpick-sheet acct-sheet" role="dialog" aria-modal="true" aria-labelledby="acct-h">
     ${a.step==="choose"?"":`<button type="button" class="tdel acct-x" aria-label="${esc(T("Close"))}">×</button>`}
@@ -358,7 +358,6 @@ function renderAcct(){
     if(b.dataset.keep==="server")applyServer(a.rec);else{sync={...SYNC0,at:a.rec.at,dirty:true,base:tripJSON(cleanTrip(a.rec.data))};saveSync();push()}
     closeAcct();joinIfAsked()});
   if(a.step==="me"){q(".acct-out").onclick=()=>{loggedOut(false);closeAcct();toast(T("Logged out. Your trip stays on this phone."))};
-    q(".acct-pt").onclick=openShare;
     if(q(".acct-admin"))q(".acct-admin").onclick=()=>{closeAcct();show("admin");history.replaceState(null,"","#admin");renderAdmin()};
     q(".acct-del").onclick=()=>{acct={step:"delete",msg:""};renderAcct()}}
   if(a.step==="delete"){q(".acct-f").onsubmit=e=>{e.preventDefault();deleteAccount(q("#acct-pw").value)};
