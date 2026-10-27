@@ -1,4 +1,4 @@
-// "Apollo, plan my trip": you say which cities and for how long, who's
+// "Apollo, plan my trip" (logged-in visitors only): you say which cities and for how long, who's
 // going, what you love and how busy the days should be; Claude, through the
 // Ask Apollo Worker (APOLLO_API, js/apollo.js), builds a day-by-day plan
 // from the notebook. Loaded after js/trip.js and uses its trip helpers.
@@ -12,7 +12,11 @@ const PLAN_LOVES=[["food","Food","🍜"],["coffee","Coffee & sweets","☕"],["sh
 const PLAN_PACE=[["relaxed","Relaxed","3 stops a day"],["balanced","Balanced","4 stops a day"],["packed","Packed","5–6 stops a day"]];
 
 let planner=null; // {cities:[{city,days}], party, loves:Set, pace, halal, note, step:"form"|"busy"|"result", plan, msg}
+// Planning needs an account (the Worker checks the login). Logged out, the
+// button opens the login sheet, and the planner follows once you're in.
+let planAfterLogin=false;
 function openPlanner(){
+  if(FB_ON&&!auth){planAfterLogin=true;openAcct("login","plan");return}
   const own=trip.stays.map(s=>({city:s.city,days:s.days.length}));
   planner={cities:own.length?own:[],party:"couple",loves:new Set(["food"]),pace:"balanced",halal:true,note:"",step:"form",msg:""};
   let el=$("planner");
@@ -90,15 +94,17 @@ async function askApollo(){
   let i=0;clearInterval(planTick);
   planTick=setInterval(()=>{const s=$("planner")&&$("planner").querySelector(".pl-say");if(s)s.textContent=T(PLAN_STEPS[Math.min(++i,PLAN_STEPS.length-1)])},4000);
   try{
-    const r=await fetch(APOLLO_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({plan:{
+    const r=await fetch(APOLLO_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({idToken:await token(),plan:{
       cities:p.cities,party:p.party,interests:[...p.loves],pace:p.pace,halal:p.halal,note:p.note,lang:isAR()?"ar":"en"}})});
-    if(!r.ok)throw {status:r.status};
+    if(!r.ok)throw {status:r.status,why:((await r.json().catch(()=>null))||{}).error};
     const plan=checkPlan((await r.json()).plan);
     if(!plan)throw {status:0};
     p.plan=plan;p.step="result";
   }catch(e){
     p.step="form";
-    p.msg=e&&e.status===429?T("You're asking faster than I can walk! Give me a minute, then try again."):T("Apollo couldn't plan that just now. Try again in a moment.");
+    if(e&&e.status===401){clearInterval(planTick);closePlanner();loggedOut(true);return}
+    p.msg=e&&e.why==="plans today"?T("That's all the plans for today 🐾 Come back tomorrow, or change this one by hand.")
+      :e&&e.status===429?T("You're asking faster than I can walk! Give me a minute, then try again."):T("Apollo couldn't plan that just now. Try again in a moment.");
   }
   clearInterval(planTick);
   if(planner===p)renderPlanner();

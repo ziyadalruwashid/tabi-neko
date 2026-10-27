@@ -286,8 +286,9 @@ function renderShareBits(){if(acct&&acct.step==="share")renderAcct();const b=$("
 
 // ---- the login sheet ----
 let acct=null; // {step:"login"|"signup"|"choose"|"me"|"delete"|"share", email, msg, ok, busy, rec}
-function openAcct(step){
-  acct={step:step||(auth?"me":"login"),email:"",msg:""};
+// why: "plan" when the planner sent you here, so the sheet says so.
+function openAcct(step,why){
+  acct={step:step||(auth?"me":"login"),email:"",msg:"",why};
   let el=$("acct");
   if(!el){el=document.createElement("div");el.id="acct";el.className="tpick acct";document.body.appendChild(el);
     el.addEventListener("click",e=>{if(e.target===el&&acct.step!=="choose")closeAcct()});
@@ -296,6 +297,8 @@ function openAcct(step){
   renderAcct();
 }
 function closeAcct(){const el=$("acct");if(el)el.hidden=true;document.documentElement.classList.remove("tpick-open");acct=null;renderTrip();
+  // Logged in from the planner's button: carry on to the planner.
+  if(planAfterLogin){planAfterLogin=false;if(auth)openPlanner()}
   if(typeof renderAdmin==="function"&&!$("admin").hidden)renderAdmin()}
 const acctFail=e=>{if(e&&e.status===401)return loggedOut(true);if(acct){acct.busy=false;say(failMsg(e))}else toast(failMsg(e))};
 function renderAcct(){
@@ -305,7 +308,7 @@ function renderAcct(){
   let h="";
   if(a.step==="login"||a.step==="signup"){const up=a.step==="signup";
     h=`<h2 id="acct-h">${T(up?"Create your account":"Log in to Tabi Neko")}</h2>
-    <p>${T(invite?"Log in, or create an account, to join the trip you were invited to.":"Keep your trip safe and open it on any phone or laptop.")}</p>
+    <p>${T(invite?"Log in, or create an account, to join the trip you were invited to.":a.why==="plan"?"Log in, or create a free account, and Apollo will plan your trip. Your plan is saved to your account too.":"Keep your trip safe and open it on any phone or laptop.")}</p>
     <form class="acct-f" novalidate><input type="email" class="thome-q" id="acct-email" value="${esc(a.email)}" placeholder="${esc(T("your@email.com"))}" aria-label="${esc(T("Email"))}" autocomplete="email" required dir="ltr">
       ${pwBox(up?"Password (8 or more characters)":"Password",up?"new-password":"current-password")}
       <button type="submit" class="store"${a.busy?" disabled":""}>${a.busy?T("One moment…"):T(up?"Create account":"Log in")}</button></form>${err}
@@ -348,7 +351,7 @@ function renderAcct(){
   el.querySelectorAll(".acct-priv").forEach(l=>l.onclick=e=>{e.preventDefault();closeAcct();show("privacy");history.replaceState(null,"","#privacy")});
   if(a.step==="login"||a.step==="signup"){
     q(".acct-f").onsubmit=e=>{e.preventDefault();logIn(q("#acct-email").value,q("#acct-pw").value,a.step==="signup")};
-    q(".acct-mode").onclick=()=>{acct={step:a.step==="signup"?"login":"signup",email:q("#acct-email").value,msg:""};renderAcct()};
+    q(".acct-mode").onclick=()=>{acct={step:a.step==="signup"?"login":"signup",email:q("#acct-email").value,msg:"",why:a.why};renderAcct()};
     if(q(".acct-forgot"))q(".acct-forgot").onclick=()=>forgot(q("#acct-email").value);
     if(!a.busy)(a.email?q("#acct-pw"):q("#acct-email")).focus()}
   if(a.step==="choose")el.querySelectorAll("[data-keep]").forEach(b=>b.onclick=()=>{
