@@ -772,6 +772,52 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .ascroll{overflow-x:auto}
 .aaccts{min-width:640px}
 @media (max-width:760px){.agrid{grid-template-columns:minmax(0,1fr)}.atile b{font-size:36px}}
+/* "Apollo, plan my trip" */
+.tmagic{appearance:none;cursor:pointer;width:100%;display:flex;align-items:center;gap:16px;text-align:start;margin:0 0 22px;padding:18px 20px;
+  border:2px solid var(--ink);border-radius:16px;color:var(--ink);font:inherit;
+  background:linear-gradient(120deg,color-mix(in srgb,var(--yuzu) 55%,var(--sheet)),color-mix(in srgb,var(--sakura,#F7B6C8) 45%,var(--sheet)));
+  box-shadow:5px 5px 0 rgba(63,33,22,.15);transition:transform .15s,box-shadow .15s}
+.tmagic:hover{transform:translate(-2px,-2px) rotate(-.4deg);box-shadow:7px 7px 0 rgba(63,33,22,.18)}
+.tmagic-s{font-size:34px;flex:none;animation:twinkle 2.4s ease-in-out infinite}
+.tmagic b{display:block;font:400 26px/1.1 var(--display)}
+.tmagic small{display:block;margin-top:4px;font-size:14.5px;color:color-mix(in srgb,var(--ink) 80%,transparent)}
+.tmagic-go{margin-inline-start:auto;font:700 26px var(--body)}
+[dir=rtl] .tmagic-go{transform:scaleX(-1)}
+@keyframes twinkle{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.15) rotate(12deg)}}
+@media (prefers-reduced-motion:reduce){.tmagic-s,.pl-cat{animation:none!important}}
+.tplanb.store{cursor:pointer;background:var(--ink);color:var(--paper)}
+.tplanb.store:hover{background:var(--lantern);border-color:var(--lantern)}
+.pl-sheet{width:min(560px,100%);max-height:min(90vh,900px);overflow-y:auto}
+.pl-cities{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:6px}
+.pl-cities li{display:flex;align-items:center;gap:10px;background:var(--sheet);border-radius:10px;padding:6px 8px;font-size:15px}
+.pl-cities li>span[lang]{font:700 14px var(--jp);color:var(--lantern);width:34px}
+.pl-step{margin-inline-start:auto;display:flex;align-items:center;gap:6px}
+.pl-step button{appearance:none;cursor:pointer;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--ink);background:var(--paper);font:700 16px var(--body);color:var(--ink)}
+.pl-step button:disabled{opacity:.35;cursor:default}
+.pl-step output{min-width:58px;text-align:center;font-weight:700;font-size:14px}
+.pl-add,.pl-pick{display:flex;flex-wrap:wrap;gap:6px}
+.pl-pick .tchip2 small{font-weight:400;opacity:.75}
+.pl-halal{display:flex;align-items:center;gap:8px;margin:14px 0 10px;font-weight:700;font-size:14.5px;cursor:pointer}
+.pl-halal input{width:18px;height:18px;accent-color:#4F7A1E}
+#pl-note{width:100%;resize:vertical;margin-bottom:12px;font-size:14.5px}
+.pl-busy{text-align:center;padding:20px 0 10px}
+.pl-cat{width:110px;animation:plbob 1.6s ease-in-out infinite}
+@keyframes plbob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-8px) rotate(4deg)}}
+.pl-busy h2{margin-top:10px}
+.pl-say{font:400 20px var(--hand);color:var(--shinkansen);min-height:28px}
+.pl-dots{display:flex;justify-content:center;gap:6px;margin-top:6px}
+.pl-dots i{width:8px;height:8px;border-radius:50%;background:var(--lantern);animation:pldot 1.2s infinite}
+.pl-dots i:nth-child(2){animation-delay:.2s}.pl-dots i:nth-child(3){animation-delay:.4s}
+@keyframes pldot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.pl-note{background:color-mix(in srgb,var(--yuzu) 30%,var(--sheet));border-radius:10px;padding:10px 12px;font-size:14.5px}
+.pl-sum{font:400 18px var(--hand);color:var(--muted);margin:0 0 10px!important}
+.pl-days{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:8px}
+.pl-days li{background:var(--sheet);border-radius:10px;padding:8px 12px;font-size:14.5px}
+.pl-days b{color:var(--lantern);font:400 17px var(--display)}
+.pl-dt{font-weight:700}
+.pl-days small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.pl-use{background:var(--ink)!important;color:var(--paper)!important}
+.pl-use:hover{background:var(--lantern)!important;border-color:var(--lantern)!important}
 /* ---- album ----
    One page per memory, laid out as an open notebook: photos taped to the left
    sheet, words on the right, a soft fold between. The strip scroll-snaps so a
