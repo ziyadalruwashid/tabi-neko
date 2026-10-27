@@ -224,7 +224,7 @@ async function planTrip(raw, env, h) {
     "- Put must-see places early in the trip and don't repeat a place.",
     "- Order each day's places in a sensible visiting order.",
     "- For the city field use the lowercase city key exactly as given above. Copy each place's name exactly as it is written in the notebook, before the brackets.",
-    `- Write the trip name, each day's short title (two to four words, like "Asakusa & Ueno") and a one or two sentence note in ${p.lang === "ar" ? "Arabic" : "English"}. Place names stay as in the notebook.`,
+    `- Write a short trip name (two to five words, like "Six Days in Tokyo"; no colons or lists), each day's short title (two to four words, like "Asakusa & Ueno") and a one or two sentence note in ${p.lang === "ar" ? "Arabic" : "English"}. Place names stay as in the notebook.`,
     "- Answer only in the JSON format you've been given.",
   ].filter((l, i, a) => l || a[i - 1]).join("\n");
 
