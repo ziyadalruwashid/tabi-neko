@@ -428,6 +428,7 @@ function renderMap(){
 // back at ten, and a selected card that's further down always gets shown, so
 // a pin, a search hit or a place Apollo names never lands on a hidden card.
 const PAGE=10;let listMax=PAGE,listKey="";
+const openNotes=new Set(); // places whose full description you've opened
 function renderList(){
   let pts=P.filter(p=>p.city===city&&visible(p));
   if(near)pts=pts.map(p=>[p,KM(near,p)]).sort((a,b)=>a[1]-b[1]).map(a=>a[0]);
@@ -441,10 +442,10 @@ function renderList(){
     return `<article class="entry${p.id===selected?" on":""}" id="e-${p.id}" data-id="${p.id}" style="--c:var(--${p.cat})">
       <div class="pola" style="--r:${r}deg"><span class="tape${i%2?" pink":""}"></span>${p.photo?`<div class="ph photo"><img src="${p.photo}" alt="${p.n}" loading="lazy"></div>`:`<div class="ph"><img src="${C.img}" alt=""></div>`}<span class="cap">${D(p,"cap")}</span></div>
       <div class="txt">
-        <div class="no">${T("No.")} ${p.num}</div>
+        <div class="no">${T("No.")} ${p.num}${p.tier==="must"?` <span class="dontskip">${T("don't skip this")}<svg viewBox="0 0 162 10" preserveAspectRatio="none"><path d="${UNDER}" fill="none" stroke="#F14E24" stroke-width="2" stroke-linecap="round"/></svg></span>`:""}</div>
         <h3>${p.n}<small>${p.jp}</small></h3>
         <p class="meta">${near?`<span class="dist">${distText(KM(near,p))}</span>`:""}<span class="c"><i></i>${D(C,"n")}</span><span>${AREA(p.area)}</span>${p.halal?`<span class="halal${p.hl==="friendly"?" mf":""}">${p.hl==="friendly"?T("Muslim-friendly"):T("✓ halal")}</span>`:""}<span>${D(p,"t")}</span><span>${D(p,"cost")}</span><span>${D(p,"dur")}</span></p>
-        <p class="note">${D(p,"tip")}${p.tier==="must"?` <span class="dontskip">${T("don't skip this")}<svg viewBox="0 0 162 10" preserveAspectRatio="none"><path d="${UNDER}" fill="none" stroke="#F14E24" stroke-width="2" stroke-linecap="round"/></svg></span>`:""}</p>
+        <p class="note${openNotes.has(p.id)||p.id===selected?" open":""}" id="n-${p.id}">${D(p,"tip")}</p>
         <a class="go" href="${p.url||"https://www.google.com/maps/search/?api=1&query="+q}" target="_blank" rel="noopener">${T("Open in Google Maps")}</a>${p.book?`<a class="go book" href="${p.book}" target="_blank" rel="noopener">${T("Book on {s} ↗",{s:/getyourguide/.test(p.book)?"GetYourGuide":/klook/.test(p.book)?"Klook":T("the site")})}</a>`:""}${p.also?`<p class="also">${T("also in:")} ${p.also.map(([l,qq])=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(qq)}" target="_blank" rel="noopener">${l}</a>`).join(" · ")}</p>`:""}
         ${typeof tripBtn==="function"?tripBtn(p):""}
       </div>
@@ -456,6 +457,12 @@ function renderList(){
     const first=pts.length;listMax+=PAGE;renderList();
     const el=$("list").querySelectorAll(".entry")[first];if(el){el.setAttribute("tabindex","-1");el.focus({preventScroll:true})}};
   $("list").querySelectorAll(".entry").forEach(el=>el.onclick=e=>{if(e.target.closest("a"))return;select(el.dataset.id,false)});
+  // Long descriptions show three lines and a "Read more" under them. The
+  // button is only added where the text really is cut off.
+  $("list").querySelectorAll(".note:not(.open)").forEach(n=>{
+    if(n.scrollHeight<=n.clientHeight+2)return;
+    n.insertAdjacentHTML("afterend",`<button type="button" class="more-note" aria-expanded="false" aria-controls="${n.id}">${T("Read more")}</button>`);
+    n.nextElementSibling.onclick=e=>{e.stopPropagation();openNotes.add(n.id.slice(2));n.classList.add("open");e.currentTarget.remove()}});
 }
 function select(id,fromMap){
   selected=selected===id?null:id;renderMap();renderList();
