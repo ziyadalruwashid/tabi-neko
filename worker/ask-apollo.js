@@ -25,7 +25,10 @@
 // days, who's going, interests, pace), Claude builds a day-by-day plan from
 // the notebook only, answering in a fixed JSON shape (structured outputs).
 // It uses the same system prompt and cached notebook as the chat, so a plan
-// reads the notebook from the cache like any question does.
+// reads the notebook from the cache like any question does. Planning is for
+// logged-in visitors only: the request carries their Firebase login token,
+// which is checked with Firebase before anything is sent to Claude, and each
+// account gets a few plans a day.
 
 const MODEL = "claude-opus-5-5";
 const DATA = "https://raw.githubusercontent.com/ziyadalruwashid/tabi-neko/main/data/";
@@ -134,7 +137,7 @@ export default {
     let body;
     try { body = JSON.parse((await request.text()).slice(0, 40000)); } catch { return fail(400, "bad json", h); }
     if (body && typeof body.resolve === "string") return resolveLink(body.resolve, h);
-    if (body && body.plan && typeof body.plan === "object") return planTrip(body.plan, env, h);
+    if (body && body.plan && typeof body.plan === "object") return planTrip(body.plan, body.idToken, env, h);
     const messages = cleanMessages(body);
     if (!messages) return fail(400, "bad messages", h);
 
@@ -202,7 +205,33 @@ function cleanPlan(p) {
   };
 }
 
-async function planTrip(raw, env, h) {
+// The site's Firebase project. Its web key is public by design; Firebase
+// itself says whether a login token is real and whose it is.
+const FIREBASE_KEY = "AIzaSyCDpZenpMYnCsck56GgBk3jyn-BHZUbiwE";
+const PLANS_PER_DAY = 10;
+async function whoIs(idToken) {
+  if (typeof idToken !== "string" || idToken.length < 100 || idToken.length > 4000) return null;
+  try {
+    const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_KEY}`, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ idToken }) });
+    if (!r.ok) return null;
+    const u = (await r.json()).users;
+    return u && u[0] && !u[0].disabled ? u[0].localId : null;
+  } catch { return null; }
+}
+// Best effort, like the per-visitor limit: each Cloudflare location counts alone.
+const plansBy = new Map();
+function planLimited(uid) {
+  const day = new Date().toISOString().slice(0, 10), k = uid + "|" + day, n = (plansBy.get(k) || 0) + 1;
+  if (plansBy.size > 5000) plansBy.clear();
+  plansBy.set(k, n);
+  return n > PLANS_PER_DAY;
+}
+
+async function planTrip(raw, idToken, env, h) {
+  const uid = await whoIs(idToken);
+  if (!uid) return fail(401, "log in", h);
+  if (planLimited(uid)) return fail(429, "plans today", h);
   let book;
   try { book = await loadNotebook(); } catch { return fail(502, "notebook", h); }
   const p = cleanPlan(raw);

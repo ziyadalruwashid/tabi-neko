@@ -207,7 +207,8 @@ function renderTrip(){
     <button type="button" class="store" data-home="0">${T("Share without it")}</button><button type="button" class="store" data-home="1">${T("Include it")}</button></div>`;
   if(!t.stays.length&&!ro){
     if(typeof openPlanner==="function")h+=`<button type="button" class="tmagic tplanb"><span class="tmagic-s" aria-hidden="true">✨</span><span><b>${T("Let Apollo plan it")}</b>
-      <small>${T("Tell him where and for how long. He builds every day from his notebook, halal food included, in seconds.")}</small></span><span class="tmagic-go" aria-hidden="true">→</span></button>`;
+      <small>${T("Tell him where and for how long. He builds every day from his notebook, halal food included, in seconds.")}</small>
+      ${typeof auth!=="undefined"&&FB_ON&&!auth?`<em class="tmagic-lock">🔒 ${T("Log in to use it. It's free.")}</em>`:""}</span><span class="tmagic-go" aria-hidden="true">→</span></button>`;
     h+=`<div class="tempty"><img src="assets/cat.png" alt=""><div>${cityChooser(T("Where are you headed first?"),T("Pick a city, tell Apollo where you're staying, then fill your days."))}</div></div>`;
   }
   if(t.ideas.length||(!ro&&n)){
