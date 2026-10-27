@@ -575,6 +575,10 @@ function show(target,quiet){
   const el=target&&document.getElementById(target);
   if(el)requestAnimationFrame(()=>el.scrollIntoView({behavior:"smooth",block:"start"}));else window.scrollTo(0,0);
 }
+// While the page scrolls, hover effects on cards pause (see the CSS), so
+// cards don't lift one after another as they slide under the pointer.
+(function(){let t;addEventListener("scroll",()=>{document.documentElement.classList.add("scrolling");clearTimeout(t);
+  t=setTimeout(()=>document.documentElement.classList.remove("scrolling"),150)},{passive:true})})();
 // Phone menu: the three-line button opens the nav; picking a page, tapping
 // outside or Escape closes it.
 const burger=$("burger"),mainnav=$("mainnav");

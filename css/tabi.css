@@ -251,7 +251,7 @@ svg.map{display:block;width:100%;height:auto;border:1px solid var(--rule)}
 .entry:first-child{padding-top:4px}
 @media (max-width:520px){.entry{grid-template-columns:110px minmax(0,1fr);gap:16px}}
 .pola{background:var(--sheet);padding:7px 7px 30px;box-shadow:0 1px 1px rgba(63,33,22,.08),0 8px 18px -10px rgba(63,33,22,.45);transform:rotate(var(--r));position:relative;align-self:start;transition:transform .25s}
-.entry:hover .pola,.entry.on .pola{transform:rotate(0deg) scale(1.03)}
+.entry.on .pola{transform:rotate(0deg) scale(1.03)}
 .pola .tape{width:56px;height:18px;top:-9px;left:calc(50% - 28px)}
 .pola .ph{aspect-ratio:1;max-width:100%;background:color-mix(in srgb,var(--c) 20%,var(--sheet));display:grid;place-items:center;overflow:hidden}
 .pola .ph img{width:90%;height:90%;object-fit:contain}
@@ -377,7 +377,7 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .crew{display:flex;flex-direction:column;gap:30px;min-width:0}
 .member{display:grid;grid-template-columns:150px minmax(0,1fr);gap:22px;align-items:start}
 .member .pola{transform:rotate(var(--r))}
-.member:hover .pola{transform:rotate(0deg) scale(1.03)}
+
 .member .ph{background:color-mix(in srgb,var(--c) 18%,var(--sheet))}
 /* Taking the art out of flow so a portrait cutout can't stretch the square.
    In flow, height:90% has nothing definite to resolve against and the image
@@ -407,7 +407,7 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .hcity[aria-selected="true"] small{color:rgba(255,255,255,.85)}
 .hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:34px 28px;padding-block:22px 10px}
 .hcard{perspective:1400px;transform:rotate(var(--r));transition:transform .25s}
-.hcard:hover{transform:rotate(0) translateY(-4px)}
+
 .hinner{display:grid;transition:transform .6s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d;cursor:pointer}
 .hcard.flipped .hinner{transform:rotateY(180deg)}
 .hface{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;
@@ -819,6 +819,15 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .pl-days small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
 .pl-use{background:var(--ink)!important;color:var(--paper)!important}
 .pl-use:hover{background:var(--lantern)!important;border-color:var(--lantern)!important}
+/* Cards that straighten or grow under the pointer. Only with a real mouse
+   (on a touch screen, the finger you scroll with counts as hovering, and the
+   card stays lifted), and not while the page is scrolling, so cards don't
+   jump one after another as they pass under a still pointer. app.js puts
+   the "scrolling" class on <html>. */
+@media (hover:hover) and (pointer:fine){
+  html:not(.scrolling) .entry:hover .pola,html:not(.scrolling) .member:hover .pola,html:not(.scrolling) .pics .pola:hover{transform:rotate(0deg) scale(1.03)}
+  html:not(.scrolling) .hcard:hover{transform:rotate(0) translateY(-4px)}
+}
 /* ---- album ----
    One page per memory, laid out as an open notebook: photos taped to the left
    sheet, words on the right, a soft fold between. The strip scroll-snaps so a
@@ -839,7 +848,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .pics.n1{grid-template-columns:minmax(0,380px);justify-content:center}
 .pics.n3 .pola:first-child{grid-column:span 2;width:62%;justify-self:center}
 .pics .pola{margin:0;transition:transform .25s}
-.pics .pola:hover{transform:rotate(0deg) scale(1.03)}
+
 .pics .pola .cap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px}
 .words{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:40px 40px 48px}
 .words h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,3.6vw,44px);line-height:1;margin:6px 0 14px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
