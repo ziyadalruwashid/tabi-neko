@@ -61,6 +61,7 @@ AR.ui={
  "✓ halal":"✓ حلال",
 "Show more":"شوف أكثر",
 "Read more":"كمّل القراءة",
+"Show less":"أقل",
 "Log in to use it. It's free.":"سجّل دخولك وجرّبها، ببلاش.",
 "Log in, or create a free account, and Apollo will plan your trip. Your plan is saved to your account too.":"سجّل دخولك أو سوّ حساب ببلاش، وأبولو يخطط رحلتك، وخطتك تنحفظ في حسابك بعد.",
 "That's all the plans for today 🐾 Come back tomorrow, or change this one by hand.":"خلصت خطط اليوم 🐾 ارجع بكرة، أو عدّل هذي الخطة بنفسك.",

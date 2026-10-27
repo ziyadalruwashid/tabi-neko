@@ -457,12 +457,18 @@ function renderList(){
     const first=pts.length;listMax+=PAGE;renderList();
     const el=$("list").querySelectorAll(".entry")[first];if(el){el.setAttribute("tabindex","-1");el.focus({preventScroll:true})}};
   $("list").querySelectorAll(".entry").forEach(el=>el.onclick=e=>{if(e.target.closest("a"))return;select(el.dataset.id,false)});
-  // Long descriptions show three lines and a "Read more" under them. The
-  // button is only added where the text really is cut off.
-  $("list").querySelectorAll(".note:not(.open)").forEach(n=>{
-    if(n.scrollHeight<=n.clientHeight+2)return;
-    n.insertAdjacentHTML("afterend",`<button type="button" class="more-note" aria-expanded="false" aria-controls="${n.id}">${T("Read more")}</button>`);
-    n.nextElementSibling.onclick=e=>{e.stopPropagation();openNotes.add(n.id.slice(2));n.classList.add("open");e.currentTarget.remove()}});
+  // Long descriptions show three lines and a "Read more" under them, which
+  // turns into "Show less" once open. The button is only added where the
+  // text is really cut off when folded (measured folded, then put back).
+  $("list").querySelectorAll(".note").forEach(n=>{
+    const was=n.classList.contains("open");n.classList.remove("open");
+    const long=n.scrollHeight>n.clientHeight+2;n.classList.toggle("open",was);
+    if(!long)return;
+    const label=o=>o?`${T("Show less")} <span aria-hidden="true">↑</span>`:`${T("Read more")} <span aria-hidden="true">↓</span>`;
+    n.insertAdjacentHTML("afterend",`<button type="button" class="more-note" aria-expanded="${was}" aria-controls="${n.id}">${label(was)}</button>`);
+    const btn=n.nextElementSibling;
+    btn.onclick=e=>{e.stopPropagation();const o=!n.classList.contains("open"),id=n.id.slice(2);
+      n.classList.toggle("open",o);o?openNotes.add(id):openNotes.delete(id);btn.innerHTML=label(o);btn.setAttribute("aria-expanded",o)}});
 }
 function select(id,fromMap){
   selected=selected===id?null:id;renderMap();renderList();
