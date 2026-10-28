@@ -163,6 +163,23 @@ function dayIdeas(ps,home,city,used){
   return out;
 }
 
+// One Google Maps link for the whole day: from where you're staying, through
+// every stop in order, and back. With no stay set it starts from wherever the
+// phone is. Places go in by name, the same search the cards use; the stay goes
+// in by coordinates, since an Airbnb has no name Google knows. Maps URLs take
+// at most 9 stops in between, so a longer day is cut there.
+const GMAX=9;
+function dayMapsUrl(ps,home,city){
+  if(!ps.length)return "";
+  const q=p=>`${p.n}, ${CITIES[city].n}, Japan`,at=h=>h.lat.toFixed(6)+","+h.lng.toFixed(6);
+  const u=new URLSearchParams({api:"1"});
+  let mid;
+  if(home){u.set("origin",at(home));u.set("destination",at(home));mid=ps}
+  else{u.set("destination",q(ps[ps.length-1]));mid=ps.slice(0,-1)}
+  if(mid.length)u.set("waypoints",mid.slice(0,GMAX).map(q).join("|"));
+  return "https://www.google.com/maps/dir/?"+u.toString();
+}
+
 // ---- the page ----
 const cityName=c=>D(CITIES[c],"n");
 function moveMenu(k,here){
@@ -258,6 +275,7 @@ function renderTrip(){
           ${stats?`<p class="tstats">${esc(isAR()?iso(stats):stats)}</p>`:""}
           ${routeDoodle(ps,home)}
           <ul class="tlist">${rows||`<li class="tnone">${T(ro?"Nothing planned for this day.":"Nothing here yet. Add places, or move ideas into this day.")}</li>`}</ul>
+          ${ps.length?`<a class="tgmaps" href="${esc(dayMapsUrl(ps,home,s.city))}" target="_blank" rel="noopener">🗺️ ${T(home?"Open this day in Google Maps, from your stay":"Open this day in Google Maps")} ↗</a>${ps.length>GMAX?`<p class="tgmaps-n">${T("Google Maps takes {n} stops at a time, so the link stops there.",{n:GMAX})}</p>`:""}`:""}
           ${ro?"":`<button type="button" class="tpickb" data-day="${ref}">＋ ${T("Add places")}</button>`}
           ${ideas.map(idea=>`<p class="tlunch">${idea.icon} ${T(idea.label)} <button type="button" class="tname" data-id="${idea.p.id}">${esc(idea.p.n)}</button> <span>${esc(T("{n} km",{n:idea.km.toFixed(1)}))}</span> <button type="button" class="tlunch-add" data-k="${esc(PKEY(idea.p))}" data-day="${ref}">＋ ${T("add")}</button></p>`).join("")}
         </article>`}).join("")+
