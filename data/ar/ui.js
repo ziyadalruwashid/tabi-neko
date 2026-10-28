@@ -504,7 +504,9 @@ AR.areas={
  "Nakano":"ناكانو",
  "Korakuen & Tokyo Dome":"كوراكوين وطوكيو دوم",
  "Uzumasa":"أوزوماسا",
- "Ohara":"أوهارا"
+ "Ohara":"أوهارا",
+ "Nipponbashi":"نيبونباشي",
+ "Tempozan":"تمبوزان"
 };
 AR.map={
  "Asakusa":"أساكوسا",
