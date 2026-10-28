@@ -147,7 +147,7 @@ function renderFilters(){
 // Osaka needs a wider cut than the rest: its outliers come in pairs (teamLab
 // Nagai sits beside Sumiyoshi in the south, USJ beside Kaiyukan in the west),
 // so a 3% quantile drops one of each pair and the survivor still sets the frame.
-const TRIM={osaka:.05};
+const TRIM={osaka:.05,nara:.17};
 function fitBox(list,W,H,min=.03,trim=0){
   if(!list.length)return BOX[city];
   const lat=list.map(p=>p.lat).sort((a,b)=>a-b),lo=list.map(p=>p.lng).sort((a,b)=>a-b);
