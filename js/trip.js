@@ -134,14 +134,33 @@ function routeDoodle(ps,home){
   </svg>`;
 }
 
-// The nearest halal food spot to a day's stops (or, on an empty day, to where
-// you're staying) that isn't already planned.
-function halalIdea(ps,home){
-  const c=ps.length?{lat:ps.reduce((s,p)=>s+p.lat,0)/ps.length,lng:ps.reduce((s,p)=>s+p.lng,0)/ps.length}:home;
-  if(!c)return null;
-  let best=null,bd=3;
-  P.forEach(p=>{if(!p.halal||p.cat!=="food"||inTrip(PKEY(p)))return;const d=KM(c,p);if(d<bd){bd=d;best=p}});
-  return best&&{p:best,km:bd};
+// Up to two tips for a day, picked from what the day is missing: halal food,
+// a coffee break, a change of pace after a run of temples, a mosque to pray
+// at, or a must-see close by. "Close" means close to the nearest stop (or to
+// where you're staying on an empty day), and must-sees count as a bit closer.
+function dayIdeas(ps,home,city,used){
+  const from=ps.length?ps:home?[home]:[];
+  if(!from.length)return [];
+  const near=p=>Math.min(...from.map(s=>KM(s,p)));
+  const taken=used||new Set(); // shared across the trip, so no tip repeats on two days
+  const pick=(ok,max=2.5)=>{let best=null,bs=max+1,bk=0;
+    P.forEach(p=>{if(p.city!==city||p.nomap||taken.has(p)||inTrip(PKEY(p))||!ok(p))return;
+      const d=near(p);if(d>max)return;const s=d-(p.tier==="must"?.6:0)-(p.photo?.1:0);if(s<bs){bs=s;best=p;bk=d}});
+    if(best)taken.add(best);return best&&{p:best,km:bk}};
+  const has=c=>ps.some(p=>p.cat===c),temples=ps.filter(p=>p.cat==="shrine").length,out=[];
+  const add=(icon,label,hit)=>{if(hit&&out.length<2)out.push({icon,label,...hit})};
+  const food=p=>p.cat==="food"&&p.halal;
+  if(!ps.length){
+    add("🌟","Start your day with:",pick(p=>p.cat!=="food"&&p.cat!=="coffee"&&(p.tier==="must"||"src" in p),3));
+    add("🍜","Halal food near your stay:",pick(food,3));
+    return out;
+  }
+  add("🕌","Mosque nearby for prayer:",pick(p=>/mosque|camii/i.test(p.n),3));
+  if(!has("food"))add("🍜",ps.length>1?"Halal lunch near your stops:":"Halal food near this day:",pick(food));
+  if(temples>=2&&!has("nature")&&!has("views"))add("🌿","Change of pace:",pick(p=>["nature","views","streets"].includes(p.cat)));
+  if(!has("coffee")&&ps.length>1)add("☕","Coffee break nearby:",pick(p=>p.cat==="coffee",1.5));
+  add("⭐","Don't miss nearby:",pick(p=>p.cat!=="food"&&p.cat!=="coffee"&&!has(p.cat)&&(p.tier==="must"||"src" in p),2));
+  return out;
 }
 
 // ---- the page ----
@@ -193,7 +212,7 @@ function homeCard(s,si,ro){
 let addingCity=false,shareAsk=false;
 function renderTrip(){
   const box=$("tripbook");if(!box)return;
-  const t=shared||trip,ro=!!shared,n=tripCount(t);
+  const t=shared||trip,ro=!!shared,n=tripCount(t),usedIdeas=new Set();
   let h="";
   if(shared)h+=`<div class="tshared"><p>${esc(T("Someone shared a trip with you:"))} <b>${esc(shared.name||T("My Japan trip"))}</b></p>
     <button type="button" class="store tsave">${T("Save it as my trip")}</button><button type="button" class="tcancel">${T("Close")}</button>
@@ -223,7 +242,7 @@ function renderTrip(){
       ${ro?"":`<button type="button" class="tdayx tstayx" data-s="${si}" aria-label="${esc(T("Remove {c} from the trip",{c:cityName(s.city)}))}">×</button>`}</header>
       ${homeCard(s,si,ro)}
       <div class="tdays">`+s.days.map((d,di)=>{
-        num++;const ref=si+"."+di,ps=d.ids.map(k=>BYKEY.get(k)),home=s.home,idea=ro?null:halalIdea(ps,home);
+        num++;const ref=si+"."+di,ps=d.ids.map(k=>BYKEY.get(k)),home=s.home,ideas=ro?[]:dayIdeas(ps,home,s.city,usedIdeas);
         let km=0;for(let i=1;i<ps.length;i++)km+=KM(ps[i-1],ps[i]);
         if(home&&ps.length)km+=KM(home,ps[0])+KM(ps[ps.length-1],home);
         const halal=ps.filter(p=>p.halal).length;
@@ -240,7 +259,7 @@ function renderTrip(){
           ${routeDoodle(ps,home)}
           <ul class="tlist">${rows||`<li class="tnone">${T(ro?"Nothing planned for this day.":"Nothing here yet. Add places, or move ideas into this day.")}</li>`}</ul>
           ${ro?"":`<button type="button" class="tpickb" data-day="${ref}">＋ ${T("Add places")}</button>`}
-          ${idea?`<p class="tlunch">🍜 ${T(ps.length?"Halal food near this day:":"Halal food near your stay:")} <button type="button" class="tname" data-id="${idea.p.id}">${esc(idea.p.n)}</button> <span>${esc(T("{n} km",{n:idea.km.toFixed(1)}))}</span> <button type="button" class="tlunch-add" data-k="${esc(PKEY(idea.p))}" data-day="${ref}">＋ ${T("add")}</button></p>`:""}
+          ${ideas.map(idea=>`<p class="tlunch">${idea.icon} ${T(idea.label)} <button type="button" class="tname" data-id="${idea.p.id}">${esc(idea.p.n)}</button> <span>${esc(T("{n} km",{n:idea.km.toFixed(1)}))}</span> <button type="button" class="tlunch-add" data-k="${esc(PKEY(idea.p))}" data-day="${ref}">＋ ${T("add")}</button></p>`).join("")}
         </article>`}).join("")+
       (ro||num>=30?"":`<button type="button" class="taddday" data-s="${si}">＋ ${T("Add a day in {c}",{c:cityName(s.city)})}</button>`)+`</div></section>`;
   });
