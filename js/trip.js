@@ -259,6 +259,7 @@ function renderTrip(){
           ${routeDoodle(ps,home)}
           <ul class="tlist">${rows||`<li class="tnone">${T(ro?"Nothing planned for this day.":"Nothing here yet. Add places, or move ideas into this day.")}</li>`}</ul>
           ${ro?"":`<button type="button" class="tpickb" data-day="${ref}">＋ ${T("Add places")}</button>`}
+          ${ro||!ps.length?"":`<button type="button" class="tshare" data-day="${ref}">📤 ${T("Share this day as a picture")}</button>`}
           ${ideas.map(idea=>`<p class="tlunch">${idea.icon} ${T(idea.label)} <button type="button" class="tname" data-id="${idea.p.id}">${esc(idea.p.n)}</button> <span>${esc(T("{n} km",{n:idea.km.toFixed(1)}))}</span> <button type="button" class="tlunch-add" data-k="${esc(PKEY(idea.p))}" data-day="${ref}">＋ ${T("add")}</button></p>`).join("")}
         </article>`}).join("")+
       (ro||num>=30?"":`<button type="button" class="taddday" data-s="${si}">＋ ${T("Add a day in {c}",{c:cityName(s.city)})}</button>`)+`</div></section>`;
@@ -304,6 +305,7 @@ function wireTrip(){
   q(".tmove").forEach(s=>s.onchange=()=>{if(!s.value)return;const k=s.dataset.k;removeKey(k);dayList(s.value).push(k);redo()});
   q(".tlunch-add").forEach(b=>b.onclick=()=>{const k=b.dataset.k;removeKey(k);dayList(b.dataset.day).push(k);redo()});
   q(".tpickb").forEach(b=>b.onclick=()=>openPicker(b.dataset.day));
+  q(".tshare").forEach(b=>b.onclick=()=>shareDay(b.dataset.day));
   // where you're staying
   q(".thome-add").forEach(b=>b.onclick=()=>{homeUI={si:+b.dataset.s,q:""};renderTrip();const f=box.querySelector(".thome-q");if(f)f.focus()});
   q(".thome-edit").forEach(b=>b.onclick=()=>{const si=+b.dataset.s;trip.stays[si].home=null;homeUI={si,q:""};saveTrip();renderTrip();renderMap();const f=box.querySelector(".thome-q");if(f)f.focus()});
