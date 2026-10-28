@@ -495,7 +495,14 @@ AR.areas={
  "Umeda":"أوميدا",
  "Universal City":"يونيفرسال سيتي",
  "Yawata":"ياواتا",
- "Yoyogi":"يويوغي"
+ "Yoyogi":"يويوغي",
+ "Toshimaen":"توشيماإن",
+ "Gotokuji":"غوتوكوجي",
+ "Kichijoji":"كيتشيجوجي",
+ "Ryogoku":"ريوغوكو",
+ "Tama":"تاما",
+ "Nakano":"ناكانو",
+ "Korakuen & Tokyo Dome":"كوراكوين وطوكيو دوم"
 };
 AR.map={
  "Asakusa":"أساكوسا",
