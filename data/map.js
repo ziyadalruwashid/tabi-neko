@@ -4,9 +4,10 @@ const CATS={
   coffee:{n:"Coffee",img:"assets/c-coffee.png"},
   shrine:{n:"Temples & shrines",img:"assets/c-shrine.png"},
   views:{n:"Views",img:"assets/c-views.png"},
+  nature:{n:"Parks & nature",img:"assets/c-nature.png"},
+  streets:{n:"Streets & old towns",img:"assets/c-streets.png"},
   shop:{n:"Shopping",img:"assets/c-shop.png"},
-  experience:{n:"Experiences",img:"assets/c-experience.png"},
-  gem:{n:"Hidden gems",img:"assets/c-gem.png"}
+  experience:{n:"Experiences",img:"assets/c-experience.png"}
 };
 const CITIES={
   tokyo:{n:"Tokyo",jp:"東京",nick:"old Edo"},

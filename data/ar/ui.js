@@ -26,6 +26,7 @@ AR.ui={
  "Halal food:":"أكل حلال:",
  "Halal only":"حلال بس",
  "Muslim-friendly":"مناسب للمسلمين",
+ "⭐ hidden gem":"⭐ كنز مخفي",
  "Next page":"الصفحة اللي بعدها",
  "No area by that name.":"ما فيه منطقة بهالاسم.",
  "No pages yet. Apollo is still sorting the photos.":"ما فيه صفحات للحين، أبولو لسا يرتّب الصور.",
@@ -410,9 +411,10 @@ AR.cats={
  "coffee":"قهوة",
  "shrine":"تمبلات وشراينات",
  "views":"إطلالات",
+ "nature":"حدائق وطبيعة",
+ "streets":"شوارع وأحياء قديمة",
  "shop":"تسوّق",
- "experience":"تجارب",
- "gem":"كنوز مخفية"
+ "experience":"تجارب"
 };
 AR.areas={
  "Akasaka":"أكاساكا",

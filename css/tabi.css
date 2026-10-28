@@ -15,7 +15,7 @@
   --paper:#FAF4E8; --sheet:#FFFDF7; --ink:#3F2116; --muted:#8C6F60; --rule:#E7D9C6; --tape:rgba(255,209,59,.55); --tape2:rgba(255,143,163,.5);
   --lantern:#F14E24; --shinkansen:#1D52A0; --mochi:#FF8FA3; --wasabi:#88B44A; --yuzu:#FFD13B;
   --land:#FFFBF2; --water:#D3E4F2; --park:#E1EDCB; --hill:#EBF0DC;
-  --food:#E8A800; --coffee:#9A6233; --experience:#7B5EA7; --shrine:var(--lantern); --views:var(--shinkansen); --shop:#E8607A; --gem:#6E9A33;
+  --food:#E8A800; --coffee:#9A6233; --experience:#7B5EA7; --shrine:var(--lantern); --views:var(--shinkansen); --shop:#E8607A; --gem:#6E9A33; --nature:#5E9A3E; --streets:#2E8C88;
   --display:"Bagel Fat One","Arial Rounded MT Bold",system-ui,sans-serif;
   --hand:"Gaegu","Comic Neue","Segoe Print",cursive;
   --body:"DM Sans","Segoe UI",system-ui,sans-serif;
@@ -277,6 +277,7 @@ svg.map{display:block;width:100%;height:auto;border:1px solid var(--rule)}
 .txt .no .dontskip{font-size:17px;margin-inline-start:10px;vertical-align:1px;letter-spacing:0}
 .meta .halal{color:#4F7A1E;font-weight:700}
 .meta .halal.mf{color:#8A7A2E}
+.meta .gemb{color:#B5800F;font-weight:700}
 .go{white-space:nowrap;display:inline-block;margin-top:2px;font-size:14px;font-weight:700;color:var(--shinkansen);text-decoration:none;border-bottom:1.5px solid currentColor}
 .go:hover{color:var(--lantern)}
 .go.book{margin-left:14px;color:var(--lantern)}
