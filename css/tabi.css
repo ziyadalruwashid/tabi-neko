@@ -1,15 +1,24 @@
-/* Fonts are served from assets/fonts, Latin letters only. Google's own
-   stylesheet for these families also lists every Japanese and Korean slice
-   (500+ @font-face rules, 400KB), and on a phone just reading that list froze
-   the first paint for about a second and a half. DM Sans is one variable
-   file for every weight. Japanese names use the system's Japanese font. */
+/* Fonts are served from assets/fonts (all SIL Open Font License, see
+   assets/fonts/LICENSE.md). Google's own stylesheets also list every Japanese
+   and Korean slice (500+ @font-face rules, 400KB), and on a phone just reading
+   that list froze the first paint for about a second and a half. Each face is
+   split by script with unicode-range, so a browser only downloads the Arabic
+   files when Arabic letters are on the page. Japanese names use the system's
+   Japanese font.
+   Bagel Fat One: English headings. Nunito: everything you read (one variable
+   file for every weight; sized down a little to match the old DM Sans width).
+   Patrick Hand: short handwritten notes only. Arabic: Baloo Bhaijaan 2 for
+   text, its 800 weight for headings, Marhey for the handwritten notes. */
 @font-face{font-family:"Bagel Fat One";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/bagel-fat-one-400-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
 @font-face{font-family:"Bagel Fat One";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/bagel-fat-one-400-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
-@font-face{font-family:"Gaegu";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/gaegu-400-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
-@font-face{font-family:"Gaegu";font-style:normal;font-weight:700;font-display:swap;src:url("../assets/fonts/gaegu-700-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
-@font-face{font-family:"DM Sans";font-style:normal;font-weight:400 700;font-display:swap;src:url("../assets/fonts/dm-sans-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
-@font-face{font-family:"DM Sans";font-style:normal;font-weight:400 700;font-display:swap;src:url("../assets/fonts/dm-sans-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
-/* Layout: a travel notebook — loose headline, scribbled city switcher, taped map on the left, journal entries with polaroids on the right. Few boxes. Light only. */
+@font-face{font-family:"Nunito";font-style:normal;font-weight:200 1000;font-display:swap;src:url("../assets/fonts/nunito-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;size-adjust:96%}
+@font-face{font-family:"Nunito";font-style:normal;font-weight:200 1000;font-display:swap;src:url("../assets/fonts/nunito-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;size-adjust:96%}
+@font-face{font-family:"Patrick Hand";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/patrick-hand-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:"Patrick Hand";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/patrick-hand-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Baloo Bhaijaan 2";font-style:normal;font-weight:400 800;font-display:swap;src:url("../assets/fonts/baloo-bhaijaan-2-arabic.woff2") format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200E}
+@font-face{font-family:"Baloo Display";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/baloo-bhaijaan-2-arabic-800.woff2") format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200E}
+@font-face{font-family:"Marhey";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/marhey-arabic-400.woff2") format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200E}
+@font-face{font-family:"Marhey";font-style:normal;font-weight:700;font-display:swap;src:url("../assets/fonts/marhey-arabic-700.woff2") format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200E}
 :root{
   color-scheme:light;
   --paper:#FAF4E8; --sheet:#FFFDF7; --ink:#3F2116; --muted:#8C6F60; --rule:#E7D9C6; --tape:rgba(255,209,59,.55); --tape2:rgba(255,143,163,.5);
@@ -17,8 +26,8 @@
   --land:#FFFBF2; --water:#D3E4F2; --park:#E1EDCB; --hill:#EBF0DC;
   --food:#E8A800; --coffee:#9A6233; --experience:#7B5EA7; --shrine:var(--lantern); --views:var(--shinkansen); --shop:#E8607A; --gem:#6E9A33; --nature:#5E9A3E; --streets:#2E8C88;
   --display:"Bagel Fat One","Arial Rounded MT Bold",system-ui,sans-serif;
-  --hand:"Gaegu","Comic Neue","Segoe Print",cursive;
-  --body:"DM Sans","Segoe UI",system-ui,sans-serif;
+  --hand:"Patrick Hand","Comic Neue","Segoe Print",cursive;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
   --jp:"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic UI","Meiryo",sans-serif;
 }
 *{box-sizing:border-box}
@@ -261,7 +270,7 @@ svg.map{display:block;width:100%;height:auto;border:1px solid var(--rule)}
 .pola .ph img{width:90%;height:90%;object-fit:contain}
 .pola .ph{position:relative}
 .pola .ph.photo img{width:100%;height:100%;object-fit:cover}
-.pola .cap{position:absolute;left:0;right:0;bottom:4px;text-align:center;font-family:var(--hand);font-size:16px;color:var(--muted)}
+.pola .cap{position:absolute;left:0;right:0;bottom:3px;padding:0 4px;line-height:1.05;text-align:center;font-family:var(--hand);font-size:16px;color:var(--muted)}
 .txt{min-width:0}
 .txt .no{font-family:var(--display);font-size:15px;color:var(--c);letter-spacing:.04em}
 .txt h3{font-family:var(--display);font-weight:400;font-size:clamp(24px,2.6vw,30px);line-height:1.05;margin:2px 0 4px;text-wrap:balance}
@@ -269,7 +278,7 @@ svg.map{display:block;width:100%;height:auto;border:1px solid var(--rule)}
 .meta{font-size:13.5px;color:var(--muted);margin:0 0 10px;display:flex;flex-wrap:wrap;gap:2px 10px}
 .meta .c{color:var(--ink);font-weight:700;display:inline-flex;align-items:center;gap:6px}
 .meta .c i{width:9px;height:9px;border-radius:50%;background:var(--c)}
-.note{font-family:var(--hand);font-size:22px;line-height:1.25;margin:0 0 10px;color:var(--ink)}
+.note{font-family:var(--body);font-size:16.5px;line-height:1.6;margin:0 0 10px;color:var(--ink)}
 /* Place descriptions: three lines, then "Read more". */
 .entry .note:not(.open){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
 /* In Apollo's handwriting and a soft brown, so it reads as part of the note
@@ -355,7 +364,7 @@ footer .links a:hover{color:var(--lantern)}
 .app h3{font-family:var(--display);font-weight:400;font-size:23px;line-height:1.1;margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
 .app h3 small{font-family:var(--body);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1.5px solid var(--rule);border-radius:4px;padding:1px 7px}
 .app p{margin:4px 0 0;font-size:15.5px}
-.app .tip{font-family:var(--hand);font-size:20px;line-height:1.25;margin-top:6px}
+.app .tip{font-family:var(--body);font-size:15.5px;line-height:1.55;margin-top:6px}
 .app a{font-size:14px;font-weight:700;color:var(--shinkansen);text-decoration:none;border-bottom:1.5px solid currentColor;display:inline-block;margin-top:6px}
 .app a:hover{color:var(--lantern)}
 .stores{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -380,7 +389,7 @@ footer .links a:hover{color:var(--lantern)}
 .trip p{margin:0 0 8px;font-size:15px;line-height:1.5}
 .trip p b{font-weight:700}
 .trip .hfood b{color:#4F7A1E}
-.trip .tip{font-family:var(--hand);font-size:20px;line-height:1.25;margin-top:4px}
+.trip .tip{font-family:var(--body);font-size:15.5px;line-height:1.55;margin-top:4px}
 .trip .stores{margin-top:12px}
 button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .trip a.store,.trip button.store{display:inline-flex;align-items:center;border:1.5px solid var(--ink);border-radius:8px;padding:5px 12px;font-size:13.5px;font-weight:700;color:var(--ink);background:var(--sheet);text-decoration:none;transition:background .15s,color .15s}
@@ -407,7 +416,7 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .member h3 small{font-family:var(--jp);font-weight:500;font-size:13px;color:var(--muted)}
 .member .role{font-family:var(--body);font-style:normal;font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--c);border:1.5px solid currentColor;border-radius:4px;padding:1px 7px}
 .member p{margin:6px 0 0;font-size:15.5px;line-height:1.5}
-.member .tip{font-family:var(--hand);font-size:20px;line-height:1.25;color:var(--muted);margin-top:6px}
+.member .tip{font-family:var(--body);font-size:15.5px;line-height:1.55;color:var(--muted);margin-top:6px}
 @media (max-width:520px){.member{grid-template-columns:110px minmax(0,1fr);gap:16px}.member .initial{font-size:34px}}
 /* ---- neighbourhood cards ----
    Trading cards: a coloured frame per city, photo, a vibe strip, five stat
@@ -448,10 +457,10 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .hhalal.none{color:var(--muted);font-weight:500}
 .hbest{margin:4px 8px 0;font-size:13.5px;color:var(--muted)}
 .hbest b{color:var(--ink)}
-.htip{margin:8px 8px 4px;font:400 20px/1.25 var(--hand);flex:1}
+.htip{margin:8px 8px 4px;font:400 15px/1.5 var(--body);flex:1}
 .hflip{appearance:none;cursor:pointer;align-self:flex-end;margin:6px 4px 0;border:0;background:none;font:700 13px var(--body);color:var(--c);padding:6px 8px;border-radius:8px}
 .hflip:hover{background:var(--paper)}
-.hstory{font:400 19px/1.4 var(--hand);margin:12px 0 10px;flex:1}
+.hstory{font:400 15px/1.6 var(--body);margin:12px 0 10px;flex:1}
 .hmh{margin:0 0 4px;font-weight:700;font-size:14px}
 .hmiss{margin:0 0 14px;padding-inline-start:18px;font-size:14.5px;line-height:1.6}
 .hgo{appearance:none;border:0;background:none;padding:0;cursor:pointer;font:inherit;color:var(--shinkansen);font-weight:700;text-decoration:underline;text-underline-offset:2px;text-align:start}
@@ -460,7 +469,6 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .harea:hover{background:var(--ink);color:var(--paper)}
 @media (max-width:640px){.hgrid{grid-template-columns:1fr;gap:28px}.hcard{max-width:420px;justify-self:center;width:100%}}
 @media (prefers-reduced-motion:reduce){.hinner{transition:none}}
-[dir=rtl] .htip,[dir=rtl] .hstory{font-size:17px}
 [dir=rtl] .hvibe{font-size:15.5px}
 /* ---- my trip ----
    The planner page: an ideas tray like a sticky-note strip, then each day as a
@@ -868,7 +876,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .words{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:40px 40px 48px}
 .words h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,3.6vw,44px);line-height:1;margin:6px 0 14px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
 .words h2 small{font-family:var(--jp);font-weight:500;font-size:15px;color:var(--muted)}
-.memo{font-family:var(--hand);font-size:23px;line-height:1.35;margin:0 0 16px}
+.memo{font-family:var(--body);font-size:17px;line-height:1.65;margin:0 0 16px}
 .words .store{margin-top:4px}
 .words .store:hover{background:var(--ink);color:var(--paper)}
 .actrl{display:flex;align-items:center;justify-content:center;gap:18px;padding-top:4px}
@@ -880,7 +888,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
   .spread{grid-template-columns:1fr;min-height:0;background-image:none}
   .pics{padding:30px 22px 10px;gap:20px 16px}
   .words{padding:16px 22px 30px;justify-content:flex-start}
-  .memo{font-size:21px}
+  .memo{font-size:17px}
 }
 @media (max-width:640px){.apage{padding:14px 4px 32px}.pics.n1{padding-inline:12%}}
 /* ---- Arabic ----
@@ -888,12 +896,13 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
    grid and text block on its own. What's left here is the handful of rules
    pinned to a physical left or right, plus type the Arabic faces need. */
 /* The Latin faces have no Arabic letters, so each Arabic letter falls through
-   to the next face in the stack. Only in Arabic: in English these would also
-   catch the odd accented letter Gaegu lacks, and change how lines wrap. */
+   to the next face in the stack, and English words inside Arabic text keep
+   the English face. Baloo Display is the 800 weight under its own name, so
+   Arabic headings come out heavy while Bagel stays at its only weight. */
 :root[dir=rtl]{
-  --display:"Bagel Fat One","Baloo Bhaijaan 2","Arial Rounded MT Bold",system-ui,sans-serif;
-  --hand:"Gaegu","Marhey","Comic Neue","Segoe Print",cursive;
-  --body:"DM Sans","IBM Plex Sans Arabic","Segoe UI",system-ui,sans-serif;
+  --display:"Bagel Fat One","Baloo Display","Arial Rounded MT Bold",system-ui,sans-serif;
+  --hand:"Patrick Hand","Marhey","Comic Neue","Segoe Print",cursive;
+  --body:"Nunito","Baloo Bhaijaan 2","Segoe UI",system-ui,sans-serif;
 }
 [dir=rtl] *{letter-spacing:0!important}
 [dir=rtl] .search .mag{left:auto;right:11px}
@@ -929,7 +938,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 [dir=rtl] .hero h1,[dir=rtl] .apphero h1{line-height:1.2}
 [dir=rtl] .hero h1 .small,[dir=rtl] .apphero h1 .small{line-height:1.4}
 [dir=rtl] .agroup h2,[dir=rtl] .words h2,[dir=rtl] .trip h3,[dir=rtl] .member h3,[dir=rtl] .app h3{line-height:1.35}
-/* Marhey, the Arabic hand font, runs about a seventh larger than Gaegu at
+/* Marhey, the Arabic hand font, runs about a seventh larger than the Latin hand at
    the same size, so every handwritten size steps down to match. */
 [dir=rtl] .search .lead{font-size:17.2px}
 [dir=rtl] .search input::placeholder{font-size:16.3px}
@@ -947,7 +956,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 [dir=rtl] .stn{font-size:12px}
 [dir=rtl] .wl{font-size:13.8px}
 [dir=rtl] .pola .cap{font-size:13.8px}
-[dir=rtl] .note{font-size:18.9px}
+[dir=rtl] .note{font-size:17px}
 [dir=rtl] .dontskip{font-size:16.3px}
 [dir=rtl] .empty{font-size:18.9px}
 [dir=rtl] .save .how{font-size:18.9px}
@@ -955,16 +964,16 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 [dir=rtl] .letter .sig{font-size:24.1px}
 [dir=rtl] footer .bye small{font-size:20.6px}
 [dir=rtl] .agroup .why{font-size:18.1px}
-[dir=rtl] .app .tip{font-size:17.2px}
+[dir=rtl] .app .tip{font-size:16px}
 [dir=rtl] .appnote{font-size:16.3px}
 [dir=rtl] .trip .best{font-size:18.1px}
 [dir=rtl] .facts dt{font-size:14.6px}
-[dir=rtl] .trip .tip{font-size:17.2px}
-[dir=rtl] .member .tip{font-size:17.2px}
-[dir=rtl] .memo{font-size:19.8px}
+[dir=rtl] .trip .tip{font-size:16px}
+[dir=rtl] .member .tip{font-size:16px}
+[dir=rtl] .memo{font-size:17.5px}
 [dir=rtl] .acount{font-size:18.9px}
 [dir=rtl] .nearmsg{font-size:15.5px}
-@media (max-width:640px){[dir=rtl] .note{font-size:15.9px} [dir=rtl] .pola .cap{font-size:12px} [dir=rtl] .hero p .turn{font-size:18.1px} [dir=rtl] .hero-side .note{font-size:16.3px} [dir=rtl] .memo{font-size:18.1px}}
+@media (max-width:640px){[dir=rtl] .note{font-size:16px} [dir=rtl] .pola .cap{font-size:12px} [dir=rtl] .hero p .turn{font-size:18.1px} [dir=rtl] .hero-side .note{font-size:16.3px} [dir=rtl] .memo{font-size:16.5px}}
 @media (max-width:640px){
   [dir=rtl] .filters{mask-image:linear-gradient(270deg,#000 88%,transparent)}
   [dir=rtl] .tomap{right:auto;left:14px}
@@ -1061,10 +1070,10 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
   .apanel{left:0;right:0;width:auto;max-width:none}
   .search{padding-block:8px 10px}
   .entry{grid-template-columns:96px minmax(0,1fr);gap:14px;padding-block:20px}
-  .pola{padding:5px 5px 22px}
+  .pola{padding:5px 5px 30px}
   .pola .cap{font-size:13px;bottom:2px}
   .txt h3{font-size:23px}
-  .note{font-size:18.5px}
+  .note{font-size:16px}
   .meta{font-size:12.5px}
   .tomap{display:flex;position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:50;align-items:center;gap:6px;background:var(--ink);color:var(--paper);border:0;border-radius:999px;padding:10px 16px;font:700 14px var(--body);box-shadow:0 8px 18px -6px rgba(63,33,22,.55);opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity .2s,transform .2s}
   .tomap.show{opacity:1;pointer-events:auto;transform:none}
