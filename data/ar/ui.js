@@ -513,7 +513,15 @@ AR.areas={
  "West Kamakura":"غرب كاماكورا",
  "Kita-Kamakura":"كيتا-كاماكورا",
  "Coast":"الساحل",
- "Enoshima":"إنوشيما"
+ "Enoshima":"إنوشيما",
+ "Waterfront":"الواجهة البحرية",
+ "Shin-Kobe":"شين-كوبي",
+ "Old Settlement":"الحي الأجنبي القديم",
+ "Nada & HAT Kobe":"نادا وHAT كوبي",
+ "Mountains (Rokko & Maya)":"الجبال (روكو ومايا)",
+ "Arima":"أريما",
+ "Port Island":"بورت آيلاند",
+ "West Kobe":"غرب كوبي"
 };
 AR.map={
  "Asakusa":"أساكوسا",
