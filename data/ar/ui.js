@@ -502,7 +502,9 @@ AR.areas={
  "Ryogoku":"ريوغوكو",
  "Tama":"تاما",
  "Nakano":"ناكانو",
- "Korakuen & Tokyo Dome":"كوراكوين وطوكيو دوم"
+ "Korakuen & Tokyo Dome":"كوراكوين وطوكيو دوم",
+ "Uzumasa":"أوزوماسا",
+ "Ohara":"أوهارا"
 };
 AR.map={
  "Asakusa":"أساكوسا",
