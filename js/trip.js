@@ -163,56 +163,6 @@ function dayIdeas(ps,home,city,used){
   return out;
 }
 
-// Saving a day's places into a Google Maps list. Google has no way for a
-// website to write into someone's lists, so this walks you through them one at
-// a time: open the place in Google Maps, tap Save there, come back, and the
-// next one is waiting. Coming back to the page is taken as "saved" (tap the
-// tick to undo). What's been saved is remembered on this device.
-const GS_KEY="tabineko-gsaved";
-let gsaved=new Set(),gs=null;
-try{gsaved=new Set(JSON.parse(store.get(GS_KEY)||"[]"))}catch(e){}
-const gsStore=()=>store.set(GS_KEY,JSON.stringify([...gsaved]));
-const placeMaps=p=>p.url||"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(`${p.n} ${CITIES[p.city].n} Japan`);
-function openGsave(ref){
-  gs={ref,pending:null,skip:new Set()};
-  let el=$("gsave");
-  if(!el){el=document.createElement("div");el.id="gsave";el.className="tpick";document.body.appendChild(el);
-    el.addEventListener("click",e=>{if(e.target===el)closeGsave()});
-    el.addEventListener("keydown",e=>{if(e.key==="Escape")closeGsave()})}
-  el.hidden=false;document.documentElement.classList.add("tpick-open");
-  renderGsave();el.querySelector(".tpick-x").focus();
-}
-function closeGsave(){const el=$("gsave");if(el)el.hidden=true;document.documentElement.classList.remove("tpick-open");gs=null;renderTrip()}
-function gsBack(){if(!gs||!gs.pending||document.hidden)return;gsaved.add(gs.pending);gs.pending=null;gsStore();renderGsave()}
-document.addEventListener("visibilitychange",gsBack);
-window.addEventListener("focus",gsBack);
-function renderGsave(){
-  const el=$("gsave"),[a,b]=gs.ref.split(".").map(Number),s=trip.stays[a];
-  const num=trip.stays.slice(0,a).reduce((n,x)=>n+x.days.length,0)+b+1;
-  const ps=s.days[b].ids.map(k=>BYKEY.get(k)).filter(Boolean),done=ps.filter(p=>gsaved.has(PKEY(p))).length;
-  const next=ps.find(p=>!gsaved.has(PKEY(p))&&!gs.skip.has(PKEY(p)))||ps.find(p=>!gsaved.has(PKEY(p)));
-  el.innerHTML=`<div class="tpick-sheet gsave" role="dialog" aria-modal="true" aria-labelledby="gsave-h">
-    <header><div><h2 id="gsave-h">${T("Save Day {n} to Google Maps",{n:num})}</h2>
-      <small>${esc(T("{d} of {n} saved",{d:done,n:ps.length}))}</small></div>
-      <button type="button" class="store tpick-x">${T("Done")}</button></header>
-    ${next?`<div class="gs-now">
-      <img src="${esc(next.photo||CATS[next.cat].img)}" alt="">
-      <div><b dir="auto">${esc(next.n)}</b><small>${esc(D(CATS[next.cat],"n"))} · ${esc(AREA(next.area))}</small></div>
-      <a class="gs-open" href="${esc(placeMaps(next))}" target="_blank" rel="noopener" data-k="${esc(PKEY(next))}">${T("Open in Google Maps")} ↗</a>
-      <p class="gs-how">${T("In Google Maps, tap <b>Save</b> and pick a list (for example \"Japan trip\"), then come back here. The next place will be waiting.")}</p>
-      <button type="button" class="gs-skip" data-k="${esc(PKEY(next))}">${T("Skip this one")}</button></div>`
-    :`<div class="gs-now gs-done"><b>${T("All saved ✓")}</b><p class="gs-how">${T("Your places are in Google Maps, under Saved → your list.")}</p></div>`}
-    <ul class="tpick-list">${ps.map(p=>{const k=PKEY(p),on=gsaved.has(k);
-      return `<li><button type="button" class="tprow${on?" on":""}" data-k="${esc(k)}" aria-pressed="${on}" style="--c:var(--${p.cat})" title="${esc(T(on?"Saved. Tap to undo":"Tap if you've saved it"))}">
-        <img src="${esc(p.photo||CATS[p.cat].img)}" alt="" loading="lazy">
-        <span class="tpinfo"><b dir="auto">${esc(p.n)}</b><small>${esc(D(CATS[p.cat],"n"))} · ${esc(AREA(p.area))}</small></span>
-        <span class="tpadd" aria-hidden="true">${on?"✓":""}</span></button></li>`}).join("")}</ul></div>`;
-  el.querySelector(".tpick-x").onclick=closeGsave;
-  const o=el.querySelector(".gs-open");if(o)o.onclick=()=>{gs.pending=o.dataset.k};
-  const sk=el.querySelector(".gs-skip");if(sk)sk.onclick=()=>{gs.skip.add(sk.dataset.k);renderGsave()};
-  el.querySelectorAll(".tprow").forEach(r=>r.onclick=()=>{const k=r.dataset.k;gsaved.has(k)?gsaved.delete(k):gsaved.add(k);gsStore();renderGsave()});
-}
-
 // ---- the page ----
 const cityName=c=>D(CITIES[c],"n");
 function moveMenu(k,here){
@@ -308,7 +258,6 @@ function renderTrip(){
           ${stats?`<p class="tstats">${esc(isAR()?iso(stats):stats)}</p>`:""}
           ${routeDoodle(ps,home)}
           <ul class="tlist">${rows||`<li class="tnone">${T(ro?"Nothing planned for this day.":"Nothing here yet. Add places, or move ideas into this day.")}</li>`}</ul>
-          ${ps.length?`<button type="button" class="tgmaps" data-day="${ref}">📍 ${T("Save this day to Google Maps")}${ps.every(p=>gsaved.has(PKEY(p)))?" ✓":""}</button>`:""}
           ${ro?"":`<button type="button" class="tpickb" data-day="${ref}">＋ ${T("Add places")}</button>`}
           ${ideas.map(idea=>`<p class="tlunch">${idea.icon} ${T(idea.label)} <button type="button" class="tname" data-id="${idea.p.id}">${esc(idea.p.n)}</button> <span>${esc(T("{n} km",{n:idea.km.toFixed(1)}))}</span> <button type="button" class="tlunch-add" data-k="${esc(PKEY(idea.p))}" data-day="${ref}">＋ ${T("add")}</button></p>`).join("")}
         </article>`}).join("")+
@@ -355,7 +304,6 @@ function wireTrip(){
   q(".tmove").forEach(s=>s.onchange=()=>{if(!s.value)return;const k=s.dataset.k;removeKey(k);dayList(s.value).push(k);redo()});
   q(".tlunch-add").forEach(b=>b.onclick=()=>{const k=b.dataset.k;removeKey(k);dayList(b.dataset.day).push(k);redo()});
   q(".tpickb").forEach(b=>b.onclick=()=>openPicker(b.dataset.day));
-  q(".tgmaps").forEach(b=>b.onclick=()=>openGsave(b.dataset.day));
   // where you're staying
   q(".thome-add").forEach(b=>b.onclick=()=>{homeUI={si:+b.dataset.s,q:""};renderTrip();const f=box.querySelector(".thome-q");if(f)f.focus()});
   q(".thome-edit").forEach(b=>b.onclick=()=>{const si=+b.dataset.s;trip.stays[si].home=null;homeUI={si,q:""};saveTrip();renderTrip();renderMap();const f=box.querySelector(".thome-q");if(f)f.focus()});

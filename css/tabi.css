@@ -627,19 +627,6 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .tpickb{appearance:none;cursor:pointer;display:block;width:100%;margin:10px 0 2px;font:700 14.5px var(--body);color:var(--lantern);
   background:none;border:1.5px dashed var(--lantern);border-radius:12px;padding:9px}
 .tpickb:hover{background:color-mix(in srgb,var(--lantern) 8%,var(--sheet));border-style:solid}
-.tgmaps{appearance:none;cursor:pointer;display:block;width:100%;text-align:center;margin:12px 0 2px;padding:9px 12px;border:0;border-radius:10px;background:var(--shinkansen);color:#fff;font:700 14.5px var(--body);transition:filter .15s}
-.tgmaps:hover{filter:brightness(1.12)}
-.gs-now{margin:0 18px 10px;padding:14px;background:var(--sheet);border:1.5px solid var(--rule);border-radius:14px;display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 12px;align-items:center}
-.gs-now img{width:64px;height:64px;border-radius:10px;object-fit:cover;grid-row:span 1}
-.gs-now b{display:block;font:700 17px var(--body)}
-.gs-now small{display:block;font-size:13px;color:var(--muted)}
-.gs-open{grid-column:1/-1;display:block;text-align:center;margin-top:8px;padding:11px 12px;border-radius:12px;background:var(--shinkansen);color:#fff;font:700 15.5px var(--body);text-decoration:none}
-.gs-open:hover{filter:brightness(1.12)}
-.gs-how{grid-column:1/-1;margin:6px 0 0;font:400 13.5px/1.5 var(--body);color:var(--muted)}
-.gs-now .gs-how b{display:inline;font:inherit;font-weight:800;color:var(--ink)}
-.gs-skip{grid-column:1/-1;justify-self:center;appearance:none;cursor:pointer;background:none;border:0;font:600 13px var(--body);color:var(--muted);text-decoration:underline}
-.gs-done{display:block;text-align:center}
-.gs-done b{font-size:19px;color:#4F7A1E}
 .taddday,.tnextb{appearance:none;cursor:pointer;font:700 15px var(--body);color:var(--muted);background:none;border:2px dashed var(--rule);border-radius:10px;transition:color .15s,border-color .15s}
 .taddday{min-height:120px;align-self:start;width:100%}
 .taddday:hover,.tnextb:hover{color:var(--ink);border-color:var(--ink)}
