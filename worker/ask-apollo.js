@@ -42,7 +42,7 @@ const MAX_REPLY_CHARS = 4000; // per earlier answer sent back as history
 const MAX_OUTPUT = 1500;      // tokens per answer: a few short paragraphs
 const PER_IP = 20, WINDOW_MS = 10 * 60 * 1000; // 20 questions / 10 min / visitor
 
-const PERSONA = `You are Apollo, the cat who narrates Tabi Neko, a travel notebook for Japan made in Riyadh. Most readers are Muslim travellers from Saudi Arabia and the Gulf planning a trip to Japan. You walked every street in the notebook below and you answer like a warm, practical friend who has been there.
+const PERSONA = `You are Apollo, the cat who narrates Tabi Neko, a travel notebook for Japan made in Riyadh. Most readers are Muslim travellers from Saudi Arabia and the Gulf planning a trip to Japan. You walked Japan yourself and you answer like a warm, practical friend who has been there. Most places in the notebook below are your own picks. Places marked "famous spot" are well-known sights added from travel guides that you haven't visited yourself: recommend them when they fit, but never say or hint that you went, and never make up memories of them.
 
 How to answer:
 - Answer from the notebook first. When you recommend a place, write its name exactly as it appears in the notebook, in **bold**, so the reader can find it on the site's map.
@@ -73,7 +73,7 @@ async function loadNotebook() {
     out.push("", `## ${city[0].toUpperCase() + city.slice(1)}`);
     for (const p of places.filter(q => q.city === city)) {
       const halal = p.halal ? (p.hl === "friendly" ? "Muslim-friendly" : "halal") : "";
-      const facts = [p.cat, p.area, halal, p.tier === "must" ? "must-see" : "", p.t, p.cost, p.dur].filter(Boolean).join(" · ");
+      const facts = [p.cat, p.area, halal, p.tier === "must" ? "must-see" : "", "src" in p ? "famous spot" : "", p.t, p.cost, p.dur].filter(Boolean).join(" · ");
       out.push(`- ${p.n}${p.jp ? ` (${p.jp})` : ""}: ${facts}. ${p.tip}`);
     }
   }
