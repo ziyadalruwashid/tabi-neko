@@ -220,7 +220,7 @@ function renderTrip(){
   if(!ro&&typeof acctBar==="function")h+=acctBar();
   h+=`<div class="ttop">
     <input class="tname-in" id="tripname" value="${esc(t.name)}" placeholder="${esc(T(ro?"My Japan trip":"Name your trip…"))}" maxlength="60"${ro?" readonly":""} aria-label="${esc(T("Trip name"))}">
-    ${ro||!(n||t.stays.length)?"":`<div class="tbtns">${typeof openPlanner==="function"?`<button type="button" class="store tplanb">✨ ${T("Plan with Apollo")}</button>`:""}<button type="button" class="store" id="tshare">${T("Share")} ↗</button>${typeof isShared==="function"&&isShared()&&tripOwner()!==me()?"":`<button type="button" class="tclear" id="tclear">${T("Start over")}</button>`}</div>`}
+    ${ro||!(n||t.stays.length)?"":`<div class="tbtns">${typeof openPlanner==="function"?`<button type="button" class="store tplanb">✨ ${T("Plan with Apollo")}</button>`:""}<button type="button" class="store" id="tshare">${T("Share")} ↗</button>${n?`<button type="button" class="store" id="tpdf">📘 ${T("Trip PDF")}</button>`:""}${typeof isShared==="function"&&isShared()&&tripOwner()!==me()?"":`<button type="button" class="tclear" id="tclear">${T("Start over")}</button>`}</div>`}
   </div>`;
   if(shareAsk&&!ro)h+=`<div class="tshareask"><p>${T("Include where you're staying? Anyone with the link will see it.")}</p>
     <button type="button" class="store" data-home="0">${T("Share without it")}</button><button type="button" class="store" data-home="1">${T("Include it")}</button></div>`;
@@ -259,7 +259,7 @@ function renderTrip(){
           ${routeDoodle(ps,home)}
           <ul class="tlist">${rows||`<li class="tnone">${T(ro?"Nothing planned for this day.":"Nothing here yet. Add places, or move ideas into this day.")}</li>`}</ul>
           ${ro?"":`<button type="button" class="tpickb" data-day="${ref}">＋ ${T("Add places")}</button>`}
-          ${ro||!ps.length?"":`<button type="button" class="tshare" data-day="${ref}">📤 ${T("Share this day as a picture")}</button>`}
+          ${ro||!ps.length?"":`<button type="button" class="tshare" data-day="${ref}">📄 ${T("Share this day as PDF")}</button>`}
           ${ideas.map(idea=>`<p class="tlunch">${idea.icon} ${T(idea.label)} <button type="button" class="tname" data-id="${idea.p.id}">${esc(idea.p.n)}</button> <span>${esc(T("{n} km",{n:idea.km.toFixed(1)}))}</span> <button type="button" class="tlunch-add" data-k="${esc(PKEY(idea.p))}" data-day="${ref}">＋ ${T("add")}</button></p>`).join("")}
         </article>`}).join("")+
       (ro||num>=30?"":`<button type="button" class="taddday" data-s="${si}">＋ ${T("Add a day in {c}",{c:cityName(s.city)})}</button>`)+`</div></section>`;
@@ -305,7 +305,8 @@ function wireTrip(){
   q(".tmove").forEach(s=>s.onchange=()=>{if(!s.value)return;const k=s.dataset.k;removeKey(k);dayList(s.value).push(k);redo()});
   q(".tlunch-add").forEach(b=>b.onclick=()=>{const k=b.dataset.k;removeKey(k);dayList(b.dataset.day).push(k);redo()});
   q(".tpickb").forEach(b=>b.onclick=()=>openPicker(b.dataset.day));
-  q(".tshare").forEach(b=>b.onclick=()=>shareDay(b.dataset.day));
+  q(".tshare").forEach(b=>b.onclick=()=>sharePdf([b.dataset.day]));
+  if($("tpdf"))$("tpdf").onclick=()=>sharePdf(null);
   // where you're staying
   q(".thome-add").forEach(b=>b.onclick=()=>{homeUI={si:+b.dataset.s,q:""};renderTrip();const f=box.querySelector(".thome-q");if(f)f.focus()});
   q(".thome-edit").forEach(b=>b.onclick=()=>{const si=+b.dataset.s;trip.stays[si].home=null;homeUI={si,q:""};saveTrip();renderTrip();renderMap();const f=box.querySelector(".thome-q");if(f)f.focus()});
