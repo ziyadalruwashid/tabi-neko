@@ -218,7 +218,11 @@ img{max-width:100%;display:block}
 .f[aria-pressed="false"] .fi{filter:grayscale(1);opacity:.5}
 .f[aria-pressed="true"]{text-decoration:underline wavy var(--c);text-underline-offset:6px;text-decoration-thickness:1.5px}
 .f[aria-pressed="false"]{color:var(--muted);opacity:.6}
-.halalf{margin-left:10px;padding-left:14px!important;border-left:1.5px dashed var(--rule)!important}
+.hsub{display:flex;flex-wrap:wrap;gap:8px;margin:-14px 0 24px;padding-left:12px;border-left:2px solid var(--food)}
+.hchip{appearance:none;font:inherit;font-size:14px;cursor:pointer;border:1.5px solid var(--rule);background:var(--sheet);color:var(--ink);border-radius:999px;padding:5px 12px}
+.hchip small{color:var(--muted);font-size:12px;margin-left:2px}
+.hchip[aria-pressed="true"]{border-color:#4F7A1E;background:#4F7A1E;color:#fff}
+.hchip[aria-pressed="true"] small{color:#e6efd9}
 .f[aria-pressed="false"] i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--c)}
 
 /* main */
@@ -906,7 +910,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 [dir=rtl] .asbox input{padding:5px 30px 6px 9px}
 [dir=rtl] .ao{text-align:right}
 [dir=rtl] .filters .lead{margin-right:0;margin-left:2px}
-[dir=rtl] .halalf{margin-left:0;margin-right:10px;padding-left:12px!important;padding-right:14px!important;border-left:0!important;border-right:1.5px dashed var(--rule)!important}
+[dir=rtl] .hsub{padding-left:0;padding-right:12px;border-left:0;border-right:2px solid var(--food)}
 [dir=rtl] .txt h3 small{margin:0 6px}
 [dir=rtl] .go.book{margin-left:0;margin-right:14px}
 [dir=rtl] .dontskip{margin-left:0;margin-right:4px;transform:rotate(3deg)}
