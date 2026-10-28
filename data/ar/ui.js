@@ -506,7 +506,8 @@ AR.areas={
  "Uzumasa":"أوزوماسا",
  "Ohara":"أوهارا",
  "Nipponbashi":"نيبونباشي",
- "Tempozan":"تمبوزان"
+ "Tempozan":"تمبوزان",
+ "Nishinokyo":"نيشينوكيو"
 };
 AR.map={
  "Asakusa":"أساكوسا",
