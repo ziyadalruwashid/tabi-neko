@@ -48,7 +48,10 @@ function attachAR(){
   for(const k in CITIES)CITIES[k]._ar=AR.cities[k];for(const k in CATS)CATS[k]._ar={n:AR.cats[k]};
 }
 if(AR_ON())attachAR();
-const visible=p=>active.has(p.cat)&&(!area||p.area===area)&&(!halalOnly||p.halal);
+// halalOnly is false, "halal" (certified or fully halal) or "any" (halal or
+// Muslim-friendly). It only applies while Food is the one category shown.
+const halalOk=p=>!halalOnly||(halalOnly==="halal"?p.halal&&p.hl!=="friendly":!!p.halal);
+const visible=p=>active.has(p.cat)&&(!area||p.area===area)&&halalOk(p);
 const SCRIB="M14 34 C 10 12, 70 4, 120 8 C 170 12, 196 26, 186 46 C 176 64, 90 68, 40 60 C 6 54, 4 30, 30 18 C 44 12, 60 10, 78 9";
 const UNDER="M2 6 C 30 2, 60 9, 90 4 S 140 7, 160 3";
 
@@ -131,15 +134,25 @@ function renderAreas(){
 // Each category wears its own sticker, tilted a different way so the row reads
 // as things stuck onto the page rather than a toolbar. The art is cut out of the
 // same sheets a photo-less place falls back to, so the row matches the cards.
-// "Halal only" keeps the plain dot — it is not a category and has no sticker.
 const TILT=[-5,4,-3,5.5,-4.5,3,-2.5];
 function renderFilters(){
-  $("filters").innerHTML=`<span class="lead">${T("show me:")}</span>`+Object.entries(CATS).map(([k,c],i)=>`<button class="f" id="f-${k}" data-k="${k}" aria-pressed="${active.has(k)}" style="--c:var(--${k});--r:${TILT[i%TILT.length]}deg"><img class="fi" src="assets/icons/${k}.png" alt="" width="26" height="26">${D(c,"n")}</button>`).join("")+(P.some(p=>p.city===city&&p.halal)?`<button class="f halalf" id="f-halal" aria-pressed="${halalOnly}" style="--c:#4F7A1E"><i></i>${T("Halal only")}</button>`:"");
-  const hb=$("f-halal");if(hb)hb.onclick=()=>{halalOnly=!halalOnly;zoomTo=null;selected=null;renderFilters();renderMap();renderList()};
+  $("filters").innerHTML=`<span class="lead">${T("show me:")}</span>`+Object.entries(CATS).map(([k,c],i)=>`<button class="f" id="f-${k}" data-k="${k}" aria-pressed="${active.has(k)}" style="--c:var(--${k});--r:${TILT[i%TILT.length]}deg"><img class="fi" src="assets/icons/${k}.png" alt="" width="26" height="26">${D(c,"n")}</button>`).join("");
+  renderHalal();
   $("filters").querySelectorAll(".f[data-k]").forEach(b=>b.onclick=()=>{const k=b.dataset.k,all=Object.keys(CATS);
     if(active.has(k)&&active.size===all.length)active=new Set([k]);
     else if(active.has(k)){active.delete(k);if(!active.size)active=new Set(all)}
     else active.add(k);zoomTo=null;renderFilters();renderMap();renderList()});
+}
+// Halal sits under Food: tap Food on its own and the halal choices appear
+// underneath. Showing any other category drops the halal filter again.
+function renderHalal(){
+  const el=$("hsub"),here=P.filter(p=>p.city===city&&p.cat==="food"&&p.halal&&(!area||p.area===area));
+  if(!(active.size===1&&active.has("food"))||!here.length){halalOnly=false;el.hidden=true;el.innerHTML="";return}
+  const strict=here.filter(p=>p.hl!=="friendly").length;
+  const opts=[[false,T("All food")],["halal",T("✓ Halal")+` <small>${strict}</small>`],["any",T("Halal & Muslim-friendly")+` <small>${here.length}</small>`]];
+  el.hidden=false;
+  el.innerHTML=opts.map(([v,l])=>`<button type="button" class="hchip" data-v="${v||""}" aria-pressed="${halalOnly===v}">${l}</button>`).join("");
+  el.querySelectorAll(".hchip").forEach(b=>b.onclick=()=>{halalOnly=b.dataset.v||false;zoomTo=null;selected=null;renderHalal();renderMap();renderList()});
 }
 // trim ignores that fraction of places at each edge, so a handful of far-out
 // spots (Disney, USJ) stop shrinking the centre where almost everything is.
