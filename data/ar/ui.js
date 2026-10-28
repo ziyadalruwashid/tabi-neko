@@ -507,7 +507,13 @@ AR.areas={
  "Ohara":"أوهارا",
  "Nipponbashi":"نيبونباشي",
  "Tempozan":"تمبوزان",
- "Nishinokyo":"نيشينوكيو"
+ "Nishinokyo":"نيشينوكيو",
+ "Central Kamakura":"وسط كاماكورا",
+ "East Kamakura":"شرق كاماكورا",
+ "West Kamakura":"غرب كاماكورا",
+ "Kita-Kamakura":"كيتا-كاماكورا",
+ "Coast":"الساحل",
+ "Enoshima":"إنوشيما"
 };
 AR.map={
  "Asakusa":"أساكوسا",
