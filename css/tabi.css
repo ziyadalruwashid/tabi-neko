@@ -627,6 +627,9 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .tpickb{appearance:none;cursor:pointer;display:block;width:100%;margin:10px 0 2px;font:700 14.5px var(--body);color:var(--lantern);
   background:none;border:1.5px dashed var(--lantern);border-radius:12px;padding:9px}
 .tpickb:hover{background:color-mix(in srgb,var(--lantern) 8%,var(--sheet));border-style:solid}
+.tgmaps{display:block;text-align:center;margin:12px 0 2px;padding:9px 12px;border-radius:10px;background:var(--shinkansen);color:#fff;font:700 14.5px var(--body);text-decoration:none;transition:filter .15s}
+.tgmaps:hover{filter:brightness(1.12)}
+.tgmaps-n{margin:6px 2px 0;font:400 13px var(--body);color:var(--muted);text-align:center}
 .taddday,.tnextb{appearance:none;cursor:pointer;font:700 15px var(--body);color:var(--muted);background:none;border:2px dashed var(--rule);border-radius:10px;transition:color .15s,border-color .15s}
 .taddday{min-height:120px;align-self:start;width:100%}
 .taddday:hover,.tnextb:hover{color:var(--ink);border-color:var(--ink)}
