@@ -48,10 +48,9 @@ function attachAR(){
   for(const k in CITIES)CITIES[k]._ar=AR.cities[k];for(const k in CATS)CATS[k]._ar={n:AR.cats[k]};
 }
 if(AR_ON())attachAR();
-// halalOnly is false, "halal" (certified or fully halal) or "any" (halal or
-// Muslim-friendly). It only applies while Food is the one category shown.
-const halalOk=p=>!halalOnly||(halalOnly==="halal"?p.halal&&p.hl!=="friendly":!!p.halal);
-const visible=p=>active.has(p.cat)&&(!area||p.area===area)&&halalOk(p);
+// halalOnly shows halal and Muslim-friendly places together. It only applies
+// while Food is the one category shown.
+const visible=p=>active.has(p.cat)&&(!area||p.area===area)&&(!halalOnly||p.halal);
 const SCRIB="M14 34 C 10 12, 70 4, 120 8 C 170 12, 196 26, 186 46 C 176 64, 90 68, 40 60 C 6 54, 4 30, 30 18 C 44 12, 60 10, 78 9";
 const UNDER="M2 6 C 30 2, 60 9, 90 4 S 140 7, 160 3";
 
@@ -148,11 +147,10 @@ function renderFilters(){
 function renderHalal(){
   const el=$("hsub"),here=P.filter(p=>p.city===city&&p.cat==="food"&&p.halal&&(!area||p.area===area));
   if(!(active.size===1&&active.has("food"))||!here.length){halalOnly=false;el.hidden=true;el.innerHTML="";return}
-  const strict=here.filter(p=>p.hl!=="friendly").length;
-  const opts=[[false,T("All food")],["halal",T("✓ Halal")+` <small>${strict}</small>`],["any",T("Halal & Muslim-friendly")+` <small>${here.length}</small>`]];
+  const opts=[[false,T("All food")],[true,T("✓ Halal & Muslim-friendly")+` <small>${here.length}</small>`]];
   el.hidden=false;
-  el.innerHTML=opts.map(([v,l])=>`<button type="button" class="hchip" data-v="${v||""}" aria-pressed="${halalOnly===v}">${l}</button>`).join("");
-  el.querySelectorAll(".hchip").forEach(b=>b.onclick=()=>{halalOnly=b.dataset.v||false;zoomTo=null;selected=null;renderHalal();renderMap();renderList()});
+  el.innerHTML=opts.map(([v,l])=>`<button type="button" class="hchip" data-v="${v?1:""}" aria-pressed="${halalOnly===v}">${l}</button>`).join("");
+  el.querySelectorAll(".hchip").forEach(b=>b.onclick=()=>{halalOnly=!!b.dataset.v;zoomTo=null;selected=null;renderHalal();renderMap();renderList()});
 }
 // trim ignores that fraction of places at each edge, so a handful of far-out
 // spots (Disney, USJ) stop shrinking the centre where almost everything is.
