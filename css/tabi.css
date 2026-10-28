@@ -538,6 +538,7 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .tmove{max-width:92px;font:500 12.5px var(--body);color:var(--ink);background:var(--sheet);border:1.5px solid var(--rule);border-radius:8px;padding:4px 2px;cursor:pointer}
 .tleg{font:400 16px var(--hand);color:var(--muted);padding:1px 0 1px 46px}
 .tnone{font:400 18px var(--hand);color:var(--muted);padding:10px 6px}
+.tlunch+.tlunch{margin-top:6px}
 .tlunch{margin:12px 0 4px;padding:10px 12px;background:color-mix(in srgb,var(--wasabi) 14%,var(--sheet));border-radius:10px;font-size:14px;line-height:1.5}
 .tlunch .tname{display:inline;white-space:normal;color:#4F7A1E}
 .tlunch span{color:var(--muted)}
