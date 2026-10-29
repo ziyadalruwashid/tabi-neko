@@ -166,7 +166,10 @@ img{max-width:100%;display:block}
 .stub b{display:block;font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:.02em;color:var(--ink);text-transform:none}
 
 /* cities */
-.cities{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;align-items:center;gap:4px 14px;padding-block:18px 8px;border-top:1.5px dashed var(--rule)}
+/* The row scrolls sideways, so it clips anything outside it, and the circle
+   drawn round the chosen city reaches 14px past the button. The padding gives
+   the circle room; the matching negative margin keeps the names in line. */
+.cities{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;align-items:center;gap:4px 14px;padding:18px 20px 8px;margin-inline:-20px;border-top:1.5px dashed var(--rule)}
 .cityb{appearance:none;background:none;border:0;cursor:pointer;color:var(--ink);font:inherit;position:relative;padding:8px 14px;text-align:left;flex:0 0 auto}
 .cityb b{font-family:var(--display);font-weight:400;font-size:clamp(24px,2.8vw,34px);line-height:1;display:block;transition:color .2s}
 .cityb small{font-family:var(--jp);font-weight:500;font-size:13px;color:var(--muted)}
