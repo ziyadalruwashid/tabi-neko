@@ -29,6 +29,15 @@
 // logged-in visitors only: the request carries their Firebase login token,
 // which is checked with Firebase before anything is sent to Claude, and each
 // account gets a few plans a day.
+//
+// And one job for the site's owner only: Apollo Scout's "✓ Add". Sent
+// {scoutAdd: id} from the admin dashboard, it checks the login is the
+// owner's, has Claude research the place on the web and write its card in
+// English and Arabic, and commits it straight to the repo, so Vercel puts it
+// live a minute later. This needs two more settings (step 3 above):
+//   GITHUB_TOKEN   Secret: a fine-grained GitHub token for this one repo
+//                  with Contents: Read and write.
+//   GITHUB_REPO    Plain text, optional: owner/name if not the default.
 
 const MODEL = "claude-opus-5-5";
 const DATA = "https://raw.githubusercontent.com/ziyadalruwashid/tabi-neko/main/data/";
@@ -138,6 +147,7 @@ export default {
     try { body = JSON.parse((await request.text()).slice(0, 40000)); } catch { return fail(400, "bad json", h); }
     if (body && typeof body.resolve === "string") return resolveLink(body.resolve, h);
     if (body && body.plan && typeof body.plan === "object") return planTrip(body.plan, body.idToken, env, h);
+    if (body && typeof body.scoutAdd === "string") return scoutAdd(body.scoutAdd, body.idToken, env, h);
     const messages = cleanMessages(body);
     if (!messages) return fail(400, "bad messages", h);
 
@@ -303,6 +313,137 @@ async function planTrip(raw, idToken, env, h) {
   let plan;
   try { plan = JSON.parse(text); } catch { return fail(502, "bad answer", h); }
   return new Response(JSON.stringify({ plan }), { headers: { ...h, "Content-Type": "application/json" } });
+}
+
+// ---- Apollo Scout: add a suggestion the owner approved ----
+// The suggestion is read from the repo's own data/scout.json by id, never
+// taken from the request, so only places the scout found can be added.
+const ADMIN_UID = "ngmNqVpxwkbL3SHdXJpmHkAoUO22";
+const ADDS_PER_DAY = 30;
+const GH = "https://api.github.com/repos/";
+const CAT_KEYS = ["food", "coffee", "shrine", "views", "nature", "streets", "shop", "experience"];
+const CITY_NAME = { tokyo: "Tokyo", kyoto: "Kyoto", osaka: "Osaka", nara: "Nara", kobe: "Kobe", kamakura: "Kamakura", ise: "Ise" };
+const STYLE = `How to write a Tabi Neko card.
+English (fields t, cost, dur, cap, tip):
+- t: when to go or opening hours, short ("10am–6pm, closed Mon"). cost: rough price, starting with ~ when it moves ("~¥500", "free"). dur: time to spend ("45m", "1–1.5h").
+- cap: a tiny lowercase caption for the photo, 2–5 words ("the ghost candy shop").
+- tip: 2–4 plain sentences, as Apollo, a friendly travelling cat. The first sentence says why it's worth going. Then the useful details: where it is, how to get there, what to order or do, queues and booking. Say plainly if there's pork or alcohol, or if halal is only partial. No marketing words.
+Arabic (fields ar_t, ar_cost, ar_dur, ar_cap, ar_tip), the same facts in the owner's own voice:
+- White Saudi dialect, like a friend advising a friend. Use naturally: روح، جرّب، احجز، لا تفوّتها، يستاهل، الحين، عشان، شوي، مرة، بعد، جنب، قدام، ببلاش. One or two dialect words per sentence, the rest simple Arabic.
+- Never formal: no يُعدّ، يُنصح، تجدر الإشارة، and no passive voice.
+- A temple is تمبل (plural تمبلات) and a shrine is شراين (plural شراينات).
+- Keep place, brand and station names in Latin letters. English digits always (10 الصبح–6 المغرب، ~¥500، 45 دقيقة).
+- Don't add or drop any fact compared with the English.`;
+
+const addsBy = new Map();
+function addLimited() {
+  const day = new Date().toISOString().slice(0, 10), n = (addsBy.get(day) || 0) + 1;
+  addsBy.clear(); addsBy.set(day, n);
+  return n > ADDS_PER_DAY;
+}
+const ghHead = env => ({ "Authorization": "Bearer " + env.GITHUB_TOKEN, "Accept": "application/vnd.github+json", "User-Agent": "tabi-neko-worker", "X-GitHub-Api-Version": "2022-11-28" });
+async function gh(env, path, opts = {}) {
+  const r = await fetch(GH + (env.GITHUB_REPO || "ziyadalruwashid/tabi-neko") + path, { ...opts, headers: { ...ghHead(env), ...(opts.headers || {}) } });
+  if (!r.ok) throw new Error("github " + r.status + " " + path);
+  return opts.raw ? r.text() : r.json();
+}
+const ghFile = (env, path, ref) => gh(env, `/contents/${path}?ref=${ref}`, { raw: true, headers: { Accept: "application/vnd.github.raw+json" } });
+
+async function claude(env, body) {
+  const r = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2026-10-21", "anthropic-beta": "server-side-fallback-2026-07-01" },
+    body: JSON.stringify({ model: MODEL, fallbacks: "default", ...body }),
+  });
+  if (!r.ok) throw new Error("claude " + r.status);
+  return r.json();
+}
+
+async function scoutAdd(id, idToken, env, h) {
+  if ((await whoIs(idToken)) !== ADMIN_UID) return fail(401, "owner only", h);
+  if (!env.GITHUB_TOKEN) return fail(500, "GITHUB_TOKEN not set", h);
+  if (!/^[a-z0-9-]{2,80}$/.test(id)) return fail(400, "bad id", h);
+  if (addLimited()) return fail(429, "adds today", h);
+  try {
+    const sha = (await gh(env, "/git/ref/heads/main")).object.sha;
+    const [placesJs, contentJs, scoutTxt] = await Promise.all(["data/places.js", "data/ar/content.js", "data/scout.json"].map(p => ghFile(env, p, sha)));
+    const scout = JSON.parse(scoutTxt), item = (scout.pending || []).find(i => i.id === id);
+    if (!item) return fail(404, (scout.done || []).includes(id) ? "already added" : "not in the scout list", h);
+    if (!CITY_NAME[item.city]) return fail(400, "unknown city", h);
+    if (placesJs.includes(`"city":"${item.city}","n":${JSON.stringify(item.n)},`)) return fail(409, "already in the notebook", h);
+    const areas = [...new Set([...placesJs.matchAll(new RegExp(`"city":"${item.city}"[^\\n]*?"area":"([^"]+)"`, "g"))].map(m => m[1]))];
+
+    // 1. Research: web search, plain notes back.
+    const ask = `Research this place in ${CITY_NAME[item.city]}, Japan for a travel notebook, using web search. Today is ${new Date().toISOString().slice(0, 10)}.
+Place: ${item.n} (area: ${item.area}). Why it was suggested: ${item.why}
+Leads: ${(item.sources || []).join(" ")}
+Find and report as short notes: is it open now (any closure or moved?), the Japanese name, the address and nearest station, latitude and longitude to 4 decimals, opening hours and closed days, prices, how long a visit takes, what it's like and what to do or order, and halal facts (certified? pork or alcohol on the menu?). Say which facts you couldn't confirm. Prefer sources from the last year.`;
+    let messages = [{ role: "user", content: ask }], msg;
+    for (let i = 0; i < 4; i++) {
+      msg = await claude(env, { max_tokens: 16000, output_config: { effort: "medium" }, tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 6 }], messages });
+      if (msg.stop_reason !== "pause_turn") break;
+      messages = [{ role: "user", content: ask }, { role: "assistant", content: msg.content }];
+    }
+    if (msg.stop_reason === "refusal") return fail(422, "refusal", h);
+    const notes = (msg.content || []).filter(b => b.type === "text").map(b => b.text).join("\n").slice(0, 20000);
+
+    // 2. Write the card, in a fixed shape.
+    const str = { type: "string" };
+    const schema = { type: "object", additionalProperties: false,
+      required: ["ok", "problem", "jp", "cat", "tier", "area", "lat", "lng", "halal", "hl", "t", "cost", "dur", "cap", "tip", "ar_t", "ar_cost", "ar_dur", "ar_cap", "ar_tip"],
+      properties: { ok: { type: "boolean" }, problem: str, jp: str, cat: { type: "string", enum: CAT_KEYS }, tier: { type: "string", enum: ["worth", "time"] },
+        area: { type: "string", enum: areas.length ? areas : [item.area] }, lat: { type: "number" }, lng: { type: "number" },
+        halal: { type: "boolean" }, hl: { type: "string", enum: ["none", "certified", "halal", "friendly"] },
+        t: str, cost: str, dur: str, cap: str, tip: str, ar_t: str, ar_cost: str, ar_dur: str, ar_cap: str, ar_tip: str } };
+    const write = `${STYLE}
+
+Write the card for "${item.n}" (${CITY_NAME[item.city]}) from these research notes.
+- ok: false if the notes show it has closed, moved out of the city, or can't be confirmed to exist; then explain in problem. Otherwise ok true and problem "".
+- area: the closest of the city's existing areas. tier: "worth" for a strong pick, "time" if it's a nice extra.
+- halal: true only if the notes show halal certification, a fully halal menu, or a dedicated halal option. hl: "certified" or "halal" for fully halal places, "friendly" when only part of the menu is halal, "none" otherwise.
+- lat/lng: from the notes. If unsure, use the nearest station's coordinates.
+
+Research notes:
+${notes}`;
+    const card = await claude(env, { max_tokens: 8000, output_config: { effort: "medium", format: { type: "json_schema", schema } }, messages: [{ role: "user", content: write }] });
+    if (card.stop_reason === "refusal") return fail(422, "refusal", h);
+    let c;
+    try { c = JSON.parse((card.content || []).filter(b => b.type === "text").map(b => b.text).join("")); } catch { return fail(502, "bad card", h); }
+    if (!c.ok) return fail(422, "not added: " + (c.problem || "couldn't confirm it"), h);
+    if (!(c.lat > 24 && c.lat < 46 && c.lng > 122 && c.lng < 146)) return fail(422, "bad coordinates", h);
+
+    // 3. Commit: the card, its Arabic, and the scout list, in one commit.
+    const place = { city: item.city, n: item.n, jp: c.jp, cat: c.cat, tier: c.tier, area: c.area, lat: Math.round(c.lat * 1e4) / 1e4, lng: Math.round(c.lng * 1e4) / 1e4,
+      t: c.t, cost: c.cost, dur: c.dur, cap: c.cap, tip: c.tip };
+    if (c.halal && c.hl !== "none") { place.halal = true; place.hl = c.hl; }
+    if (item.kind === "weird") place.gem = true;
+    place.src = "";
+    const end = placesJs.lastIndexOf("\n];");
+    if (end < 0) return fail(500, "places.js shape", h);
+    const newPlaces = placesJs.slice(0, end).replace(/\s*$/, "") + ",\n" + JSON.stringify(place) + placesJs.slice(end);
+    const cut = contentJs.indexOf("\n};\nAR.tgroups={");
+    if (cut < 0) return fail(500, "content.js shape", h);
+    const arLine = JSON.stringify(item.city + "|" + item.n) + ":" + JSON.stringify({ t: c.ar_t, cost: c.ar_cost, dur: c.ar_dur, cap: c.ar_cap, tip: c.ar_tip });
+    const newContent = contentJs.slice(0, cut).replace(/,?\s*$/, ",") + "\n" + arLine + contentJs.slice(cut);
+    scout.pending = scout.pending.filter(i => i.id !== id);
+    scout.done = [...(scout.done || []), id];
+    const newScout = JSON.stringify(scout, null, 2) + "\n";
+
+    const base = await gh(env, "/git/commits/" + sha);
+    const tree = await gh(env, "/git/trees", { method: "POST", body: JSON.stringify({ base_tree: base.tree.sha, tree: [
+      { path: "data/places.js", mode: "100644", type: "blob", content: newPlaces },
+      { path: "data/ar/content.js", mode: "100644", type: "blob", content: newContent },
+      { path: "data/scout.json", mode: "100644", type: "blob", content: newScout },
+    ] }) });
+    const commit = await gh(env, "/git/commits", { method: "POST", body: JSON.stringify({
+      message: `Apollo Scout: add ${item.n} (${CITY_NAME[item.city]})\n\nApproved in the admin dashboard and written by the Worker from a web search.`,
+      tree: tree.sha, parents: [sha] }) });
+    // Not forced: if main moved since we read it, this fails and nothing is lost.
+    await gh(env, "/git/refs/heads/main", { method: "PATCH", body: JSON.stringify({ sha: commit.sha, force: false }) });
+    return new Response(JSON.stringify({ added: place.n, city: place.city, commit: commit.sha }), { headers: { ...h, "Content-Type": "application/json" } });
+  } catch (e) {
+    return fail(502, String(e && e.message || e).slice(0, 120), h);
+  }
 }
 
 // ---- short map links, for My trip ----
