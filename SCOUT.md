@@ -80,9 +80,11 @@ Add 5 to 12 of the best to `pending`, each as:
 ```json
 {"id":"short-unique-slug","city":"tokyo","n":"Name","area":"Existing area","cat":"shop",
  "kind":"weird|new|trendy|halal","why":"One or two plain sentences: why it's special.",
- "halal":"One short line.","sources":["https://..."]}
+ "halal":"One short line.","sources":["https://..."],
+ "maps":"optional: a Google Maps link to the exact place, when you have one"}
 ```
 
+Without `maps`, the dashboard links a Google Maps search for the name and city.
 Set `"run"` to today's date (YYYY-MM-DD). Keep `scout.json` valid JSON.
 
 ## 4. Ship it
