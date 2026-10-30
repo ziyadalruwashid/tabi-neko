@@ -89,6 +89,7 @@ async function renderAdmin(){
   let trips;
   // Visits are read separately, so a problem there doesn't hide the rest.
   let visits=null,visitErr="";try{visits=await visitDays()}catch(e){visitErr=String(e&&(e.code||e.status)||"no connection")}
+  await loadScout();
   try{trips=await allTrips()}catch(e){adminBusy=false;box.innerHTML=`<p class="anote">Couldn't load the trips (${esc(String(e&&e.code||e&&e.status||"no connection"))}). Check that the latest firestore.rules are published.</p>`;return}
   adminBusy=false;
   const planned=trips.filter(t=>hasTrip(cleanTrip(t.data))),wk=Date.now()-7*DAY;
@@ -107,6 +108,7 @@ async function renderAdmin(){
       <td>${t.members.length?`owner · ${t.members.length+1} people`:inT?`member of ${esc(inT.email||inT.emails[inT.uid]||"a trip")}`:"—"}</td><td>${fmtDay(t.created)}</td><td>${ago(t.updated)}</td></tr>`}).join("");
   const vsum=k=>{let n=0;for(let i=0;i<k;i++)n+=visits.get(riyadhDay(new Date(Date.now()-i*DAY)))||0;return n};
   box.innerHTML=`
+    ${scoutCard()}
     ${visits?`<div class="atiles">${tile(vsum(1),"visits today")}${tile(vsum(7),"visits, last 7 days")}${tile(vsum(30),"visits, last 30 days")}</div>
     <section class="acard wide avisits"><span class="tape"></span><h2>Visits per day</h2>${daily(visits)}
       <p class="amuted">One visit = someone opening the site in a browser tab. Your own visits aren't counted. Days are Riyadh time.</p></section>`
@@ -130,8 +132,44 @@ async function renderAdmin(){
         <div class="ascroll"><table class="aaccts"><tr><th>Email</th><th>Cities</th><th>Places</th><th>Planning together</th><th>Started</th><th>Last saved</th></tr>${acctRows||`<tr><td colspan="6" class="amuted">No accounts yet.</td></tr>`}</table></div></section>
     </div>
     <p class="anote small">Totals only: this page never shows anyone's trip or where they're staying. <button type="button" class="tclear" id="adminre">Refresh</button></p>`;
-  $("adminre").onclick=renderAdmin;
+  $("adminre").onclick=renderAdmin;wireScout();
 }
+// ---- Apollo Scout ----
+// The weekly scout task writes its suggestions to data/scout.json. Here the
+// owner taps ✓ or ✗ on each; the choices go to Firestore scout/picks, which
+// the next scout run reads (it's public to read, only the owner can write),
+// adds the ✓ ones to the notebook and moves both kinds into "done".
+let scout=null,picks={add:[],skip:[]};
+const arr=d=>(d&&d.arrayValue&&d.arrayValue.values||[]).map(v=>v.stringValue);
+async function loadScout(){
+  const [s,p]=await Promise.all([fetch("data/scout.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).catch(()=>null),fsGet("scout/picks").catch(()=>null)]);
+  scout=s;picks={add:arr(p&&p.fields&&p.fields.add),skip:arr(p&&p.fields&&p.fields.skip)};
+}
+const KIND={trendy:"🔥 trending",new:"🆕 new",weird:"⭐ weird & hidden",halal:"🍜 halal"};
+function scoutCard(){
+  if(!scout)return `<section class="acard wide ascout"><span class="tape pink"></span><h2>🐾 Apollo Scout</h2><p class="amuted">No scout report yet.</p></section>`;
+  const items=scout.pending||[],state=id=>picks.add.includes(id)?"add":picks.skip.includes(id)?"skip":"";
+  const waiting=items.filter(i=>!state(i.id)).length,yes=items.filter(i=>state(i.id)==="add").length;
+  return `<section class="acard wide ascout"><span class="tape pink"></span><h2>🐾 Apollo Scout</h2>
+    <p class="amuted">Last run ${esc(scout.run||"?")} · runs every Friday morning. Tap ✓ to add a place or ✗ to skip it. Every ✓ gets written up (English + Arabic) and added on the next run.</p>
+    <p class="ascount"><b>${waiting}</b> waiting · <b>${yes}</b> to add next run</p>
+    ${items.length?`<ul class="aslist">${items.map(i=>{const s=state(i.id);
+      return `<li class="asitem ${s}"><div class="asinfo"><b>${esc(i.n)}</b><small>${esc(D(CITIES[i.city]||{n:i.city},"n"))} · ${esc(AREA(i.area))} · ${esc(CATS[i.cat]?D(CATS[i.cat],"n"):i.cat)} · ${esc(KIND[i.kind]||i.kind||"")}</small>
+        <p>${esc(i.why)}</p>${i.halal?`<p class="ashal">Halal: ${esc(i.halal)}</p>`:""}
+        <p class="assrc">${(i.sources||[]).map((u,k)=>`<a href="${esc(u)}" target="_blank" rel="noopener">source ${k+1} ↗</a>`).join(" · ")}</p></div>
+        <div class="asbtns"><button type="button" class="asb yes" data-id="${esc(i.id)}" data-v="add" aria-pressed="${s==="add"}">✓ Add</button><button type="button" class="asb no" data-id="${esc(i.id)}" data-v="skip" aria-pressed="${s==="skip"}">✗ Skip</button></div></li>`}).join("")}</ul>`
+      :`<p class="amuted">Nothing waiting. The next run is Friday.</p>`}</section>`;
+}
+async function pickScout(id,v){
+  const on=picks[v].includes(id);
+  picks.add=picks.add.filter(x=>x!==id);picks.skip=picks.skip.filter(x=>x!==id);
+  if(!on)picks[v].push(id);
+  const L=a=>({arrayValue:{values:a.map(S)}});
+  const sec=document.querySelector(".ascout");if(sec)sec.outerHTML=scoutCard();wireScout();
+  try{await fsPatch("scout/picks",{add:L(picks.add),skip:L(picks.skip)},["add","skip"])}
+  catch(e){toast("Couldn't save. Check that the latest firestore.rules are published.")}
+}
+function wireScout(){document.querySelectorAll(".asb").forEach(b=>b.onclick=()=>pickScout(b.dataset.id,b.dataset.v))}
 addEventListener("hashchange",()=>{if(location.hash==="#admin")renderAdmin()});
 if(location.hash==="#admin"){show("admin");renderAdmin()}
 countVisit();
