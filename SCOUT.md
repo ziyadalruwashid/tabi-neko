@@ -1,6 +1,6 @@
-# Apollo Scout: the weekly run
+# Apollo Scout: the twice-weekly run
 
-The weekly scheduled task follows this file. It does two things, in this order:
+The scheduled task (Tuesday and Friday mornings) follows this file. It does two things, in this order:
 add the places the owner approved last week, then look for new ones.
 
 The owner (Ziyad) approves or skips suggestions in the site's admin
