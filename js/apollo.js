@@ -4,6 +4,10 @@
 // Apollo's answers come from Claude through the small proxy in
 // worker/ask-apollo.js, which holds the API key. APOLLO_API is that Worker's
 // address; while it's empty Apollo answers with a friendly "coming soon".
+//
+// Chatting needs an account, like "plan my trip": each question carries the
+// visitor's login token and the Worker checks it before calling Claude.
+// Logged out, the button opens the login sheet and the chat follows.
 const APOLLO_API="https://ask-apollo.ziyadalruwashid.workers.dev/";
 
 const SUGGEST=["Halal ramen in Tokyo?","Plan a day in Kyoto for me","Best coffee near Shibuya?","Where can I pray in Osaka?"];
@@ -71,6 +75,7 @@ const SAY={
   refusal:"I can't help with that one. Ask me something about your trip to Japan!",
   slow:"You're asking faster than I can walk! Give me a minute, then try again.",
   error:"Something went wrong on my side. Try again in a moment.",
+  login:"Log in again to keep chatting with me.",
 };
 
 async function send(text){
@@ -86,8 +91,8 @@ async function send(text){
     chat.push({role:"assistant",text:T("I'm still learning to talk! My chat opens very soon. Until then, the map and the search box above have everything in my notebook."),skip:true});
   }else{
     try{
-      const res=await fetch(APOLLO_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:chatHistory()})});
-      if(!res.ok||!res.body)fail(res.status===429?"slow":"error");
+      const res=await fetch(APOLLO_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:chatHistory(),idToken:await token()})});
+      if(!res.ok||!res.body)fail(res.status===429?"slow":res.status===401?"login":"error");
       else{
         // The Worker streams plain text. Words appear as they arrive; a lone
         // "\0refusal" or "\0error" means no answer came, and is said kindly.
@@ -98,7 +103,8 @@ async function send(text){
         if(a.text.startsWith("\u0000")||!a.text.trim()){chat.pop();fail(a.text==="\u0000refusal"?"refusal":"error")}
       }
     }catch(e){
-      if(chat[chat.length-1].role==="assistant"&&!chat[chat.length-1].skip)chat[chat.length-1].text+="…";
+      if(e&&e.status===401)fail("login");
+      else if(chat[chat.length-1].role==="assistant"&&!chat[chat.length-1].skip)chat[chat.length-1].text+="…";
       else fail("error");
     }
   }
@@ -110,8 +116,10 @@ async function send(text){
 function fitInput(){const q=$("apolloq");q.style.height="auto";const h=q.scrollHeight;
   q.style.height=Math.min(h,132)+"px";q.style.overflowY=h>132?"auto":"hidden"}
 
+let chatAfterLogin=false;
 function openApollo(){
   const p=$("apollo");if(!p.hidden)return;
+  if(FB_ON&&!auth){chatAfterLogin=true;openAcct("login","chat");return}
   p.hidden=false;$("apollob").setAttribute("aria-expanded","true");
   document.documentElement.classList.add("chat-open");
   renderChat();$("apolloq").focus();

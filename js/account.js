@@ -286,7 +286,7 @@ function renderShareBits(){if(acct&&acct.step==="share")renderAcct();const b=$("
 
 // ---- the login sheet ----
 let acct=null; // {step:"login"|"signup"|"choose"|"me"|"delete"|"share", email, msg, ok, busy, rec}
-// why: "plan" when the planner sent you here, so the sheet says so.
+// why: "plan" or "chat" when the planner or Ask Apollo sent you here, so the sheet says so.
 function openAcct(step,why){
   acct={step:step||(auth?"me":"login"),email:"",msg:"",why};
   let el=$("acct");
@@ -299,6 +299,7 @@ function openAcct(step,why){
 function closeAcct(){const el=$("acct");if(el)el.hidden=true;document.documentElement.classList.remove("tpick-open");acct=null;renderTrip();
   // Logged in from the planner's button: carry on to the planner.
   if(planAfterLogin){planAfterLogin=false;if(auth)openPlanner()}
+  if(chatAfterLogin){chatAfterLogin=false;if(auth)openApollo()}
   if(typeof renderAdmin==="function"&&!$("admin").hidden)renderAdmin()}
 const acctFail=e=>{if(e&&e.status===401)return loggedOut(true);if(acct){acct.busy=false;say(failMsg(e))}else toast(failMsg(e))};
 function renderAcct(){
@@ -308,7 +309,7 @@ function renderAcct(){
   let h="";
   if(a.step==="login"||a.step==="signup"){const up=a.step==="signup";
     h=`<h2 id="acct-h">${T(up?"Create your account":"Log in to Tabi Neko")}</h2>
-    <p>${T(invite?"Log in, or create an account, to join the trip you were invited to.":a.why==="plan"?"Log in, or create a free account, and Apollo will plan your trip. Your plan is saved to your account too.":"Keep your trip safe and open it on any phone or laptop.")}</p>
+    <p>${T(invite?"Log in, or create an account, to join the trip you were invited to.":a.why==="plan"?"Log in, or create a free account, and Apollo will plan your trip. Your plan is saved to your account too.":a.why==="chat"?"Log in, or create a free account, to chat with Apollo. Ask him anything about your trip.":"Keep your trip safe and open it on any phone or laptop.")}</p>
     <form class="acct-f" novalidate><input type="email" class="thome-q" id="acct-email" value="${esc(a.email)}" placeholder="${esc(T("your@email.com"))}" aria-label="${esc(T("Email"))}" autocomplete="email" required dir="ltr">
       ${pwBox(up?"Password (8 or more characters)":"Password",up?"new-password":"current-password")}
       <button type="submit" class="store"${a.busy?" disabled":""}>${a.busy?T("One moment…"):T(up?"Create account":"Log in")}</button></form>${err}
@@ -404,6 +405,9 @@ async function forgot(email){
 function loggedOut(expired){
   auth=null;saveAuth();sync={...SYNC0};share={members:[],emails:{},code:""};saveSync();setSync("");
   if(expired)toast(T("You were logged out. Log in again to keep syncing."));
+  // Ask Apollo is for logged-in visitors: logging out closes it and, on a
+  // shared phone, leaves nothing of the last person's chat behind.
+  else{closeApollo();chat=[];saveChat();renderChat()}
   renderTrip();
 }
 // Firebase only deletes an account right after a fresh login, so the
