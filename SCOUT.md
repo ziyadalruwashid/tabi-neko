@@ -8,11 +8,6 @@ dashboard (`#admin`, "Apollo Scout"). Suggestions live in `data/scout.json`.
 His choices live in Firestore, document `scout/picks`, as two lists of ids:
 `add` and `skip`.
 
-Tapping ✓ Add in the dashboard normally adds the place within a minute: the
-Cloudflare Worker (`worker/ask-apollo.js`, `scoutAdd`) researches it, writes
-the card and commits it, moving the id to `done`. So on a weekly run, step 2
-only finds the ✓ places whose instant add failed.
-
 ## 1. Read the picks
 
 ```
