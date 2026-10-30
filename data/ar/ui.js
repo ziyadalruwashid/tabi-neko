@@ -66,6 +66,8 @@ AR.ui={
 "Show less":"أقل",
 "Log in to use it. It's free.":"سجّل دخولك وجرّبها، ببلاش.",
 "Log in, or create a free account, and Apollo will plan your trip. Your plan is saved to your account too.":"سجّل دخولك أو سوّ حساب ببلاش، وأبولو يخطط رحلتك، وخطتك تنحفظ في حسابك بعد.",
+"Log in, or create a free account, to chat with Apollo. Ask him anything about your trip.":"سجّل دخولك أو سوّ حساب ببلاش، وتقدر تسولف مع أبولو وتسأله أي شي عن رحلتك.",
+"Log in again to keep chatting with me.":"سجّل دخولك مرة ثانية عشان نكمّل السالفة.",
 "That's all the plans for today 🐾 Come back tomorrow, or change this one by hand.":"خلصت خطط اليوم 🐾 ارجع بكرة، أو عدّل هذي الخطة بنفسك.",
 "Plan with Apollo":"خطّط مع أبولو",
 "Let Apollo plan it":"خل أبولو يخطط لك",

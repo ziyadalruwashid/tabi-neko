@@ -29,6 +29,10 @@
 // logged-in visitors only: the request carries their Firebase login token,
 // which is checked with Firebase before anything is sent to Claude, and each
 // account gets a few plans a day.
+//
+// The chat is for logged-in visitors too: every question carries the same
+// login token, checked the same way. A token is remembered for a few minutes
+// so a conversation doesn't ask Firebase on every message.
 
 const MODEL = "claude-opus-5-5";
 const DATA = "https://raw.githubusercontent.com/ziyadalruwashid/tabi-neko/main/data/";
@@ -138,6 +142,7 @@ export default {
     try { body = JSON.parse((await request.text()).slice(0, 40000)); } catch { return fail(400, "bad json", h); }
     if (body && typeof body.resolve === "string") return resolveLink(body.resolve, h);
     if (body && body.plan && typeof body.plan === "object") return planTrip(body.plan, body.idToken, env, h);
+    if (!(await chatUser(body && body.idToken))) return fail(401, "log in", h);
     const messages = cleanMessages(body);
     if (!messages) return fail(400, "bad messages", h);
 
@@ -218,6 +223,17 @@ async function whoIs(idToken) {
     const u = (await r.json()).users;
     return u && u[0] && !u[0].disabled ? u[0].localId : null;
   } catch { return null; }
+}
+const seen = new Map(); // login token -> {uid, until}
+async function chatUser(idToken) {
+  const hit = seen.get(idToken);
+  if (hit && hit.until > Date.now()) return hit.uid;
+  const uid = await whoIs(idToken);
+  if (uid) {
+    if (seen.size > 2000) seen.clear();
+    seen.set(idToken, { uid, until: Date.now() + 5 * 60 * 1000 });
+  }
+  return uid;
 }
 // Best effort, like the per-visitor limit: each Cloudflare location counts alone.
 const plansBy = new Map();
