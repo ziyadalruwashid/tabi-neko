@@ -139,7 +139,7 @@ async function renderAdmin(){
 // owner taps ✓ or ✗ on each; the choices go to Firestore scout/picks, which
 // the next scout run reads (it's public to read, only the owner can write),
 // adds the ✓ ones to the notebook and moves both kinds into "done".
-let scout=null,picks={add:[],skip:[]},adding={};
+let scout=null,picks={add:[],skip:[]};
 const arr=d=>(d&&d.arrayValue&&d.arrayValue.values||[]).map(v=>v.stringValue);
 async function loadScout(){
   const [s,p]=await Promise.all([fetch("data/scout.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).catch(()=>null),fsGet("scout/picks").catch(()=>null)]);
@@ -149,45 +149,25 @@ const KIND={trendy:"🔥 trending",new:"🆕 new",weird:"⭐ weird & hidden",hal
 function scoutCard(){
   if(!scout)return `<section class="acard wide ascout"><span class="tape pink"></span><h2>🐾 Apollo Scout</h2><p class="amuted">No scout report yet.</p></section>`;
   const items=scout.pending||[],state=id=>picks.add.includes(id)?"add":picks.skip.includes(id)?"skip":"";
-  const isAdded=i=>i.added||(adding[i.id]&&adding[i.id].st==="done");
-  const waiting=items.filter(i=>!state(i.id)&&!isAdded(i)).length,yes=items.filter(i=>state(i.id)==="add"&&!isAdded(i)&&!(adding[i.id]&&adding[i.id].st==="busy")).length;
+  const waiting=items.filter(i=>!state(i.id)).length,yes=items.filter(i=>state(i.id)==="add").length;
   return `<section class="acard wide ascout"><span class="tape pink"></span><h2>🐾 Apollo Scout</h2>
-    <p class="amuted">Last run ${esc(scout.run||"?")} · new suggestions every Friday morning. Tap ✓ Add and Apollo checks the place on the web, writes it up in English and Arabic and puts it on the site, live about a minute later. ✗ Skip drops it.</p>
-    <p class="ascount"><b>${waiting}</b> waiting${yes?` · <b>${yes}</b> approved, not added yet (tap ✓ again to retry, or the Friday run adds it)`:""}</p>
+    <p class="amuted">Last run ${esc(scout.run||"?")} · runs every Friday morning. Tap ✓ to add a place or ✗ to skip it. Every ✓ gets written up (English + Arabic) and added on Friday's run, or right away if you message Claude \"add my picks\".</p>
+    <p class="ascount"><b>${waiting}</b> waiting · <b>${yes}</b> to add next run</p>
     ${items.length?`<ul class="aslist">${items.map(i=>{const s=state(i.id);
-      const a=adding[i.id]||(i.added?{st:"done",msg:"Added ✓"}:null);
-      return `<li class="asitem ${s}${a?" "+a.st:""}"><div class="asinfo"><b>${esc(i.n)}</b><small>${esc(D(CITIES[i.city]||{n:i.city},"n"))} · ${esc(AREA(i.area))} · ${esc(CATS[i.cat]?D(CATS[i.cat],"n"):i.cat)} · ${esc(KIND[i.kind]||i.kind||"")}</small>
+      return `<li class="asitem ${s}"><div class="asinfo"><b>${esc(i.n)}</b><small>${esc(D(CITIES[i.city]||{n:i.city},"n"))} · ${esc(AREA(i.area))} · ${esc(CATS[i.cat]?D(CATS[i.cat],"n"):i.cat)} · ${esc(KIND[i.kind]||i.kind||"")}</small>
         <p>${esc(i.why)}</p>${i.halal?`<p class="ashal">Halal: ${esc(i.halal)}</p>`:""}
-        <p class="assrc"><a class="asmap" href="${esc(i.maps||"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(`${i.n} ${(CITIES[i.city]||{n:i.city}).n} Japan`))}" target="_blank" rel="noopener">📍 Google Maps ↗</a>${(i.sources||[]).map((u,k)=>` · <a href="${esc(u)}" target="_blank" rel="noopener">source ${k+1} ↗</a>`).join("")}</p>
-        ${a?`<p class="asmsg">${esc(a.msg)}</p>`:""}</div>
-        <div class="asbtns"><button type="button" class="asb yes" data-id="${esc(i.id)}" data-v="add" aria-pressed="${s==="add"}"${a&&a.st==="busy"?" disabled":""}>${a&&a.st==="busy"?"Adding…":"✓ Add"}</button><button type="button" class="asb no" data-id="${esc(i.id)}" data-v="skip" aria-pressed="${s==="skip"}"${a&&a.st==="busy"?" disabled":""}>✗ Skip</button></div></li>`}).join("")}</ul>`
+        <p class="assrc"><a class="asmap" href="${esc(i.maps||"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(`${i.n} ${(CITIES[i.city]||{n:i.city}).n} Japan`))}" target="_blank" rel="noopener">📍 Google Maps ↗</a>${(i.sources||[]).map((u,k)=>` · <a href="${esc(u)}" target="_blank" rel="noopener">source ${k+1} ↗</a>`).join("")}</p></div>
+        <div class="asbtns"><button type="button" class="asb yes" data-id="${esc(i.id)}" data-v="add" aria-pressed="${s==="add"}">✓ Add</button><button type="button" class="asb no" data-id="${esc(i.id)}" data-v="skip" aria-pressed="${s==="skip"}">✗ Skip</button></div></li>`}).join("")}</ul>`
       :`<p class="amuted">Nothing waiting. The next run is Friday.</p>`}</section>`;
 }
 async function pickScout(id,v){
-  // ✓ always (re)tries the add; only ✗ toggles.
-  const on=v==="skip"&&picks.skip.includes(id);
+  const on=picks[v].includes(id);
   picks.add=picks.add.filter(x=>x!==id);picks.skip=picks.skip.filter(x=>x!==id);
   if(!on)picks[v].push(id);
   const L=a=>({arrayValue:{values:a.map(S)}});
   const sec=document.querySelector(".ascout");if(sec)sec.outerHTML=scoutCard();wireScout();
   try{await fsPatch("scout/picks",{add:L(picks.add),skip:L(picks.skip)},["add","skip"])}
   catch(e){toast("Couldn't save. Check that the latest firestore.rules are published.")}
-  if(v==="add")addNow(id);
-}
-// ✓ Add goes straight to the Worker, which writes the card and commits it.
-// The pick stays saved either way, so the Friday run retries anything that failed.
-const ADD_ERR={"owner only":"Log in again with the admin account.","GITHUB_TOKEN not set":"The Worker needs its GitHub token (see the setup steps).","already added":"It's already on the site.","already in the notebook":"It's already in the notebook."};
-async function addNow(id){
-  const redraw=()=>{const sec=document.querySelector(".ascout");if(sec){sec.outerHTML=scoutCard();wireScout()}};
-  adding[id]={st:"busy",msg:"Apollo is checking it on the web and writing the card. This takes about a minute…"};redraw();
-  try{
-    const r=await fetch(APOLLO_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({scoutAdd:id,idToken:await token()})});
-    const d=await r.json().catch(()=>({}));
-    if(!r.ok)throw new Error(ADD_ERR[d.error]||d.error||("error "+r.status));
-    adding[id]={st:"done",msg:`Added ✓ It'll be on the site in about a minute.`};
-    if(scout)scout.pending=(scout.pending||[]).map(i=>i.id===id?{...i,added:true}:i);
-  }catch(e){const m=String(e&&e.message||e).replace(/^not added:\s*/i,"");adding[id]={st:"err",msg:"Not added: "+m}}
-  redraw();
 }
 function wireScout(){document.querySelectorAll(".asb").forEach(b=>b.onclick=()=>pickScout(b.dataset.id,b.dataset.v))}
 addEventListener("hashchange",()=>{if(location.hash==="#admin")renderAdmin()});

@@ -780,12 +780,6 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .asinfo .ashal{color:#4F7A1E}
 .asinfo .assrc{font-size:12.5px}
 .asinfo .asmap{font-weight:700;color:var(--shinkansen)}
-.asinfo .asmsg{margin-top:6px;font-weight:700;font-size:13.5px}
-.asitem.busy .asmsg{color:var(--shinkansen)}
-.asitem.done{border-color:#4F7A1E;background:color-mix(in srgb,var(--wasabi) 22%,var(--sheet))}
-.asitem.done .asmsg{color:#4F7A1E}
-.asitem.err .asmsg{color:var(--lantern)}
-.asb[disabled]{opacity:.6;cursor:wait}
 .asbtns{display:flex;flex-direction:column;gap:6px;flex:none}
 .asb{appearance:none;cursor:pointer;font:700 13px var(--body);border-radius:999px;padding:6px 12px;border:1.5px solid var(--ink);background:var(--sheet);color:var(--ink);white-space:nowrap}
 .asb.yes[aria-pressed="true"]{background:#4F7A1E;border-color:#4F7A1E;color:#fff}
