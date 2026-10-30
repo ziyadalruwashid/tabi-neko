@@ -779,6 +779,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .asinfo p{margin:0 0 4px;font-size:14px;line-height:1.5}
 .asinfo .ashal{color:#4F7A1E}
 .asinfo .assrc{font-size:12.5px}
+.asinfo .asmap{font-weight:700;color:var(--shinkansen)}
 .asbtns{display:flex;flex-direction:column;gap:6px;flex:none}
 .asb{appearance:none;cursor:pointer;font:700 13px var(--body);border-radius:999px;padding:6px 12px;border:1.5px solid var(--ink);background:var(--sheet);color:var(--ink);white-space:nowrap}
 .asb.yes[aria-pressed="true"]{background:#4F7A1E;border-color:#4F7A1E;color:#fff}

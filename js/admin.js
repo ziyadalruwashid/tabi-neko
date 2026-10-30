@@ -156,7 +156,7 @@ function scoutCard(){
     ${items.length?`<ul class="aslist">${items.map(i=>{const s=state(i.id);
       return `<li class="asitem ${s}"><div class="asinfo"><b>${esc(i.n)}</b><small>${esc(D(CITIES[i.city]||{n:i.city},"n"))} · ${esc(AREA(i.area))} · ${esc(CATS[i.cat]?D(CATS[i.cat],"n"):i.cat)} · ${esc(KIND[i.kind]||i.kind||"")}</small>
         <p>${esc(i.why)}</p>${i.halal?`<p class="ashal">Halal: ${esc(i.halal)}</p>`:""}
-        <p class="assrc">${(i.sources||[]).map((u,k)=>`<a href="${esc(u)}" target="_blank" rel="noopener">source ${k+1} ↗</a>`).join(" · ")}</p></div>
+        <p class="assrc"><a class="asmap" href="${esc(i.maps||"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(`${i.n} ${(CITIES[i.city]||{n:i.city}).n} Japan`))}" target="_blank" rel="noopener">📍 Google Maps ↗</a>${(i.sources||[]).map((u,k)=>` · <a href="${esc(u)}" target="_blank" rel="noopener">source ${k+1} ↗</a>`).join("")}</p></div>
         <div class="asbtns"><button type="button" class="asb yes" data-id="${esc(i.id)}" data-v="add" aria-pressed="${s==="add"}">✓ Add</button><button type="button" class="asb no" data-id="${esc(i.id)}" data-v="skip" aria-pressed="${s==="skip"}">✗ Skip</button></div></li>`}).join("")}</ul>`
       :`<p class="amuted">Nothing waiting. The next run is Friday.</p>`}</section>`;
 }
