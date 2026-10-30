@@ -62,6 +62,17 @@ service cloud.firestore {
         && request.resource.data.n == resource.data.n + 1;
     }
 
+    // Apollo Scout: scout/picks holds the owner's ✓/✗ on the weekly
+    // suggestions (just place ids). The weekly scout task reads it without
+    // signing in, so it's public to read; only the owner can change it.
+    match /scout/{doc} {
+      allow read: if true;
+      allow write: if admin() && doc == 'picks'
+        && request.resource.data.keys().hasOnly(['add', 'skip'])
+        && request.resource.data.get('add', []) is list && request.resource.data.get('skip', []) is list
+        && request.resource.data.get('add', []).size() <= 200 && request.resource.data.get('skip', []).size() <= 500;
+    }
+
     match /users/{uid} {
       allow read: if admin() || (request.auth != null && me() == uid);
       allow delete: if request.auth != null && me() == uid;
