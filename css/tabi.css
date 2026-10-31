@@ -832,6 +832,13 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 [dir=rtl] .tmagic-go{transform:scaleX(-1)}
 @keyframes twinkle{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.15) rotate(12deg)}}
 @media (prefers-reduced-motion:reduce){.tmagic-s,.pl-cat{animation:none!important}}
+/* ready plans: a second, quieter card under Apollo's */
+.tready{background:var(--sheet)}
+.tready .tmagic-s{animation:none}
+.rd-list{display:grid;gap:14px;margin-top:14px}
+.rd-list .tmagic{margin:0}
+.rd-route{display:block;margin-top:6px;font:700 13px var(--body);font-style:normal;color:var(--lantern)}
+.rd-back{margin-bottom:6px}
 .tplanb.store{cursor:pointer;background:var(--ink);color:var(--paper)}
 .tplanb.store:hover{background:var(--lantern);border-color:var(--lantern)}
 .pl-sheet{width:min(560px,100%);max-height:min(90vh,900px);overflow-y:auto}
