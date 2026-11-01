@@ -7,6 +7,11 @@
 <link rel="icon" href="favicon.ico" sizes="48x48">
 <link rel="icon" href="assets/icon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#FAF4E8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tabi Neko">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preload" href="assets/fonts/bagel-fat-one-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -222,5 +227,11 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
 <!-- Ready plans (data/plans.js + js/ready.js) are switched off while they're reworked; add both scripts back here to show them. -->
 <script src="js/account.js"></script>
 <script src="js/admin.js"></script>
+<script>
+// Offline copy (sw.js) for the website. The store apps carry every file
+// themselves, so they skip it.
+if("serviceWorker" in navigator&&!window.Capacitor&&(location.protocol==="https:"||location.hostname==="localhost"))
+  addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
 </body>
 </html>
