@@ -113,6 +113,7 @@ AR.ui={
 "This replaces the days in your current trip. Your ideas and where you're staying are kept.":"هذا بيستبدل أيام رحلتك الحالية، بس أفكارك ومكان سكنك باقية.",
 "Use this plan":"اعتمد هالخطة",
 "Explore":"استكشف",
+"Show them on the map":"اعرضهم على الخريطة",
 "Leave your stay":"تطلع من السكن",
 "Halal lunch · Apollo's pick":"غدا حلال · اقتراح أبولو",
 "Starts":"يبدأ",

@@ -336,11 +336,52 @@ const _select=select;select=function(id){if(!id)return;if(typeof closeApollo==="
 
 // ---- a list page: a story, a mood, the season or "See all" ----
 const lv=document.createElement("div");lv.id="lview";lv.hidden=true;lv.setAttribute("role","dialog");lv.setAttribute("aria-modal","true");document.body.appendChild(lv);
+// Rows like a maps app: photo, the full name, area and distance, a clear
+// halal badge, Apollo's one-liner, and ＋ to add it to the trip. Filters
+// across the top, and the whole list on the map.
+let lvAll=[],lvF="",lvTitle="";
+const lvHere=()=>window.tnMe||(near&&nearKind==="me"?near:null);
+function lvShort(km){const t=km<1?T("{n} m",{n:Math.max(10,Math.round(km*100)*10)}):T("{n} km",{n:km<10?km.toFixed(1):Math.round(km)});return isAR()?iso(t):t}
+function lvFilters(ps){
+  const f=[["",T("All")]];
+  if(ps.some(p=>p.hl==="certified")&&ps.some(p=>p.hl!=="certified"))f.push(["cert",T("✓ Halal certified")]);
+  else if(ps.some(p=>p.halal)&&ps.some(p=>!p.halal))f.push(["halal",T("halal ✓")]);
+  const cats=[...new Set(ps.map(p=>p.cat))];if(cats.length>1)cats.forEach(c=>f.push(["c:"+c,D(CATS[c],"n")]));
+  const ar={};ps.forEach(p=>ar[p.area]=(ar[p.area]||0)+1);
+  Object.keys(ar).filter(a=>ar[a]>=2).sort((x,y)=>ar[y]-ar[x]).slice(0,5).forEach(a=>{if(Object.keys(ar).length>1)f.push(["a:"+a,"📍 "+AREA(a)])});
+  return f}
+function lvRow(p){
+  const h=lvHere(),k=PKEY(p),on=inTrip(k),tip=(D(p,"tip")||"").split(/(?<=[.!؟?])\s/)[0];
+  const badge=p.halal?`<span class="lr-h${p.hl==="friendly"?" f":""}">${p.hl==="friendly"?T("Muslim-friendly"):p.hl==="certified"?T("✓ Halal certified"):T("✓ halal")}</span>`:"";
+  return `<div class="lr" style="--c:var(--${p.cat})"><button type="button" class="lr-go" data-id="${p.id}">
+    <span class="lr-img${p.photo?"":" art"}"><img src="${p.photo||CATS[p.cat].img}" alt="" loading="lazy">${p.gem?`<i>⭐</i>`:""}</span>
+    <span class="lr-t"><b><bdi>${esc(p.n)}</bdi></b><small><i></i>${esc(D(CATS[p.cat],"n"))} · ${esc(AREA(p.area))}${h?` · ${esc(lvShort(KM(h,p)))}`:""}</small>${badge}
+      ${tip?`<em>🐾 ${esc(tip)}</em>`:""}</span></button>
+    <button type="button" class="lr-add${on?" on":""}" data-k="${esc(k)}" aria-label="${esc(T("＋ Add to my trip"))}" aria-pressed="${on}">${on?"✓":"＋"}</button></div>`}
+function lvDraw(){
+  const ps=lvAll.filter(p=>!lvF||(lvF==="cert"?p.hl==="certified":lvF==="halal"?p.halal:lvF.startsWith("c:")?p.cat===lvF.slice(2):p.area===lvF.slice(2)));
+  const box=lv.querySelector(".lv-rows");
+  box.innerHTML=ps.map(lvRow).join("")||`<p class="lv-none">${esc(T("Nothing here yet in this city. Try another city."))}</p>`;
+  lv.querySelector(".lv-bar small").textContent=`${lv.dataset.sub?lv.dataset.sub+" · ":""}${T(ps.length===1?"1 place":"{n} places",{n:ps.length})}${lvHere()?" · "+T("nearest to you first"):""}`;
+  box.querySelectorAll(".lr-go").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
+  box.querySelectorAll(".lr-add").forEach(b=>b.onclick=()=>{const k=b.dataset.k;
+    if(inTrip(k))removeKey(k);else{trip.ideas.push(k);toast(T("Added to your trip ✓"))}
+    saveTrip();const on=inTrip(k);b.classList.toggle("on",on);b.textContent=on?"✓":"＋";b.setAttribute("aria-pressed",String(on))});
+  lv.querySelectorAll(".lv-f button").forEach(b=>b.classList.toggle("on",b.dataset.f===lvF));
+  const m=lv.querySelector(".lv-map");if(m)m.hidden=!ps.length;
+  lv.lvShown=ps;
+}
 function openList(title,sub,ps,fromHistory){
-  lv.innerHTML=`<div class="lv-bar"><button type="button" class="pv-cb lv-back" aria-label="${esc(T("Back"))}">${SVG(I.back)}</button><div><b>${esc(title)}</b><small>${esc(sub)} · ${esc(T(ps.length===1?"1 place":"{n} places",{n:ps.length}))}</small></div></div>
-    <div class="lv-grid">${ps.map(pcard).join("")||`<p class="lv-none">${esc(T("Nothing here yet in this city. Try another city."))}</p>`}</div>`;
+  const h=lvHere();lvAll=h?[...ps].sort((a,b)=>KM(h,a)-KM(h,b)):[...ps];lvF="";lvTitle=title;lv.dataset.sub=sub||"";
+  const fs=lvFilters(lvAll);
+  lv.innerHTML=`<div class="lv-bar"><button type="button" class="pv-cb lv-back" aria-label="${esc(T("Back"))}">${SVG(I.back)}</button><div><b>${esc(title)}</b><small></small></div></div>
+    ${fs.length>1?`<div class="lv-f">${fs.map(([k,l])=>`<button type="button" data-f="${esc(k)}">${esc(l)}</button>`).join("")}</div>`:""}
+    <div class="lv-rows"></div>
+    ${typeof mapOnly==="function"?`<button type="button" class="lv-map">${SVG(I.map)} ${T("Show them on the map")}</button>`:""}`;
   lv.querySelector(".lv-back").onclick=()=>history.back();
-  wireCards(lv);lv.hidden=false;lv.scrollTop=0;document.documentElement.classList.add("pv-open");
+  lv.querySelectorAll(".lv-f button").forEach(b=>b.onclick=()=>{lvF=b.dataset.f;lvDraw();lv.scrollTop=0});
+  const m=lv.querySelector(".lv-map");if(m)m.onclick=()=>{const ps2=lv.lvShown||lvAll;if(!ps2.length)return;mapOnly(ps2,lvTitle);go("map")};
+  lvDraw();lv.hidden=false;lv.scrollTop=0;document.documentElement.classList.add("pv-open");
   if(!fromHistory)history.pushState({tnList:1},"");
 }
 function closeList(){lv.hidden=true;if(pv.hidden)document.documentElement.classList.remove("pv-open")}
