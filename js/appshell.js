@@ -337,7 +337,7 @@ function renderExplore(){
   el.querySelector(".xs-search").onclick=()=>{city=exploreCity;store.set("tabineko-city",city);if(window.openSearch)openSearch("")};
   if(el.querySelector(".xs-pick"))el.querySelector(".xs-pick").onclick=()=>openPlace(pick.id);
   el.querySelectorAll(".hx-sall").forEach(b=>b.onclick=()=>{const se=season();openList(T(se.t),cityOf(exploreCity),se.ps)});
-  el.querySelectorAll(".xs-areas-all").forEach(b=>b.onclick=()=>{location.hash="#hoods";window.scrollTo(0,0)});
+  el.querySelectorAll(".xs-areas-all").forEach(b=>b.onclick=()=>openAreas(exploreCity));
   el.querySelectorAll(".ax-all[data-list]").forEach(b=>b.onclick=()=>{const k2=b.dataset.list,L={halal:["Halal food 🍜",halalHere()],gems:["Hidden gems ⭐",photoFirst(inCity().filter(p=>p.gem))],new:["New on Tabi Neko 🆕",fresh()]}[k2];
     openList(T(L[0]),cityOf(exploreCity),L[1])});
 }
@@ -387,7 +387,7 @@ function openPlace(id,fromHistory){
   pv.querySelector(".pv-scroll").scrollTop=0;
   if(!fromHistory)history.pushState({tnPlace:id},"");
 }
-function closePlaceNow(){pv.hidden=true;pvId=null;if(lv.hidden)document.documentElement.classList.remove("pv-open")}
+function closePlaceNow(){pv.hidden=true;pvId=null;if(lv.hidden&&axv.hidden)document.documentElement.classList.remove("pv-open")}
 function closePlace(){if(history.state&&history.state.tnPlace)history.back();else closePlaceNow()}
 addEventListener("popstate",e=>{const st=e.state||{};
   if(st.tnPlace)openPlace(st.tnPlace,true);else closePlaceNow();
@@ -416,7 +416,7 @@ function onBack(){
   if(H.classList.contains("chat-open")&&typeof closeApollo==="function"){closeApollo();return}
   const mc=document.querySelector(".mp-cities:not([hidden])");if(mc){mc.hidden=true;return}
   const st=history.state||{};
-  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay||st.tnTrip||st.tnBook||st.tnProf||st.tnLens||st.tnRemind){history.back();return}
+  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay||st.tnTrip||st.tnBook||st.tnProf||st.tnLens||st.tnRemind||st.tnAreas){history.back();return}
   const c=current(),h=location.hash.slice(1);
   if(h==="hoods"){go("explore");return}
   if(SUB.includes(h)){go("menu");return}
@@ -515,7 +515,44 @@ function openArea(h,fromHistory){
   if(!fromHistory)history.pushState({tnList:1},"");
 }
 window.openArea=openArea;
-function closeList(){lv.hidden=true;if(pv.hidden)document.documentElement.classList.remove("pv-open")}
+function closeList(){lv.hidden=true;if(pv.hidden&&axv.hidden)document.documentElement.classList.remove("pv-open")}
+
+// ---- all the areas of a city (from "See all" on Explore) ----
+// A photo grid, with "best for" chips: pick one and the areas line up from
+// best to least for it, with Apollo's paw score. A card opens the area's page.
+const axv=document.createElement("div");axv.id="axview";axv.hidden=true;axv.setAttribute("role","dialog");axv.setAttribute("aria-modal","true");document.body.appendChild(axv);
+let axCity=null,axMood="";
+const AX_MOODS=[["","All"],["food","🍜 Food"],["shop","🛍️ Shopping"],["culture","⛩️ Culture"],["night","🌙 Nightlife"],["calm","🌿 Calm"]];
+const axHalal=h=>P.filter(p=>p.city===h.city&&p.area===h.area&&p.halal).length;
+const axNum=n=>isAR()?iso(String(n)):String(n);
+function axDraw(){
+  const cities=[...new Set(HOODS.map(h=>h.city))].filter(c=>CITIES[c]);
+  if(!cities.includes(axCity))axCity=cities[0];
+  const all=HOODS.filter(h=>h.city===axCity),m=AX_MOODS.find(x=>x[0]===axMood)||AX_MOODS[0];
+  const card=(h,i,big)=>{const hl=axHalal(h);return `<button type="button" class="ax-card${big?" big":""}" data-i="${i}"><img src="${esc(h.photo)}" alt="" loading="lazy"${h.pos?` style="object-position:${esc(h.pos)}"`:""}>
+    <span class="ax-no" dir="ltr">No.${String(i+1).padStart(2,"0")}</span>${hl?`<span class="ax-hl">✓ ${esc(T("{n} halal",{n:axNum(hl)}))}</span>`:""}
+    <span class="ax-t"><b>${esc(D(h,"n"))}</b>${h.jp?`<span lang="ja">${esc(h.jp)}</span>`:""}<small>${esc(D(h,"vibe"))}</small></span></button>`};
+  const dots=v=>`<span class="ax-dots" role="img" aria-label="${esc(T("{n} out of 5",{n:v||0}))}">${[1,2,3,4,5].map(k=>`<i class="${k<=v?"f":""}"></i>`).join("")}</span>`;
+  let body;
+  if(!axMood)body=`<p class="ax-hint">${esc(T("{n} neighbourhoods, each rated by Apollo 🐾",{n:axNum(all.length)}))}</p><div class="ax-grid">${all.map((h,i)=>card(h,i,i===0)).join("")}</div>`;
+  else{const ranked=all.map((h,i)=>({h,i,v:(h.stats||{})[axMood]||0,hl:axHalal(h)})).sort((a,b)=>b.v-a.v||b.hl-a.hl);
+    body=`<p class="ax-hint">${esc(T("Best for {m} in {c}",{m:T(m[1].replace(/^\S+\s/,"")).toLowerCase(),c:cityOf(axCity)}))} ${m[1].split(" ")[0]}</p>
+      ${ranked.map((x,k)=>`<button type="button" class="ax-rank" data-i="${x.i}"><span class="ax-r">${axNum(k+1)}</span><img src="${esc(x.h.photo)}" alt="" loading="lazy"${x.h.pos?` style="object-position:${esc(x.h.pos)}"`:""}>
+        <span class="ax-d"><b>${esc(D(x.h,"n"))}</b><small>${esc(D(x.h,"vibe"))}</small>${dots(x.v)}${x.hl?`<em>✓ ${esc(T("{n} halal spots",{n:axNum(x.hl)}))}</em>`:""}</span></button>`).join("")}`}
+  axv.innerHTML=`<div class="ax-top"><button type="button" class="pv-cb ax-back" aria-label="${esc(T("Back"))}">${SVG(I.back)}</button><b>${T("Areas")}</b></div>
+    <div class="ax-pills">${cities.map(c=>`<button type="button" data-c="${c}" class="${c===axCity?"on":""}">${esc(cityOf(c))} <small>${axNum(HOODS.filter(h=>h.city===c).length)}</small></button>`).join("")}</div>
+    <div class="ax-moods">${AX_MOODS.map(([k,l])=>`<button type="button" data-m="${k}" class="${k===axMood?"on":""}">${esc(k?l.split(" ")[0]+" "+T(l.replace(/^\S+\s/,"")):T(l))}</button>`).join("")}</div>${body}`;
+  axv.querySelector(".ax-back").onclick=()=>history.back();
+  axv.querySelectorAll(".ax-pills button").forEach(b=>b.onclick=()=>{axCity=b.dataset.c;axDraw();axv.scrollTop=0});
+  axv.querySelectorAll(".ax-moods button").forEach(b=>b.onclick=()=>{axMood=b.dataset.m;axDraw();axv.scrollTop=0;
+    const on=axv.querySelector(".ax-moods .on");if(on)on.scrollIntoView({inline:"center",block:"nearest"})});
+  axv.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>openArea(all[+b.dataset.i]));
+}
+function openAreas(c,fromHistory){axCity=c||axCity||exploreCity;if(!fromHistory)axMood="";axv.hidden=false;document.documentElement.classList.add("pv-open");axDraw();axv.scrollTop=0;
+  if(!fromHistory)history.pushState({tnAreas:1},"")}
+function closeAreasNow(){axv.hidden=true;if(pv.hidden&&lv.hidden)document.documentElement.classList.remove("pv-open")}
+addEventListener("popstate",e=>{const st=e.state||{};if(st.tnAreas){if(axv.hidden)openAreas(null,true)}else if(!st.tnList&&!st.tnPlace&&!axv.hidden)closeAreasNow()});
+window.tnOpenAreas=openAreas;
 
 // On the Areas page, a card opens the area's own page instead of flipping.
 if(typeof renderHoods==="function"){const _rh=renderHoods;renderHoods=function(){_rh();
