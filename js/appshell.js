@@ -369,6 +369,7 @@ function renderPlace(){
       <h1><bdi>${esc(p.n)}</bdi></h1>${p.jp?`<p class="pv-jp" lang="ja">${esc(p.jp)}</p>`:""}
       <div class="pv-facts">${fact("When",D(p,"t"))}${fact("Cost",D(p,"cost"))}${fact("How long",D(p,"dur"))}</div>
       <div class="pv-note"><img src="assets/cat.png" alt=""><p>${D(p,"tip")}</p></div>
+      ${typeof tnStampSlot==="function"?tnStampSlot(p):""}
       ${p.book?`<a class="pv-book" href="${p.book}" target="_blank" rel="noopener">${T("Book it ↗")}</a>`:""}
       ${nearby.length?`<section class="ax-row pv-near"><header><h2>${T("Nearby")}</h2></header><div class="ax-hs">${nearby.map(pcard).join("")}</div></section>`:""}
     </div></div>
@@ -377,7 +378,9 @@ function renderPlace(){
   pv.querySelector(".pv-share").onclick=()=>{const url="https://tabi-neko.vercel.app/",text=`${p.n} · Tabi Neko 🐾`;
     if(navigator.share)navigator.share({title:p.n,text,url}).catch(()=>{});else{try{navigator.clipboard.writeText(`${text} ${url}`);toast(T("Link copied. Paste it to a friend ✓"))}catch(e){}}};
   wireCards(pv);
+  if(typeof tnStampWire==="function")tnStampWire(pv,p);
 }
+window.tnRenderPlace=()=>{if(pvId)renderPlace()};
 function openPlace(id,fromHistory){
   if(!placeById(id))return;
   pvId=id;renderPlace();pv.hidden=false;document.documentElement.classList.add("pv-open");
@@ -403,13 +406,14 @@ window.openPlace=openPlace; // the real map (js/appmap.js) opens places too
 let backAt=0;
 function onBack(){
   if(window.tnOnbBack&&tnOnbBack())return;
+  if(window.tnStampBack&&tnStampBack())return;
   const H=document.documentElement,top=[...document.querySelectorAll(".tpick,#atsheet")].filter(e=>!e.hidden).pop();
   if(top){top.dispatchEvent(new MouseEvent("click",{bubbles:true}));return}
   if(H.classList.contains("picking")&&typeof endPick==="function"){endPick(true);return}
   if(H.classList.contains("chat-open")&&typeof closeApollo==="function"){closeApollo();return}
   const mc=document.querySelector(".mp-cities:not([hidden])");if(mc){mc.hidden=true;return}
   const st=history.state||{};
-  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay||st.tnTrip){history.back();return}
+  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay||st.tnTrip||st.tnBook){history.back();return}
   const c=current(),h=location.hash.slice(1);
   if(h==="hoods"){go("explore");return}
   if(SUB.includes(h)){go("menu");return}
@@ -518,15 +522,18 @@ if(typeof renderHoods==="function"){const _rh=renderHoods;renderHoods=function()
 // ---- More ----
 const MORE=[["Discover",[["🚆","Day trips","trips"],["📱","Apps to download","apps"]]],
   ["Settings",[["🌐","Language","lang"],["🔒","Privacy","privacy"],["🐾","Contributors","crew"]]]];
+window.tnRenderMore=()=>renderMore();
 function renderMore(){
   const el=$("menu");if(!el)return;
   const me=typeof auth!=="undefined"&&auth;
   el.innerHTML=`<header class="ax-h"><div><h1>${T("More")}</h1></div></header>
     <button type="button" class="am-prof"><img src="assets/cat.png" alt=""><div><b>${esc(me?me.email.split("@")[0]:T("Your account"))}</b>
       <small>${esc(me?me.email:T("Log in or create a free account"))}</small></div><i aria-hidden="true">‹</i></button>
+    ${typeof tnStampCard==="function"?tnStampCard():""}
     ${MORE.map(([h,items])=>`<h2 class="am-h">${T(h)}</h2><div class="am-list">${items.map(([ic,l,k])=>`<button type="button" class="am-li" data-k="${k}"><span aria-hidden="true">${ic}</span><b>${T(l)}</b>
       ${k==="lang"?`<small>${isAR()?"العربية":"English"}</small>`:""}<i aria-hidden="true">‹</i></button>`).join("")}</div>`).join("")}
     <p class="am-foot">Tabi Neko · ${T("made in Riyadh")} 🐾</p>`;
+  if(el.querySelector(".sb-card"))el.querySelector(".sb-card").onclick=()=>tnOpenStampBook();
   el.querySelector(".am-prof").onclick=()=>{if(typeof openAcct==="function")openAcct(me?"me":"login")};
   el.querySelectorAll(".am-li").forEach(b=>b.onclick=()=>{const k=b.dataset.k;
     if(k==="lang"){setLang(isAR()?"en":"ar");return}

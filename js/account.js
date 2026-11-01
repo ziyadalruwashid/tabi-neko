@@ -423,7 +423,7 @@ async function deleteAccount(pw){
     auth=signedIn({...r,email:auth.email});
     if(tripOwner()!==me())try{await fsCommit([{update:{name:`${FS_PATH}/trips/${tripOwner()}`,fields:{}},updateMask:{fieldPaths:["emails."+KEYP(me())]},
       updateTransforms:[{fieldPath:"members",removeAllFromArray:{values:[S(me())]}}],currentDocument:{exists:true}}])}catch(e){}
-    for(const p of ["trips/"+me(),"users/"+me()])try{await call(`${FS}/${p}`,{method:"DELETE",token:auth.token})}catch(e){if(!(e&&e.status===404))throw e}
+    for(const p of ["trips/"+me(),"users/"+me(),"stamps/"+me()])try{await call(`${FS}/${p}`,{method:"DELETE",token:auth.token})}catch(e){if(!(e&&e.status===404))throw e}
     await ID("delete",{idToken:auth.token});
     loggedOut(false);closeAcct();toast(T("Your account is deleted."));
   }catch(e){say(WRONG.includes(e&&e.code)?T("That password isn't right."):failMsg(e))}

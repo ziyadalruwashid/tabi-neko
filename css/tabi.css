@@ -2196,3 +2196,65 @@ html.tn-app.at-sheet-open .ttoast,html.tn-app.onb-open .ttoast{bottom:calc(22px 
 html.tn-app .hx-sico{font-style:normal;font-size:17px;line-height:1;flex:none}
 html.tn-app .hx-season p b{color:var(--lantern);margin-inline-end:2px}
 html.tn-app .hx-sall{display:block;margin:10px auto 0;border:0;background:none;color:var(--lantern);font:800 14px var(--body);padding:6px 10px}
+
+/* ---- Apollo's stamp book (js/stamps.js) ---- */
+html.tn-app .tns{display:block;overflow:visible}
+/* on a place's page */
+html.tn-app .sb-slot{display:flex;gap:14px;align-items:center;margin-top:16px;padding:14px;border-radius:20px;border:2px dashed #E3C3B1;background:#FFF6EE}
+html.tn-app .sb-slot.got{border:0;background:var(--sheet);box-shadow:0 4px 16px rgba(63,33,22,.06)}
+html.tn-app .sb-art{flex:none;border:0;background:none;padding:0;cursor:pointer}
+html.tn-app .sb-slot>div{min-width:0}
+html.tn-app .sb-slot b{display:block;font:800 16px var(--body)}
+html.tn-app .sb-slot p{margin:2px 0 10px;color:var(--muted);font:600 13.5px/1.45 var(--body)}
+html.tn-app .sb-slot .btn,html.tn-app .sb-paper .btn,html.tn-app .sb-in .btn{border:0;background:var(--lantern);color:#fff;border-radius:99px;padding:10px 16px;font:800 14.5px var(--body);box-shadow:0 8px 16px -8px rgba(241,78,36,.8);cursor:pointer}
+html.tn-app .sb-slot .btn:disabled{opacity:.7}
+html.tn-app .sb-open{border:0;background:none;padding:0;color:var(--lantern);font:800 14px var(--body);cursor:pointer}
+html.tn-app .sb-msg{display:block;margin-top:9px;color:#B4441F;font:700 12.5px/1.45 var(--body)}
+/* the moment it lands */
+html.tn-app .sb-moment{position:fixed;inset:0;z-index:90;background:rgba(40,22,14,.62);display:flex;align-items:center;justify-content:center;padding:20px;animation:tfade .2s ease-out}
+html.tn-app .sb-paper{width:min(100%,380px);background:#FBF3E2;background-image:repeating-linear-gradient(0deg,transparent 0 27px,#EADBC2 27px 28px);border-radius:20px;padding:22px 18px 18px;text-align:center;box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
+html.tn-app .sb-land{display:flex;justify-content:center;animation:sbland .55s cubic-bezier(.2,.9,.3,1.2) both .1s}
+@keyframes sbland{0%{transform:scale(2.4) rotate(-12deg);opacity:0}60%{transform:scale(.94);opacity:1}100%{transform:scale(1)}}
+html.tn-app .sb-paper h3{font:400 28px var(--display);margin:8px 0 0}
+html.tn-app .sb-paper>p{margin:0;color:var(--muted);font:700 13.5px var(--body)}
+html.tn-app .sb-bub{display:flex;gap:8px;align-items:flex-end;text-align:start;margin:14px 0 16px}
+html.tn-app .sb-bub img{width:44px;flex:none}
+html.tn-app .sb-bub span{background:#fff;border-radius:14px 14px 14px 4px;padding:8px 11px;font:600 13px/1.45 var(--body);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+html[dir=rtl].tn-app .sb-bub span{border-radius:14px 14px 4px 14px}
+html.tn-app .sb-btns{display:flex;gap:8px;justify-content:center}
+html.tn-app .sb-done{border:1.5px solid var(--rule);background:#fff;color:var(--ink);border-radius:99px;padding:9px 18px;font:800 14.5px var(--body);cursor:pointer}
+/* the book */
+html.tn-app #sbook:not([hidden]){position:fixed;inset:0;z-index:62;background:var(--paper)}
+html.tn-app.sb-open body{overflow:hidden}
+html.tn-app .sb-scroll{position:absolute;inset:0;overflow-y:auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));overscroll-behavior:contain}
+html.tn-app .sb-pass{position:relative;overflow:hidden;display:block;border-radius:20px;background:linear-gradient(135deg,#5A2A18,#3F2116);color:#F6E7CC;padding:16px 18px;margin-top:6px}
+html.tn-app .sb-pass small{font:800 10.5px var(--body);letter-spacing:.14em;opacity:.7}
+html.tn-app .sb-pass b{display:block;font:400 22px var(--display);color:#FFD9A0;margin:2px 0 4px;padding-inline-end:80px}
+html.tn-app .sb-pass span{display:block;font:700 13px/1.4 var(--body);padding-inline-end:80px}
+html.tn-app .sb-bar{display:block;height:6px;background:#ffffff26;border-radius:9px;margin-top:10px;width:68%}
+html.tn-app .sb-bar i{display:block;height:100%;background:#FFB35C;border-radius:9px;min-width:6px}
+html.tn-app .sb-pass img{position:absolute;inset-inline-end:-8px;bottom:-10px;width:92px}
+html.tn-app .sb-in{margin-top:12px;background:#FFF6EE;border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center}
+html.tn-app .sb-in p{margin:0;flex:1;font:600 13.5px/1.45 var(--body)}
+html.tn-app .sb-pills{display:flex;gap:7px;overflow-x:auto;padding:14px 0 4px;scrollbar-width:none}
+html.tn-app .sb-pills::-webkit-scrollbar{display:none}
+html.tn-app .sb-pills button{flex:none;border:1.5px solid var(--rule);background:#fff;color:var(--ink);border-radius:99px;padding:7px 13px;font:800 13.5px var(--body);cursor:pointer}
+html.tn-app .sb-pills button small{font-weight:700;opacity:.7}
+html.tn-app .sb-pills .on{background:var(--ink);border-color:var(--ink);color:#fff}
+html.tn-app .sb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
+html.tn-app .sb-cell{border:0;background:none;padding:6px 0;display:flex;flex-direction:column;align-items:center;gap:4px;color:#B6A390;font:700 11.5px/1.25 var(--body);text-align:center;cursor:pointer}
+html.tn-app .sb-cell .tns{width:min(96px,100%);height:auto}
+html.tn-app .sb-cell:not(.got) .tns{opacity:.55}
+html.tn-app .sb-cell.got{color:var(--ink)}
+html.tn-app .sb-cell.flash .tns{animation:sbland .55s cubic-bezier(.2,.9,.3,1.2) both .15s}
+html.tn-app .sb-foot{color:var(--muted);font:600 12.5px/1.5 var(--body);text-align:center;margin:18px 10px 0}
+html.tn-app .sb-clear{display:block;margin:10px auto 0}
+/* the card at the top of More */
+html.tn-app .sb-card{display:flex;width:100%;align-items:center;gap:10px;margin-top:12px;border:0;border-radius:20px;padding:14px 12px 14px 16px;background:linear-gradient(135deg,#5A2A18,#3F2116);color:#F6E7CC;text-align:start;cursor:pointer;overflow:hidden}
+html.tn-app .sb-ct{flex:1;min-width:0}
+html.tn-app .sb-ct small{display:block;font:800 11px var(--body);letter-spacing:.06em;opacity:.75}
+html.tn-app .sb-ct b{display:block;font:400 18px/1.25 var(--display);color:#FFD9A0;margin-top:3px}
+html.tn-app .sb-peek{display:flex;flex:none}
+html.tn-app .sb-peek i{margin-inline-start:-18px;background:#FBF3E2;border-radius:50%;padding:2px;box-shadow:0 2px 6px rgba(0,0,0,.25);transform:rotate(calc((var(--i) - 1) * 8deg))}
+html.tn-app .sb-peek i:first-child{margin-inline-start:0}
+html.tn-app .sb-peek .tns{width:52px;height:52px}
