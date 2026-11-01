@@ -73,7 +73,16 @@ function restyle(){
   }
 }
 const shown=()=>P.filter(p=>(!only||only.ids.has(p.id))&&(!cat||p.cat===cat)&&(!halal||p.halal));
-const geo=()=>({type:"FeatureCollection",features:shown().map(p=>({type:"Feature",geometry:{type:"Point",coordinates:[p.lng,p.lat]},properties:{id:p.id,color:COL[p.cat]||INK}}))});
+// A day from My trip shows as a route: numbered stops joined by a line, in
+// their own source so they never gather into clusters.
+const ROUTE=()=>only&&only.order?only.order.map(id=>P.find(p=>p.id===id)).filter(Boolean):null;
+const FC=f=>({type:"FeatureCollection",features:f});
+function setRoute(){
+  if(!ready)return;const r=ROUTE()||[];
+  gl.getSource("rpts").setData(FC(r.map((p,i)=>({type:"Feature",geometry:{type:"Point",coordinates:[p.lng,p.lat]},properties:{id:p.id,n:String(i+1),color:COL[p.cat]||INK}}))));
+  gl.getSource("rline").setData(FC(r.length>1?[{type:"Feature",geometry:{type:"LineString",coordinates:r.map(p=>[p.lng,p.lat])},properties:{}}]:[]));
+}
+const geo=()=>({type:"FeatureCollection",features:ROUTE()?[]:shown().map(p=>({type:"Feature",geometry:{type:"Point",coordinates:[p.lng,p.lat]},properties:{id:p.id,color:COL[p.cat]||INK}}))});
 function onLoad(){
   ready=true;restyle();
   document.documentElement.classList.add("gl-ok");
@@ -84,10 +93,16 @@ function onLoad(){
     layout:{"text-field":["get","point_count_abbreviated"],"text-font":["Noto Sans Bold"],"text-size":14,"text-allow-overlap":true},paint:{"text-color":"#FFFFFF"}});
   gl.addLayer({id:"pt",type:"circle",source:"places",filter:["!",["has","point_count"]],
     paint:{"circle-color":["get","color"],"circle-radius":["interpolate",["linear"],["zoom"],10,6,15,10],"circle-stroke-color":"#FFFFFF","circle-stroke-width":2.5}});
+  gl.addSource("rline",{type:"geojson",data:FC([])});gl.addSource("rpts",{type:"geojson",data:FC([])});
+  gl.addLayer({id:"rl",type:"line",source:"rline",layout:{"line-cap":"round","line-join":"round"},paint:{"line-color":"#F14E24","line-width":4,"line-dasharray":[.2,2.2]}});
+  gl.addLayer({id:"rp",type:"circle",source:"rpts",paint:{"circle-color":INK,"circle-radius":14,"circle-stroke-color":"#FFFFFF","circle-stroke-width":3}});
+  gl.addLayer({id:"rp-n",type:"symbol",source:"rpts",layout:{"text-field":["get","n"],"text-font":["Noto Sans Bold"],"text-size":13,"text-allow-overlap":true,"icon-allow-overlap":true},paint:{"text-color":"#FFFFFF"}});
+  gl.on("click","rp",e=>pick(e.features[0].properties.id,true));
+  setRoute();
   gl.on("click","clu",e=>{const f=e.features[0];
     gl.getSource("places").getClusterExpansionZoom(f.properties.cluster_id).then(z=>gl.easeTo({center:f.geometry.coordinates,zoom:z+.3}),()=>{})});
   gl.on("click","pt",e=>pick(e.features[0].properties.id,true));
-  for(const l of ["clu","pt"]){gl.on("mouseenter",l,()=>gl.getCanvas().style.cursor="pointer");gl.on("mouseleave",l,()=>gl.getCanvas().style.cursor="")}
+  for(const l of ["clu","pt","rp"]){gl.on("mouseenter",l,()=>gl.getCanvas().style.cursor="pointer");gl.on("mouseleave",l,()=>gl.getCanvas().style.cursor="")}
   gl.on("moveend",()=>{if(steer){steer=false;return}cards()});
   if(fitOnly)fitResults();
   cards();
@@ -99,11 +114,11 @@ function fitResults(){
   gl.fitBounds([[Math.min(...lng),Math.min(...lat)],[Math.max(...lng),Math.max(...lat)]],{padding:{top:150,bottom:190,left:50,right:50},maxZoom:15,duration:0});
   cards();
 }
-window.mapOnly=(ps,title)=>{
+window.mapOnly=(ps,title,route)=>{
   if(!ps.length)return;
   const n={};ps.forEach(p=>n[p.city]=(n[p.city]||0)+1);
   const c=Object.keys(n).sort((a,b)=>n[b]-n[a])[0];
-  only={ids:new Set(ps.filter(p=>p.city===c).map(p=>p.id)),title};fitOnly=true;sel=null;
+  only={ids:new Set(ps.filter(p=>p.city===c).map(p=>p.id)),title,order:route?ps.filter(p=>p.city===c).map(p=>p.id):null};fitOnly=true;sel=null;
   city=c;store.set("tabineko-city",c);active=new Set(Object.keys(CATS));halalOnly=false;cat=null;halal=false;
 };
 
@@ -123,6 +138,7 @@ function render(){
     </div>
     <div class="mp-fabs"><button type="button" class="mp-fab mp-list" aria-label="${esc(T("List"))}">${SVG(I_LIST)}</button>
       <button type="button" class="mp-fab mp-loc" aria-label="${esc(T("My location"))}">${SVG(I_LOC)}</button></div>
+    ${ROUTE()&&ROUTE().length>1?`<a class="mp-dir" href="${esc(dirURL(ROUTE()))}" target="_blank" rel="noopener">${SVG('<path d="M3 11 21 3l-8 18-2-8-8-2z"/>')} ${esc(T("Start the route in Google Maps"))}</a>`:""}
     <div class="mp-peek"><div class="mp-cards"></div></div>
     <div class="mp-sheet" aria-hidden="true"><button type="button" class="mp-grab" aria-label="${esc(T("Close the list"))}"><i></i></button><header><b></b><small></small></header><div class="mp-ul"></div></div>`;
   const $$=s=>host.querySelector(s);
@@ -150,7 +166,10 @@ function render(){
   cs.addEventListener("scroll",()=>{clearTimeout(t);t=setTimeout(()=>{const c=centred(cs);if(c&&c!==sel)pick(c,false,true)},140)},{passive:true});
   host.addEventListener("click",e=>{if(!e.target.closest(".mp-city,.mp-cities"))$$(".mp-cities").hidden=true});
 }
-function refilter(){render();if(ready){gl.getSource("places").setData(geo());cards()}}
+function refilter(){render();if(ready){gl.getSource("places").setData(geo());setRoute();cards()}}
+// Google Maps directions through the day's stops (it takes up to 9 in between).
+function dirURL(r){const ll=p=>p.lat+","+p.lng,mid=r.slice(1,-1).slice(0,9);
+  return "https://www.google.com/maps/dir/?api=1&origin="+ll(r[0])+"&destination="+ll(r[r.length-1])+(mid.length?"&waypoints="+mid.map(ll).join("|"):"")+"&travelmode=walking"}
 function goCity(c){only=null;shownCity=c;city=c;store.set("tabineko-city",c);render();const b=BOX[c];if(ready&&b)gl.fitBounds([[b.w,b.s],[b.e,b.n]],{padding:40,duration:900})}
 
 // Places in view, nearest the middle first, as cards and as the list.
@@ -165,7 +184,7 @@ const card=p=>`<button type="button" class="mp-card${p.id===sel?" on":""}" data-
   ${p.halal?`<em>${p.hl==="friendly"?T("Muslim-friendly"):T("halal ✓")}</em>`:D(p,"cost")?`<em class="c">${esc(D(p,"cost"))}</em>`:""}</span></button>`;
 function cards(keep){
   const cs=host.querySelector(".mp-cards");if(!cs)return;
-  let ps=inView().slice(0,25);
+  let ps=ROUTE()||inView().slice(0,25);
   if(sel){const s=P.find(p=>p.id===sel);if(s&&!ps.includes(s)&&!keep)sel=null;else if(s&&!ps.includes(s))ps=[s,...ps.slice(0,24)]}
   cs.innerHTML=ps.map(card).join("");
   host.querySelector(".mp-peek").classList.toggle("empty",!ps.length);
@@ -231,7 +250,7 @@ function sync(){
   if(want!==cat||halalOnly!==halal){cat=want;halal=halalOnly}
   if(shownCity!==city)shownCity=city;render();
   ensure();
-  if(ready){gl.resize();gl.getSource("places").setData(geo());const b=BOX[city];
+  if(ready){gl.resize();gl.getSource("places").setData(geo());setRoute();const b=BOX[city];
     if(fitOnly)fitResults();
     else{if(b&&!gl.getBounds().contains([(b.w+b.e)/2,(b.s+b.n)/2]))gl.fitBounds([[b.w,b.s],[b.e,b.n]],{padding:40,duration:0});cards()}}
 }

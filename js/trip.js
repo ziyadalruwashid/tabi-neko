@@ -28,9 +28,19 @@ function cleanHome(h){
   if(!isFinite(lat)||!isFinite(lng)||!inJapan(lat,lng))return null;
   return {n:String(h.n||"").slice(0,60),lat:+lat.toFixed(5),lng:+lng.toFixed(5)};
 }
+// Bookings the app adds to a day (flights, hotels, trains, tickets, notes).
+const BK_TYPES=["flight","hotel","train","ticket","note"];
+const goodTime=v=>typeof v==="string"&&/^([01]\d|2[0-3]):[0-5]\d$/.test(v)?v:"";
+const goodDate=v=>typeof v==="string"&&/^20\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(v)?v:"";
+function cleanBk(a){
+  return (Array.isArray(a)?a:[]).filter(b=>b&&BK_TYPES.includes(b.ty)).slice(0,12).map(b=>{const o={ty:b.ty};
+    [["a",60],["b",60],["n",60],["x",40],["note",200]].forEach(([k,n])=>{const v=String(b[k]==null?"":b[k]).trim().slice(0,n);if(v)o[k]=v});
+    const tm=goodTime(b.tm);if(tm)o.tm=tm;return o});
+}
 function cleanTrip(t){
   const seen=new Set(),keep=a=>(Array.isArray(a)?a:[]).filter(k=>typeof k==="string"&&BYKEY.has(k)&&!seen.has(k)&&seen.add(k)).slice(0,60);
   const out={name:String(t&&t.name||"").slice(0,60),ideas:[],stays:[]};
+  const start=goodDate(t&&t.start);if(start)out.start=start; // the first day's date, if you set one
   let stays=Array.isArray(t&&t.stays)?t.stays:null;
   // Trips saved before stays existed were a plain list of days. They become
   // one stay, in the city most of their places are in.
@@ -43,7 +53,8 @@ function cleanTrip(t){
   (stays||[]).slice(0,10).forEach(s=>{
     if(!s||!TRIP_CITIES.includes(s.city))return;
     const o={city:s.city,home:cleanHome(s.home),days:[]};
-    (Array.isArray(s.days)?s.days:[]).forEach(d=>{if(nd<30){nd++;o.days.push({t:String(d&&d.t||"").slice(0,50),ids:keep(d&&d.ids)})}});
+    (Array.isArray(s.days)?s.days:[]).forEach(d=>{if(nd<30){nd++;const o2={t:String(d&&d.t||"").slice(0,50),ids:keep(d&&d.ids)};
+      const st=goodTime(d&&d.st),bk=cleanBk(d&&d.bk);if(st)o2.st=st;if(bk.length)o2.bk=bk;o.days.push(o2)}});
     if(!o.days.length){if(nd>=30)return;nd++;o.days.push({t:"",ids:[]})}
     out.stays.push(o);
   });
@@ -501,7 +512,7 @@ function renderPicker(keepScroll){
 const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 const b64d=s=>decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/"))));
 async function shareTrip(withHome){
-  const data={name:trip.name,ideas:trip.ideas,stays:trip.stays.map(s=>({city:s.city,days:s.days,...(withHome&&s.home?{home:s.home}:{})}))};
+  const data={name:trip.name,...(trip.start?{start:trip.start}:{}),ideas:trip.ideas,stays:trip.stays.map(s=>({city:s.city,days:s.days,...(withHome&&s.home?{home:s.home}:{})}))};
   const url=location.origin+location.pathname+"#trip="+b64e(JSON.stringify(data));
   const title=trip.name||T("My Japan trip");
   try{if(navigator.share){await navigator.share({title,text:T("My trip plan on Tabi Neko 🐾"),url});return}}catch(e){if(e&&e.name==="AbortError")return}
