@@ -52,7 +52,8 @@ async function schedule(ask){
     const pend=await L.getPending();if(pend&&pend.notifications&&pend.notifications.length)await L.cancel({notifications:pend.notifications.map(n=>({id:n.id}))});
     const list=plan();if(!list.length)return;
     let p=await L.checkPermissions();
-    if(p.display!=="granted"){if(!ask||p.display==="denied")return;p=await L.requestPermissions();if(p.display!=="granted")return}
+    // Asking is the shrine bell's job (js/appbell.js); this only sets them.
+    if(p.display!=="granted")return;
     await L.schedule({notifications:list.map((x,i)=>({id:1000+i,title:x.title,body:x.body,schedule:{at:x.when,allowWhileIdle:true},extra:{a:x.a,b:x.b}}))});
   }catch(e){console.warn(e)}finally{busy=false}
 }
@@ -60,7 +61,8 @@ async function schedule(ask){
 try{const L=LN();if(L&&L.addListener)L.addListener("localNotificationActionPerformed",e=>{const x=e&&e.notification&&e.notification.extra;
   if(x&&typeof window.tnOpenDay==="function"){const tb=document.querySelector('#tabbar [data-t="trip"]');if(tb)tb.click();setTimeout(()=>tnOpenDay(x.a,x.b),150)}})}catch(e){}
 // Set them when the app opens and again when you leave it (your plan may have changed).
-setTimeout(()=>schedule(true),2500);
+setTimeout(()=>schedule(false),2500);
+window.tnRemindNow=()=>schedule(false);
 document.addEventListener("visibilitychange",()=>{if(document.hidden)schedule(false);else{schedule(false);watch()}});
 
 // ---- 2. the "you're nearby" banner ----
@@ -105,6 +107,7 @@ function draw(){
   pg.innerHTML=`<div class="pf-scroll"><div class="apbar"><button type="button" class="pv-cb rm-back" aria-label="${esc(T("Back"))}"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${document.documentElement.dir==="rtl"?"M9 18l6-6-6-6":"M15 18l-6-6 6-6"}"/></svg></button><b>${T("Reminders")}</b></div>
     <div class="rm-hero"><img src="${GI()}" alt=""><span><b>${T("Apollo keeps you on track")}</b><small>${T("Reminders come from your trip plan. Your location is only used while the app is open.")}</small></span></div>
     ${window.tnTripPlan&&tnTripPlan().length?"":`<p class="rm-note">📅 ${T("Add your travel date in My trip, and the reminders follow your days.")}</p>`}
+    <button type="button" class="rm-on" hidden>🔔 ${T("Turn on reminders")}</button>
     <h2 class="pf-h">${T("During your trip")}</h2>
     <div class="pf-list">${sel("morning","☀️",T("Morning plan"),T("Today's stops and stamps"),times)}
       ${sel("before","⏰",T("Before each stop"),T("With a stamp reminder"),[["0",T("Off")],["10","10 min"],["15","15 min"],["30","30 min"],["60","1 h"]])}
@@ -113,8 +116,12 @@ function draw(){
     <div class="pf-list">${tg("flight","✈️",T("Flight tomorrow"),T("24 h before, with a packing nudge"))}${tg("hotel","🏨",T("Hotel check-in"),T("On the day"))}</div>
     <p class="rm-note">${T("The first time, your phone asks to allow notifications. You can change it later in the phone's settings.")}</p></div>`;
   pg.querySelector(".rm-back").onclick=close;
-  pg.querySelectorAll(".rm-tg").forEach(b=>b.onclick=()=>{set[b.dataset.k]=!set[b.dataset.k];save();draw();schedule(true);watch()});
-  pg.querySelectorAll(".rm-sel").forEach(s=>s.onchange=()=>{const k=s.dataset.k;set[k]=k==="before"?+s.value:s.value;save();schedule(true)});
+  // While notifications aren't allowed yet, the bell is one tap away.
+  const on=pg.querySelector(".rm-on"),L=LN();
+  if(L)L.checkPermissions().then(p=>{if(p.display!=="granted")on.hidden=false}).catch(()=>{});
+  on.onclick=()=>window.tnBellAsk&&tnBellAsk("settings",()=>{draw()});
+  pg.querySelectorAll(".rm-tg").forEach(b=>b.onclick=()=>{set[b.dataset.k]=!set[b.dataset.k];save();draw();schedule(false);watch()});
+  pg.querySelectorAll(".rm-sel").forEach(s=>s.onchange=()=>{const k=s.dataset.k;set[k]=k==="before"?+s.value:s.value;save();schedule(false)});
 }
 function open(fromHistory){pg.hidden=false;document.documentElement.classList.add("pf-open");draw();if(!fromHistory)history.pushState({tnRemind:1},"")}
 function closeNow(){pg.hidden=true;document.documentElement.classList.remove("pf-open")}
