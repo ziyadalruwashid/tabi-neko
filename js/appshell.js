@@ -78,19 +78,25 @@ function renderExplore(){
   const el=$("explore");if(!el)return;
   const who=typeof auth!=="undefined"&&auth&&auth.email?auth.email.split("@")[0]:"";
   const cities=TRIP_CITIES.filter(c=>c!=="ise");
+  const [first,...rest]=rows(),must=first&&first.t==="Don't miss 🔥"?first:null,others=must?rest:rows();
+  // The big swipeable cards: the place's photo fills the card, its name on it.
+  const hero=p=>`<button type="button" class="pc bigc" data-id="${p.id}" style="--c:var(--${p.cat})"><span class="pimg${p.photo?"":" art"}"><img src="${p.photo||CATS[p.cat].img}" alt="" loading="lazy"></span>
+    <span class="bigc-badge">🔥 ${T("don't skip this")}</span>${p.halal?`<i class="hb">${p.hl==="friendly"?T("Muslim-friendly"):T("halal ✓")}</i>`:""}
+    <span class="bigc-t"><b><bdi>${esc(p.n)}</bdi></b><small>${esc(D(CATS[p.cat],"n"))} · ${esc(AREA(p.area))}</small></span></button>`;
   el.innerHTML=`<header class="ax-h"><div><small>${esc(who?T("Hi {n} 👋",{n:who}):T("Hi 👋"))}</small><h1>${T("Where are we going today?")}</h1></div>
       <button type="button" class="ax-av" aria-label="${esc(T("More"))}"><img src="assets/cat.png" alt=""></button></header>
-    <div class="ax-cities" role="tablist">${cities.map(c=>`<button type="button" role="tab" class="ax-city${c===exploreCity?" on":""}" data-c="${c}" aria-selected="${c===exploreCity}">${esc(cityOf(c))} <small>${P.filter(p=>p.city===c).length}</small></button>`).join("")}</div>
     <button type="button" class="ax-search">${SVG(I.search)}<span>${T("Search places, areas, dishes…")}</span></button>
-    <div class="ax-cats">${Object.keys(CATS).map(k=>`<button type="button" class="ax-cat" data-k="${k}"><img src="assets/icons/${k}.png" alt="">${esc(D(CATS[k],"n"))}</button>`).join("")}</div>
-    ${rows().map(r=>`<section class="ax-row"><header><h2>${T(r.t)}</h2>${r.all?`<button type="button" class="ax-all" data-all="${r.all}">${T("See all")}</button>`:""}</header>
+    <div class="ax-cities" role="tablist">${cities.map(c=>`<button type="button" role="tab" class="ax-city${c===exploreCity?" on":""}" data-c="${c}" aria-selected="${c===exploreCity}">${esc(cityOf(c))}</button>`).join("")}</div>
+    ${must?`<section class="ax-row ax-must"><p class="ax-sub">${esc(must.s)}</p><div class="ax-hs">${must.ps.slice(0,10).map(hero).join("")}</div></section>`:""}
+    <div class="ax-grid">${Object.keys(CATS).map(k=>`<button type="button" class="ax-cat" data-k="${k}" style="--c:var(--${k})"><span><img src="assets/icons/${k}.png" alt=""></span>${esc(D(CATS[k],"n"))}</button>`).join("")}</div>
+    ${others.map(r=>`<section class="ax-row"><header><h2>${T(r.t)}</h2>${r.all?`<button type="button" class="ax-all" data-all="${r.all}">${T("See all")}</button>`:""}</header>
       ${r.s?`<p class="ax-sub">${esc(r.s)}</p>`:""}<div class="ax-hs">${r.ps.slice(0,12).map(pcard).join("")}</div></section>`).join("")}`;
   wireCards(el);
   el.querySelector(".ax-av").onclick=()=>go("menu");
   el.querySelectorAll(".ax-city").forEach(b=>b.onclick=()=>{exploreCity=b.dataset.c;renderExplore()});
   // Picking a city here also sets the map's city, so the Map tab follows.
   const toMap=(cats,halal)=>{city=exploreCity;store.set("tabineko-city",city);active=new Set(cats);halalOnly=!!halal;area=null;zoomTo=null;selected=null;renderAll();go("map")};
-  el.querySelector(".ax-search").onclick=()=>{toMap(Object.keys(CATS));setTimeout(()=>{const q=$("q");if(q){q.scrollIntoView({block:"center"});q.focus()}},60)};
+  el.querySelector(".ax-search").onclick=()=>{toMap(Object.keys(CATS));setTimeout(()=>{const q=$("mp-q")&&!$("amap").hidden?$("mp-q"):$("q");if(q){q.scrollIntoView({block:"center"});q.focus()}},80)};
   el.querySelectorAll(".ax-cat").forEach(b=>b.onclick=()=>toMap([b.dataset.k]));
   el.querySelectorAll(".ax-all").forEach(b=>b.onclick=()=>b.dataset.all==="halal"?toMap(["food"],true):toMap([b.dataset.all]));
 }
@@ -133,6 +139,7 @@ function openPlace(id,fromHistory){
 function closePlaceNow(){pv.hidden=true;pvId=null;document.documentElement.classList.remove("pv-open")}
 function closePlace(){if(history.state&&history.state.tnPlace)history.back();else closePlaceNow()}
 addEventListener("popstate",e=>{if(e.state&&e.state.tnPlace)openPlace(e.state.tnPlace,true);else closePlaceNow()});
+window.openPlace=openPlace; // the real map (js/appmap.js) opens places too
 // Every way of picking a place opens its page instead of unfolding the card.
 const _select=select;select=function(id){if(!id)return;if(typeof closeApollo==="function")closeApollo();openPlace(id)};
 
