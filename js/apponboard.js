@@ -20,7 +20,7 @@ const el=document.createElement("div");el.id="onb";el.setAttribute("role","dialo
 document.body.appendChild(el);document.documentElement.classList.add("onb-open");
 
 // The three most visited cities, each with its own night photo behind the gate.
-const CITY=[["tokyo","東京","assets/onboard/tokyo.jpg","22% 50%"],["kyoto","京都","assets/onboard/kyoto.jpg","90% 50%"],["osaka","大阪","assets/onboard/osaka.jpg","48% 40%"]].filter(([c])=>TRIP_CITIES.includes(c));
+const CITY=[["tokyo","東京","assets/onboard/tokyo.jpg","50% 50%"],["kyoto","京都","assets/onboard/kyoto.jpg","50% 50%"],["osaka","大阪","assets/onboard/osaka.jpg","50% 45%"]].filter(([c])=>TRIP_CITIES.includes(c));
 const cityPic=c=>(CITY.find(x=>x[0]===c)||CITY[0]);
 const stk=st=>`<img class="ob-stk" src="assets/cat.png" alt="" style="${st}">`;
 const tape=(c,st)=>`<span class="ob-tape" style="${st};--t:${c}"></span>`;
@@ -78,7 +78,7 @@ function place(dx,anim){
   t.style.transition=anim?"transform .5s cubic-bezier(.2,.8,.2,1)":"none";
   t.style.transform=`translateX(calc(${sgn()*i*100}% + ${dx}px))`;
   // A little parallax: the photos drift slower than the paper.
-  el.querySelectorAll(".ob-bg").forEach((b,k)=>{b.style.transition=t.style.transition;b.style.transform=`translateX(${k===i?dx*-.3:0}px) scale(1.08)`});
+  el.querySelectorAll(".ob-bg").forEach((b,k)=>{b.style.transition=t.style.transition;b.style.transform=`translateX(${k===i?dx*-.3:0}px) scale(1.02)`});
 }
 function go(n){
   n=Math.max(0,Math.min(N-1,n));if(n===i)return place(0,true);
