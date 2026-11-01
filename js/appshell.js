@@ -330,6 +330,26 @@ window.openPlace=openPlace; // the real map (js/appmap.js) opens places too
   new MutationObserver(ms=>ms.forEach(m=>{const t=m.target;if(m.type==="attributes"&&t.classList&&t.classList.contains("tpick")&&!t.hidden)arm(t);
     (m.addedNodes||[]).forEach(n=>{if(n.classList&&n.classList.contains("tpick")&&!n.hidden)arm(n)})}))
     .observe(document.body,{attributes:true,attributeFilter:["hidden"],subtree:true,childList:true})})();
+// The phone's back button (Android): close what's on top, step back through
+// pages, go back to Explore from the other tabs, and only leave the app from
+// Explore, on a second press.
+let backAt=0;
+function onBack(){
+  const H=document.documentElement,top=[...document.querySelectorAll(".tpick,#atsheet")].filter(e=>!e.hidden).pop();
+  if(top){top.dispatchEvent(new MouseEvent("click",{bubbles:true}));return}
+  if(H.classList.contains("picking")&&typeof endPick==="function"){endPick(true);return}
+  if(H.classList.contains("chat-open")&&typeof closeApollo==="function"){closeApollo();return}
+  const mc=document.querySelector(".mp-cities:not([hidden])");if(mc){mc.hidden=true;return}
+  const st=history.state||{};
+  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay){history.back();return}
+  const c=current(),h=location.hash.slice(1);
+  if(SUB.includes(h)){go("menu");return}
+  if(c!=="explore"){go("explore");return}
+  if(Date.now()-backAt<2000){try{Capacitor.Plugins.App.exitApp()}catch(e){}return}
+  backAt=Date.now();toast(T("Press back again to leave"));
+}
+try{const A=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.App;if(A&&A.addListener)A.addListener("backButton",onBack)}catch(e){}
+window.tnBack=onBack; // for tests
 window.goTab=go;window.openListPage=openList; // and so does search (js/appsearch.js)
 // Every way of picking a place opens its page instead of unfolding the card.
 const _select=select;select=function(id){if(!id)return;if(typeof closeApollo==="function")closeApollo();openPlace(id)};
