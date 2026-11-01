@@ -1827,3 +1827,7 @@ html.tn-app .lv-map{position:fixed;left:50%;bottom:calc(22px + env(safe-area-ins
 html.tn-app .lv-map[hidden]{display:none}
 html.tn-app .lv-map svg{width:18px;height:18px}
 html.tn-app .lr-t b{direction:ltr;unicode-bidi:plaintext}
+
+/* Explore runs edge to edge like More: the same 14px sides for its cards. */
+html.tn-app #explore{width:100vw;margin-inline:calc(50% - 50vw);padding-inline:14px;box-sizing:border-box}
+html.tn-app #explore .ax-hs,html.tn-app #explore .ax-cities,html.tn-app #explore .xs-stories{scroll-padding-inline:14px}
