@@ -1190,7 +1190,7 @@ html.tn-app .am-prof img{width:54px;height:54px;border-radius:50%;object-fit:cov
 html.tn-app .am-prof b{display:block;font:800 19px var(--body)}
 html.tn-app .am-prof small{color:var(--muted)}
 html.tn-app .am-prof i,html.tn-app .am-li i{margin-inline-start:auto;font-style:normal;color:#CDBBA2;font-size:20px}
-[dir=ltr].tn-app .am-prof i,[dir=ltr].tn-app .am-li i{transform:scaleX(-1)}
+html.tn-app:not([dir=rtl]) .am-prof i,html.tn-app:not([dir=rtl]) .am-li i{transform:scaleX(-1)}
 html.tn-app .am-h{margin:20px 4px 6px;color:var(--muted);font:700 13.5px var(--body)}
 html.tn-app .am-list{background:var(--sheet);border-radius:18px;overflow:hidden}
 html.tn-app .am-li{display:flex;width:100%;align-items:center;gap:12px;padding:14px;border:0;border-bottom:1px solid #F1E7D7;background:none;font:700 16px var(--body);color:var(--ink);text-align:start}
@@ -1390,7 +1390,7 @@ html.tn-app .xs-pt small{display:block;color:var(--lantern);font:800 14px var(--
 html.tn-app .xs-pt b{display:block;font:900 19px/1.2 var(--body);margin:3px 0}
 html.tn-app .xs-pt i{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font:400 15px/1.5 var(--hand);font-style:normal;color:#5a3a2a}
 html.tn-app .xs-pt em{display:block;margin-top:6px;font:800 15px var(--body);font-style:normal;color:var(--lantern)}
-[dir=ltr].tn-app .xs-pt em{direction:rtl;text-align:left}
+
 html.tn-app .xs-h{font:400 23px var(--display);margin:26px 0 10px}
 html.tn-app .xs-moods{display:flex;flex-wrap:wrap;gap:8px}
 html.tn-app .xs-md{display:flex;align-items:center;gap:6px;background:var(--sheet);border:1.5px solid var(--rule);border-radius:999px;padding:9px 14px;font:800 16px var(--body);color:var(--ink)}
@@ -1417,3 +1417,30 @@ html.tn-app .lv-grid .pc{width:auto}
 html.tn-app .lv-grid .pimg{aspect-ratio:1}
 html.tn-app .lv-none{grid-column:1/-1;text-align:center;color:var(--muted);padding:30px}
 @media (prefers-reduced-motion:reduce){html.tn-app .xs-star,html.tn-app .xs-cloud{animation:none}}
+
+/* ---- app home v2.1: edge to edge, trip card, tip, areas, weather ---- */
+html.tn-app #explore{padding-inline:4px}
+html.tn-app .xs{width:100vw;margin-inline:calc(50% - 50vw)}
+html.tn-app #explore .ax-hs,html.tn-app #explore .ax-cities,html.tn-app #explore .xs-stories{margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%)}
+html.tn-app .xs-hi>div{max-width:calc(100% - 86px)}
+html.tn-app .xs-hi small{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+html.tn-app .xs-hint{margin:6px 2px 0;font:700 14px/1.3 var(--body);color:#2A1A12;opacity:.85}
+html.tn-app .xs-night .xs-hint{color:#fff}
+html.tn-app .xs-search span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.tn-app .xs-trip{display:flex;width:100%;gap:12px;align-items:center;margin-top:20px;background:var(--ink);color:#fff;border:0;border-radius:22px;padding:14px 16px;text-align:start}
+html.tn-app .xs-trip.empty{background:linear-gradient(135deg,#F14E24,#E8853A)}
+html.tn-app .xs-tr-ic{font-size:30px;flex:none}
+html.tn-app .xs-trip b{display:block;font:800 18px/1.25 var(--body)}
+html.tn-app .xs-trip small{display:block;color:rgba(255,255,255,.82);font-size:14px;margin-top:2px}
+html.tn-app .xs-trip i{margin-inline-start:auto;font-style:normal;font-weight:800;font-size:20px}
+html.tn-app:not([dir=rtl]) .xs-trip i{transform:scaleX(-1)}
+html.tn-app .xs-tip{display:flex;gap:12px;align-items:center;margin-top:22px;background:#EAF3E3;border-radius:22px;padding:14px}
+html.tn-app .xs-tip img{width:52px;height:60px;object-fit:cover;object-position:50% 0;flex:none}
+html.tn-app .xs-tip small{display:block;color:#2E8B3E;font:800 14px var(--body)}
+html.tn-app .xs-tip b{display:block;font:600 16px/1.5 var(--body);margin-top:2px}
+html.tn-app .xs-area{position:relative;flex:none;width:min(70vw,280px);height:170px;border:0;padding:0;border-radius:22px;overflow:hidden;scroll-snap-align:start;box-shadow:0 6px 16px rgba(63,33,22,.18)}
+html.tn-app .xs-area img{width:100%;height:100%;object-fit:cover;display:block}
+html.tn-app .xs-area::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 35%,rgba(30,15,8,.8))}
+html.tn-app .xs-area span{position:absolute;left:14px;right:14px;bottom:12px;z-index:1;color:#fff;text-align:start}
+html.tn-app .xs-area b{display:block;font:400 22px/1.15 var(--display)}
+html.tn-app .xs-area small{display:block;font:600 14px/1.35 var(--body);opacity:.92}
