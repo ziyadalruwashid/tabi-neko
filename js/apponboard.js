@@ -4,8 +4,8 @@
 //   1. Arrival (Tokyo Tower): luggage tags to pick your language.
 //   2. The city (Shibuya): a printed map with photo pins and where you are.
 //   3. The route (Tokyo Station): a JR ticket with your days, stamped by Apollo.
-//   4. The gate (Kaminarimon at night): omamori charms to pick your first
-//      city, and Start my trip opens a new trip with it.
+//   4. The gate at night: omamori charms for Tokyo, Kyoto or Osaka; the
+//      photo changes with the city, and Let's go opens Explore on it.
 // Swipe or tap Next; Skip ends it. It shows once (tabineko-onboarded), or
 // again with ?onboard=1. Only in the app layout.
 (function(){
@@ -19,7 +19,9 @@ let i=0,pick="tokyo";
 const el=document.createElement("div");el.id="onb";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");
 document.body.appendChild(el);document.documentElement.classList.add("onb-open");
 
-const CITY=[["tokyo","東京"],["kyoto","京都"],["osaka","大阪"],["nara","奈良"],["kobe","神戸"]].filter(([c])=>TRIP_CITIES.includes(c));
+// The three most visited cities, each with its own night photo behind the gate.
+const CITY=[["tokyo","東京",HD+"asakusa.jpg","50% 30%"],["kyoto","京都",PH+"kyoto-sannenzaka-ninenzaka.jpg","50% 40%"],["osaka","大阪",HD+"dotonbori.jpg","50% 40%"]].filter(([c])=>TRIP_CITIES.includes(c));
+const cityPic=c=>(CITY.find(x=>x[0]===c)||CITY[0]);
 const stk=st=>`<img class="ob-stk" src="assets/cat.png" alt="" style="${st}">`;
 const tape=(c,st)=>`<span class="ob-tape" style="${st};--t:${c}"></span>`;
 const note=(t,st)=>`<span class="ob-note" style="${st}">${esc(t)}</span>`;
@@ -45,9 +47,9 @@ function slides(){
      <div class="ob-tixf"><span>PASSENGER · APOLLO 🐾</span><span>CAR 7 · 1A</span></div>
      <div class="ob-paw"><b>🐾</b><small>APOLLO<br>APPROVED</small></div>${tape("rgba(255,143,163,.7)","top:-10px;right:30px;transform:rotate(6deg)")}</div>
      ${note(T("Trust me, I sorted it for you ✓"),"top:calc(56% + 6px);inset-inline-start:40px;transform:rotate(3deg)")}`,cta:T("Next")},
-  {img:HD+"asakusa.jpg",pos:"50% 30%",night:true,kick:"出発 · DEPARTURE",tag:"04 · THE GATE",h:T("Where to first?"),p:T("Pick your city and we'll get your first trip ready."),
+  {img:cityPic(pick)[2],pos:cityPic(pick)[3],night:true,kick:"出発 · DEPARTURE",tag:"04 · THE GATE",h:T("Where to first?"),p:T("Pick your city and Apollo shows you around."),
    obj:"",below:`<div class="ob-oms" role="radiogroup">${CITY.map(([c,j])=>`<button type="button" role="radio" class="ob-om${c===pick?" on":""}" data-c="${c}" aria-checked="${c===pick}"><i></i><span lang="ja">${j}</span><b>${esc(D(CITIES[c],"n"))}</b></button>`).join("")}</div>`,
-   cta:T("Start my trip ✈️"),later:T("Later")}];
+   cta:T("Let's go ✈️")}];
 }
 function draw(){
   const S=slides();
@@ -63,7 +65,11 @@ function draw(){
   const later=el.querySelector(".ob-later");if(later)later.onclick=()=>finish(false);
   el.querySelectorAll(".ob-tag").forEach(b=>b.onclick=()=>{const l=b.dataset.l;if((isAR()?"ar":"en")===l)return;
     setLang(l);setTimeout(draw,l==="ar"&&typeof AR_ON==="function"&&!AR_ON()?400:30)});
-  el.querySelectorAll(".ob-om").forEach(b=>b.onclick=()=>{pick=b.dataset.c;el.querySelectorAll(".ob-om").forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-checked",String(on))})});
+  el.querySelectorAll(".ob-om").forEach(b=>b.onclick=()=>{pick=b.dataset.c;el.querySelectorAll(".ob-om").forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-checked",String(on))});
+    // The photo behind the gate changes to the city, with a soft crossfade.
+    const s=el.querySelectorAll(".ob-s")[N-1],old=s.querySelector(".ob-bg"),[,,src,pos]=cityPic(pick),n=old.cloneNode();
+    n.src=src;n.style.objectPosition=pos;n.style.opacity="0";n.style.transition="opacity .5s";old.after(n);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{n.style.opacity="1"}));setTimeout(()=>old.remove(),550)});
 }
 // The slides sit side by side; in Arabic the next one comes from the left.
 const sgn=()=>isAR()?1:-1;
@@ -98,8 +104,7 @@ function finish(start){
   el.classList.add("out");document.documentElement.classList.remove("onb-open");
   setTimeout(()=>el.remove(),450);window.tnOnbBack=null;
   if(typeof goTab==="function"){
-    if(start){goTab("trip");setTimeout(()=>{if(window.tnNewTrip)tnNewTrip(pick)},350)}
-    else goTab("explore")
+    goTab("explore")
   }
 }
 // The phone's back button steps back through the stops.
