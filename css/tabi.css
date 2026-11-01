@@ -2192,3 +2192,7 @@ html.tn-app .ttoast{bottom:calc(98px + env(safe-area-inset-bottom))}
 html.tn-app.at-sheet-open .ttoast,html.tn-app.onb-open .ttoast{bottom:calc(22px + env(safe-area-inset-bottom))}
 /* The count next to Saved places on a trip. */
 .at-h .tv-n{font:600 13px var(--body);font-style:normal;background:var(--ink);color:var(--paper);border-radius:99px;padding:2px 8px;vertical-align:middle}
+/* In season: the season's emoji in place of the live dot, and a See all link. */
+html.tn-app .hx-sico{font-style:normal;font-size:17px;line-height:1;flex:none}
+html.tn-app .hx-season p b{color:var(--lantern);margin-inline-end:2px}
+html.tn-app .hx-sall{display:block;margin:10px auto 0;border:0;background:none;color:var(--lantern);font:800 14px var(--body);padding:6px 10px}
