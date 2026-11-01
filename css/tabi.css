@@ -2190,3 +2190,5 @@ html.tn-app body{margin:0}
 /* In the app the message sits just above the tab bar. */
 html.tn-app .ttoast{bottom:calc(98px + env(safe-area-inset-bottom))}
 html.tn-app.at-sheet-open .ttoast,html.tn-app.onb-open .ttoast{bottom:calc(22px + env(safe-area-inset-bottom))}
+/* The count next to Saved places on a trip. */
+.at-h .tv-n{font:600 13px var(--body);font-style:normal;background:var(--ink);color:var(--paper);border-radius:99px;padding:2px 8px;vertical-align:middle}

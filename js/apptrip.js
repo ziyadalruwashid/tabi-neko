@@ -28,7 +28,6 @@ const I={share:'<path d="M12 15V4m0 0-4 4m4-4 4 4M6 13v6h12v-6"/>',dots:'<circle
   walk:'<circle cx="13" cy="4" r="2"/><path d="m9 20 3-6 3 3v4M7 12l3-4 4 1 2 4"/>',train:'<rect x="6" y="3" width="12" height="14" rx="3"/><path d="M6 11h12M9 17l-2 4M15 17l2 4"/>',
   list:'<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',cal:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',clock:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',img:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 8"/>',search:'<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>',trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'};
 let view=null,tab="plan",seg="up",compact=false,sheet=null,nt=null;
-try{compact=store.get("tabineko-compact")==="1"}catch(e){}
 const N=(n,one,many)=>T(n===1?one:many,{n});
 const arrow=()=>isAR()?"←":"→";
 const num=v=>isAR()?iso(String(v)):String(v);
@@ -239,11 +238,12 @@ function tripHTML(){
     <div class="at-cbtn tv-cbtn"><button type="button" class="at-cb tv-back" aria-label="${esc(T("My trips"))}">${SVG(I.back)}</button><span></span><button type="button" class="at-cb at-share" aria-label="${esc(T("Share"))}">${SVG(I.share)}</button></div>
     <div class="at-ctext">${countdown(nd)}<input class="tname-in at-title" id="tripname" value="${esc(t.name)}" placeholder="${esc(T("My Japan trip 🇯🇵"))}" maxlength="60" aria-label="${esc(T("Trip name"))}"><p>${esc(isAR()?iso(when):when)}</p></div></div>`;
   if(shareAsk)h+=`<div class="tshareask"><p>${T("Include where you're staying? Anyone with the link will see it.")}</p><button type="button" class="store" data-home="0">${T("Share without it")}</button><button type="button" class="store" data-home="1">${T("Include it")}</button></div>`;
-  h+=`<div class="tv-pills" role="tablist">${[["plan","Schedule"],["map","Map"],["bk","Bookings"],["ideas","Ideas 💡"]].map(([k,l])=>`<button type="button" role="tab" data-tab="${k}" class="${tab===k?"on":""}">${T(l)}${k==="ideas"&&t.ideas.length?` <i>${num(t.ideas.length)}</i>`:""}</button>`).join("")}
-    <button type="button" class="tv-cmp${compact?" on":""}" aria-pressed="${compact}" aria-label="${esc(T("Compact"))}">${SVG(I.list,16)}</button></div>`;
+  h+=`<div class="tv-pills" role="tablist">${[["plan","Schedule"],["map","Map"],["bk","Bookings"]].map(([k,l])=>`<button type="button" role="tab" data-tab="${k}" class="${tab===k?"on":""}">${T(l)}</button>`).join("")}</div>`;
   if(tab==="bk")h+=`<div class="tv-pad">${bookingsHTML()}</div>`;
-  else if(tab==="ideas")h+=`<div class="tv-pad">${t.ideas.length?ideasRow(t):`<div class="tv-idea0"><img src="assets/cat.png" alt=""><span><b>${T("Save places you like here")}</b><small>${T("Tap ＋ on any place while you browse, then sort them into your days.")}</small></span></div>`}</div>`;
-  else{const used=new Set();h+=`<div class="tv-pad tv-plan${compact?" compact":""}">${allDays().map(x=>dayHTML(x,used)).join("")}</div>`}
+  else{const used=new Set();
+    // Places saved with ＋ wait at the top of the schedule until they're sorted into a day.
+    if(t.ideas.length)h+=`<div class="tv-pad"><h2 class="at-h">${T("Saved places")} <i class="tv-n">${num(t.ideas.length)}</i></h2>${ideasRow(t)}</div>`;
+    h+=`<div class="tv-pad tv-plan${compact?" compact":""}">${allDays().map(x=>dayHTML(x,used)).join("")}</div>`}
   h+=`<div class="tv-pad"><h2 class="at-h">${T("Do more")}</h2><div class="at-acts">
     ${typeof openPlanner==="function"?`<button type="button" class="tplanb at-act a1"><span>✨</span><b>${T("Let Apollo sort it")}</b><small>${T("From his notebook, with halal food")}</small></button>`:""}
     ${tripCount(t)?`<button type="button" class="at-act a2" id="tpdf"><span>📘</span><b>${T("Trip PDF")}</b><small>${T("Every day, with map links")}</small></button>`:""}
@@ -474,7 +474,6 @@ function wire(box){
   q(".tv-pills [data-tab]").forEach(b=>b.onclick=()=>{const k=b.dataset.tab;
     if(k==="map"){const ps=allIds(trip).map(x=>BYKEY.get(x)).filter(Boolean);if(!ps.length){toast(T("Add some places first."));return}if(typeof mapOnly==="function"){mapOnly(ps,trip.name||T("My Japan trip"));goTab("map")}return}
     tab=k;appTrip();const p=box.querySelector(".tv-pills");if(p)p.scrollIntoView({block:"start"})});
-  q(".tv-cmp").forEach(b=>b.onclick=()=>{compact=!compact;store.set("tabineko-compact",compact?"1":"0");appTrip()});
   q(".tv-dadd").forEach(b=>b.onclick=()=>openAdd(b.dataset.s,b.dataset.d));
   q(".tv-q").forEach(b=>b.onclick=()=>{const ty=b.dataset.ty;if(ty==="hotel")return openHotel(+b.dataset.s);openAdd(b.dataset.s,b.dataset.d,null);sheet.ty=ty;drawAdd()});
   q(".tv-fab,.tv-addany").forEach(b=>b.onclick=()=>{
