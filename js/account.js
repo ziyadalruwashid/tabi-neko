@@ -88,7 +88,7 @@ async function getActive(){const d=await fsGet("users/"+me());return d&&d.fields
 const setActive=owner=>fsPatch("users/"+me(),{active:S(owner)},["active"]);
 
 // ---- syncing the trip ----
-const tripJSON=t=>JSON.stringify({name:t.name,start:t.start,ideas:t.ideas,stays:t.stays});
+const tripJSON=t=>JSON.stringify({name:t.name,start:t.start,id:t.id,cover:t.cover,ideas:t.ideas,stays:t.stays});
 const hasTrip=t=>!!(t.name||t.ideas.length||t.stays.length);
 function setShare(rec){share={members:rec.members,emails:rec.emails,code:rec.code};sync.share=share;saveSync()}
 // Put a trip from the server on this phone, without sending it back.
@@ -107,13 +107,14 @@ function showLocal(){store.set(TRIP_KEY,JSON.stringify(trip));tripBadge();homeBt
 function merge3(baseJSON,local,server){
   let base;try{base=JSON.parse(baseJSON)}catch(e){return local}
   base=cleanTrip(base);server=cleanTrip(server);
-  const shape=t=>JSON.stringify(t.stays.map(s=>({c:s.city,h:s.home,d:s.days.map(d=>[d.t,d.st,d.bk])})));
+  const shape=t=>JSON.stringify(t.stays.map(s=>({c:s.city,h:s.home,ho:s.hotel,d:s.days.map(d=>[d.t,d.st,d.bk,d.at])})));
   const pos=t=>{const m=new Map();t.ideas.forEach(k=>m.set(k,"ideas"));t.stays.forEach((s,i)=>s.days.forEach((d,j)=>d.ids.forEach(k=>m.set(k,i+"."+j))));return m};
   const pb=pos(base),pl=pos(local),ps=pos(server);
   const src=shape(local)!==shape(base)&&shape(server)===shape(base)?local:server;
   const out={name:local.name!==base.name?local.name:server.name,ideas:[],
-    stays:src.stays.map(s=>({city:s.city,home:s.home,days:s.days.map(d=>({t:d.t,ids:[],...(d.st?{st:d.st}:{}),...(d.bk?{bk:d.bk}:{})}))}))};
+    stays:src.stays.map(s=>({city:s.city,home:s.home,...(s.hotel?{hotel:s.hotel}:{}),days:s.days.map(d=>({t:d.t,ids:[],...(d.st?{st:d.st}:{}),...(d.bk?{bk:d.bk}:{}),...(d.at?{at:d.at}:{})}))}))};
   const start=local.start!==base.start?local.start:server.start;if(start)out.start=start;
+  ["id","cover"].forEach(k=>{const v=local[k]!==base[k]?local[k]:server[k];if(v)out[k]=v});
   const final=new Map();
   new Set([...pl.keys(),...ps.keys()]).forEach(k=>{const f=pl.get(k)!==pb.get(k)?pl.get(k):ps.get(k);if(f)final.set(k,f)});
   const list=r=>{if(r==="ideas")return out.ideas;const[i,j]=r.split(".").map(Number);return out.stays[i]&&out.stays[i].days[j]?out.stays[i].days[j].ids:null};

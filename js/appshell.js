@@ -51,6 +51,8 @@ function renderTabs(){
 function go(t,keep){
   closePlaceNow();if(typeof closeList==="function")closeList();if(window.closeSearchNow)closeSearchNow(true);
   try{history.replaceState(null,"","#"+t)}catch(_){}show(t,true);
+  // Explore follows your trip, which may have changed on the other tabs.
+  if(t==="explore"&&typeof renderExplore==="function")renderExplore();
   if(!keep)window.scrollTo(0,0);
 }
 const SUB=["hoods","apps","trips","memories","crew","privacy","admin"];
@@ -398,7 +400,7 @@ function onBack(){
   if(H.classList.contains("chat-open")&&typeof closeApollo==="function"){closeApollo();return}
   const mc=document.querySelector(".mp-cities:not([hidden])");if(mc){mc.hidden=true;return}
   const st=history.state||{};
-  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay){history.back();return}
+  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay||st.tnTrip){history.back();return}
   const c=current(),h=location.hash.slice(1);
   if(h==="hoods"){go("explore");return}
   if(SUB.includes(h)){go("menu");return}
