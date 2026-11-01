@@ -484,8 +484,10 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
   border-radius:999px;background:var(--lantern);color:#fff;font:700 11px var(--body);vertical-align:2px}
 .ttoast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));z-index:90;transform:translate(-50%,140%);display:flex;gap:12px;align-items:center;
   background:var(--ink);color:var(--paper);padding:10px 12px 10px 18px;border-radius:14px;font:500 14.5px var(--body);box-shadow:0 14px 30px -12px rgba(0,0,0,.5);
-  transition:transform .3s cubic-bezier(.2,.8,.2,1);width:max-content;max-width:calc(100vw - 32px)}
-.ttoast.show{transform:translate(-50%,0)}
+  transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .25s,visibility 0s .3s;width:max-content;max-width:calc(100vw - 32px);
+  opacity:0;visibility:hidden;pointer-events:none}
+/* Hidden means hidden: sliding down alone left it on screen above a phone's navigation bar. */
+.ttoast.show{transform:translate(-50%,0);opacity:1;visibility:visible;pointer-events:auto;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .2s,visibility 0s}
 .ttoast button{appearance:none;border:0;cursor:pointer;background:var(--yuzu);color:var(--ink);font:700 13.5px var(--body);border-radius:9px;padding:6px 11px;white-space:nowrap}
 #tripbook{padding-block:26px 10px}
 .ttop{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 18px;margin-bottom:22px}
@@ -2184,3 +2186,7 @@ html.onb-open #tabbar{display:none}
 .ob-om.on{background:linear-gradient(#F14E24,#C23A15);border-color:#FFD9A0;transform:translateY(-4px)}
 .ob-om.on span,.ob-om.on b{color:#fff}
 html.tn-app body{margin:0}
+
+/* In the app the message sits just above the tab bar. */
+html.tn-app .ttoast{bottom:calc(98px + env(safe-area-inset-bottom))}
+html.tn-app.at-sheet-open .ttoast,html.tn-app.onb-open .ttoast{bottom:calc(22px + env(safe-area-inset-bottom))}
