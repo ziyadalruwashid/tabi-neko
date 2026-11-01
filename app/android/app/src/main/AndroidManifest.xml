@@ -35,4 +35,6 @@
     <!-- The map's "my location" button: only while the app is open. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- Halal Lens: the camera reads food labels and menus on the phone. -->
+    <uses-permission android:name="android.permission.CAMERA" />
 </manifest>
