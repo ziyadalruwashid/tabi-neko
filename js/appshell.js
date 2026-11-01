@@ -73,31 +73,96 @@ function jstText(){const {h,m}=jst(),hh=h%12||12,mm=String(m).padStart(2,"0");
   if(!isAR())return `${hh}:${mm} ${h<12?"am":"pm"} in ${cityOf(exploreCity)}`;
   const part=h>=4&&h<11?"الصبح":h<14?"الظهر":h<17?"العصر":h<19?"المغرب":"الليل";
   return `${hh}:${mm} ${part} في ${cityOf(exploreCity)}`}
-// The scene behind the greeting: sky for the hour, Fuji, and the city's
-// own skyline (Tokyo Tower and Skytree, Kyoto's pagoda, Osaka Castle).
+// The scene behind the greeting: sky for the hour in Japan, and the city's
+// own landmarks.
+// Each city's own landmarks behind the greeting, coloured like the real
+// thing in the day, warm at sunset, and lit up at night.
+const LM={
+  // Tokyo Tower: red and white lattice, orange glow after dark.
+  tower(cx,b,h,col){const w=h*.2;return `<g fill="${col}"><path d="M${cx-w} ${b} L${cx-w*.18} ${b-h*.72} L${cx+w*.18} ${b-h*.72} L${cx+w} ${b} L${cx+w*.62} ${b} Q${cx} ${b-h*.26} ${cx-w*.62} ${b} Z"/>
+    <rect x="${cx-w*.62}" y="${b-h*.45}" width="${w*1.24}" height="${h*.06}" rx="1"/><rect x="${cx-w*.34}" y="${b-h*.74}" width="${w*.68}" height="${h*.05}" rx="1"/>
+    <path d="M${cx-w*.12} ${b-h*.74} L${cx} ${b-h} L${cx+w*.12} ${b-h*.74} Z"/></g>
+    <g stroke="#fff" stroke-width="1" opacity=".55" fill="none"><path d="M${cx-w*.82} ${b-h*.12} L${cx+w*.82} ${b-h*.12} M${cx-w*.56} ${b-h*.3} L${cx+w*.56} ${b-h*.3} M${cx-w*.3} ${b-h*.58} L${cx+w*.3} ${b-h*.58}"/></g>`},
+  skytree(cx,b,h,col){return `<g fill="${col}"><path d="M${cx-9} ${b} L${cx-3} ${b-h*.78} L${cx+3} ${b-h*.78} L${cx+9} ${b} Z"/><rect x="${cx-10}" y="${b-h*.6}" width="20" height="9" rx="4"/><rect x="${cx-7}" y="${b-h*.76}" width="14" height="6" rx="3"/>
+    <rect x="${cx-1.2}" y="${b-h}" width="2.4" height="${h*.25}"/></g>`},
+  pagoda(cx,b,s,roof,body,spire){let g="",y=b;for(let i=0;i<5;i++){const rw=s*(1-i*.11),bw=s*.52*(1-i*.1),bh=s*.26;
+    g+=`<rect x="${cx-bw/2}" y="${y-bh}" width="${bw}" height="${bh}" fill="${body}"/>`;y-=bh;
+    g+=`<path d="M${cx-rw/2} ${y+2} Q${cx-rw*.3} ${y-4} ${cx-bw*.42} ${y-s*.1} L${cx+bw*.42} ${y-s*.1} Q${cx+rw*.3} ${y-4} ${cx+rw/2} ${y+2} Z" fill="${roof}"/>`;y-=s*.1}
+    return g+`<rect x="${cx-1.4}" y="${y-s*.55}" width="2.8" height="${s*.55}" fill="${spire}"/>${[0,1,2,3,4].map(i=>`<rect x="${cx-4}" y="${y-s*.12-i*s*.07}" width="8" height="1.8" fill="${spire}"/>`).join("")}`},
+  torii(cx,b,s,col){const pw=s*.09;return `<g fill="${col}"><rect x="${cx-s*.36-pw/2}" y="${b-s}" width="${pw}" height="${s}"/><rect x="${cx+s*.36-pw/2}" y="${b-s}" width="${pw}" height="${s}"/>
+    <rect x="${cx-s*.5}" y="${b-s*.8}" width="${s}" height="${s*.07}"/><path d="M${cx-s*.62} ${b-s*1.04} Q${cx} ${b-s*.95} ${cx+s*.62} ${b-s*1.04} L${cx+s*.56} ${b-s*.92} L${cx-s*.56} ${b-s*.92} Z"/></g>`},
+  castle(cx,b,s,wall,roof,stone,gold){const lv=[[1,.36],[.8,.3],[.62,.27],[.46,.25]];let y=b-s*.3,g=`<path d="M${cx-s*.62} ${b} L${cx-s*.5} ${y} L${cx+s*.5} ${y} L${cx+s*.62} ${b} Z" fill="${stone}"/>`;
+    lv.forEach(([w,h],i)=>{const ww=s*w*.86,hh=s*h*.62;g+=`<rect x="${cx-ww/2}" y="${y-hh}" width="${ww}" height="${hh}" fill="${wall}"/><path d="M${cx-ww/2-s*.08} ${y-hh+3} Q${cx-ww*.3} ${y-hh-4} ${cx-ww*.3} ${y-hh-s*.07} L${cx+ww*.3} ${y-hh-s*.07} Q${cx+ww*.3} ${y-hh-4} ${cx+ww/2+s*.08} ${y-hh+3} Z" fill="${roof}"/>
+      ${i===1||i===2?`<path d="M${cx-s*.08} ${y-hh-s*.07} L${cx} ${y-hh-s*.16} L${cx+s*.08} ${y-hh-s*.07} Z" fill="${roof}"/>`:""}<rect x="${cx-ww*.3}" y="${y-hh*.6}" width="${ww*.6}" height="${hh*.18}" fill="${roof}" opacity=".25"/>`;y-=hh+s*.07});
+    return g+`<path d="M${cx-s*.17} ${y+1} L${cx-s*.2} ${y-s*.07} M${cx+s*.17} ${y+1} L${cx+s*.2} ${y-s*.07}" stroke="${gold}" stroke-width="4" stroke-linecap="round"/>`},
+  tsutenkaku(cx,b,h,col,acc){return `<g fill="${col}"><path d="M${cx-18} ${b} L${cx-6} ${b-h*.42} L${cx+6} ${b-h*.42} L${cx+18} ${b} L${cx+10} ${b} Q${cx} ${b-h*.2} ${cx-10} ${b} Z"/><rect x="${cx-7}" y="${b-h*.9}" width="14" height="${h*.48}"/>
+    <rect x="${cx-12}" y="${b-h*.86}" width="24" height="${h*.16}" rx="2"/><rect x="${cx-1.2}" y="${b-h}" width="2.4" height="${h*.12}"/></g><rect x="${cx-12}" y="${b-h*.8}" width="24" height="${h*.05}" fill="${acc}"/>`},
+  hall(cx,b,s,roof,wall,gold){return `<rect x="${cx-s*.5}" y="${b-s*.08}" width="${s}" height="${s*.08}" fill="#B5AA9C"/><rect x="${cx-s*.42}" y="${b-s*.34}" width="${s*.84}" height="${s*.26}" fill="${wall}"/>
+    ${[0,1,2,3,4,5,6].map(i=>`<rect x="${cx-s*.4+i*s*.13}" y="${b-s*.34}" width="${s*.03}" height="${s*.26}" fill="#5A3A2A" opacity=".55"/>`).join("")}
+    <path d="M${cx-s*.62} ${b-s*.3} Q${cx-s*.4} ${b-s*.38} ${cx-s*.36} ${b-s*.46} L${cx+s*.36} ${b-s*.46} Q${cx+s*.4} ${b-s*.38} ${cx+s*.62} ${b-s*.3} Z" fill="${roof}"/>
+    <rect x="${cx-s*.3}" y="${b-s*.56}" width="${s*.6}" height="${s*.1}" fill="${wall}"/>
+    <path d="M${cx-s*.5} ${b-s*.52} Q${cx-s*.32} ${b-s*.6} ${cx-s*.28} ${b-s*.7} L${cx+s*.28} ${b-s*.7} Q${cx+s*.32} ${b-s*.6} ${cx+s*.5} ${b-s*.52} Z" fill="${roof}"/>
+    <path d="M${cx-s*.3} ${b-s*.7} l2 -${s*.07} l5 ${s*.07} Z M${cx+s*.3} ${b-s*.7} l-2 -${s*.07} l-5 ${s*.07} Z" fill="${gold}"/>`},
+  deer(x,b,s,col,flip,bow){const f=flip?-1:1;return `<g transform="translate(${x} ${b}) scale(${f*s} ${s})" fill="${col}"><ellipse cx="0" cy="-22" rx="16" ry="8"/><rect x="-12" y="-18" width="3" height="18"/><rect x="-6" y="-18" width="3" height="18"/><rect x="7" y="-18" width="3" height="18"/><rect x="11" y="-18" width="3" height="18"/>
+    <path d="${bow?"M12 -26 L22 -14 L26 -10 L24 -6 L16 -14 Z":"M10 -26 L16 -40 L22 -40 L20 -34 L14 -24 Z"}"/>${bow?"":`<path d="M18 -40 l-2 -7 M20 -40 l3 -7" stroke="${col}" stroke-width="1.6"/>`}
+    <circle cx="-4" cy="-24" r="1.6" fill="#fff" opacity=".7"/><circle cx="3" cy="-21" r="1.4" fill="#fff" opacity=".7"/><circle cx="-9" cy="-20" r="1.3" fill="#fff" opacity=".7"/></g>`},
+  porttower(cx,b,h,col){return `<path d="M${cx-17} ${b} Q${cx-4} ${b-h*.5} ${cx-13} ${b-h*.9} L${cx+13} ${b-h*.9} Q${cx+4} ${b-h*.5} ${cx+17} ${b} Z" fill="${col}"/>
+    <g stroke="#fff" stroke-width=".9" opacity=".45">${[-12,-6,0,6,12].map(o=>`<path d="M${cx+o*1.3} ${b} Q${cx+o*.35} ${b-h*.5} ${cx+o} ${b-h*.9}" fill="none"/>`).join("")}</g>
+    <rect x="${cx-15}" y="${b-h*.98}" width="30" height="${h*.08}" rx="3" fill="#F2EEE6"/><rect x="${cx-1}" y="${b-h*1.08}" width="2" height="${h*.1}" fill="${col}"/>`},
+  museum(x,b,s){return `<g fill="none" stroke="#F7F5F0" stroke-width="2.4" stroke-linejoin="round"><path d="M${x} ${b} L${x+s*.35} ${b-s*.9} L${x+s*.55} ${b}"/><path d="M${x+s*.25} ${b} L${x+s*.65} ${b-s*.75} L${x+s*.85} ${b}"/><path d="M${x+s*.55} ${b} L${x+s} ${b-s*.6} L${x+s*1.15} ${b}"/></g>`},
+  buddha(cx,b,s,col,dark){return `<g fill="${col}"><path d="M${cx-s*.62} ${b} Q${cx-s*.6} ${b-s*.42} ${cx-s*.3} ${b-s*.56} L${cx+s*.3} ${b-s*.56} Q${cx+s*.6} ${b-s*.42} ${cx+s*.62} ${b} Z"/>
+    <rect x="${cx-s*.1}" y="${b-s*.66}" width="${s*.2}" height="${s*.14}"/><ellipse cx="${cx}" cy="${b-s*.8}" rx="${s*.18}" ry="${s*.2}"/>
+    <ellipse cx="${cx-s*.19}" cy="${b-s*.74}" rx="${s*.04}" ry="${s*.1}"/><ellipse cx="${cx+s*.19}" cy="${b-s*.74}" rx="${s*.04}" ry="${s*.1}"/>
+    ${[-2,-1,0,1,2].map(i=>`<circle cx="${cx+i*s*.06}" cy="${b-s*.97+Math.abs(i)*s*.02}" r="${s*.035}"/>`).join("")}<circle cx="${cx}" cy="${b-s*1.02}" r="${s*.05}"/></g>
+    <path d="M${cx-s*.32} ${b-s*.2} Q${cx} ${b-s*.1} ${cx+s*.32} ${b-s*.2}" stroke="${dark}" stroke-width="2" fill="none" opacity=".5"/><ellipse cx="${cx}" cy="${b-s*.22}" rx="${s*.16}" ry="${s*.05}" fill="${dark}" opacity=".45"/>
+    <path d="M${cx-s*.08} ${b-s*.8} q${s*.04} ${s*.02} ${s*.07} 0 M${cx+s*.01} ${b-s*.8} q${s*.04} ${s*.02} ${s*.07} 0" stroke="${dark}" stroke-width="1.6" fill="none" opacity=".6"/>`},
+};
+// Per city: the far layer (hills, sea), the landmarks, and what lights up at night.
+function cityLayer(c){
+  if(c==="tokyo")return {far:"fuji",parts:[{g:LM.skytree(108,262,148,"#E9EEF3"),lit:"#8FB8FF"},{g:LM.tower(300,262,124,"#E8452E"),lit:"#FFA040"}]};
+  if(c==="kyoto")return {far:"hills",parts:[{g:[0,1,2,3].map(i=>LM.torii(30+i*26,262-i*3,40-i*7,"#E5482C")).join(""),lit:"#FF8A50"},
+    {g:LM.pagoda(292,262,52,"#3B2E2A","#8A5A40","#B89B5E"),lit:"#FFC870"}]};
+  if(c==="osaka")return {far:"low",parts:[{g:LM.tsutenkaku(92,262,112,"#BFC6CC","#F2A33A"),lit:"#FFD27A"},{g:LM.castle(282,262,84,"#F7F3EA","#4E9483","#9E968A","#D9A93A"),lit:"#FFF2D0"}]};
+  if(c==="nara")return {far:"hills",parts:[{g:LM.pagoda(78,262,46,"#3B2E2A","#7E5038","#B89B5E"),lit:"#FFC870"},{g:LM.hall(262,262,150,"#3A302C","#E6DDCB","#D9A93A")},
+    {g:LM.deer(170,266,.95,"#A87444",false,false)+LM.deer(205,268,.8,"#B07D4C",true,true)}]};
+  if(c==="kobe")return {far:"rokko",sea:true,parts:[{g:LM.porttower(150,250,112,"#E2402E"),lit:"#FF7A4A"},{g:LM.museum(222,250,62)},
+    {g:`<path d="M292 246 h58 l-6 8 h-48 Z" fill="#F2EEE6"/><rect x="304" y="238" width="22" height="8" fill="#F2EEE6"/><rect x="314" y="230" width="5" height="8" fill="#E2402E"/>`}]};
+  if(c==="kamakura")return {far:"sea",sea:true,parts:[{g:LM.buddha(140,262,120,"#7E9A8E","#3F5A52")},{g:LM.torii(305,262,44,"#E5482C"),lit:"#FF8A50"},
+    {g:`<path d="M330 214 Q352 196 380 212 Z" fill="#6E8E7E"/><rect x="350" y="192" width="5" height="16" fill="#F2EEE6"/>`}]};
+  return {far:"fuji",parts:[]};
+}
 function scene(k,c){
-  const t=PERIODS[k],W=390,H=300;let s=`<svg class="xs-sky" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs>
+  const t=PERIODS[k];
+  const W=390,H=300,L=cityLayer(c);let s=`<svg class="xs-sky" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs>
     <linearGradient id="xs-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${t.sky[0]}"/><stop offset="1" stop-color="${t.sky[1]}"/></linearGradient>
     <radialGradient id="xs-s"><stop offset="0" stop-color="${t.sun||"#fff"}" stop-opacity=".95"/><stop offset=".35" stop-color="${t.sun||"#fff"}" stop-opacity=".55"/><stop offset="1" stop-color="${t.sun||"#fff"}" stop-opacity="0"/></radialGradient>
-    <linearGradient id="xs-f" x1="0" y1="0" x2="0" y2="1"><stop offset=".7" stop-color="#FAF4E8" stop-opacity="0"/><stop offset="1" stop-color="#FAF4E8"/></linearGradient></defs>
+    <radialGradient id="xs-lit"><stop offset="0" stop-color="#FFD9A0" stop-opacity=".55"/><stop offset="1" stop-color="#FFD9A0" stop-opacity="0"/></radialGradient>
+    <linearGradient id="xs-f" x1="0" y1="0" x2="0" y2="1"><stop offset=".7" stop-color="#FAF4E8" stop-opacity="0"/><stop offset="1" stop-color="#FAF4E8"/></linearGradient>
+    <filter id="xs-dusk"><feColorMatrix type="matrix" values="1 .06 0 0 .04  0 .82 0 0 0  0 0 .72 0 0  0 0 0 1 0"/></filter>
+    <filter id="xs-dark"><feColorMatrix type="matrix" values=".22 .05 .05 0 .02  .05 .22 .06 0 .03  .08 .1 .4 0 .08  0 0 0 1 0"/></filter></defs>
     <rect width="${W}" height="${H}" fill="url(#xs-g)"/>`;
   if(k==="night"){for(let i=0;i<40;i++)s+=`<circle class="xs-star" style="animation-delay:${(i%7)*.6}s" cx="${(i*97)%W}" cy="${(i*53)%150+10}" r="${(i%3)*.4+.6}" fill="#fff" opacity="${.4+(i%4)*.15}"/>`;
     s+=`<circle cx="236" cy="132" r="18" fill="#FFF3C9"/><circle cx="244" cy="125" r="16" fill="${t.sky[0]}"/>`}
   else{const sx={morning:78,afternoon:110,sunset:300}[k],sy={morning:120,afternoon:62,sunset:170}[k];
     s+=`<circle cx="${sx}" cy="${sy}" r="80" fill="url(#xs-s)"/><circle cx="${sx}" cy="${sy}" r="${k==="sunset"?26:20}" fill="${t.sun}"/>
     <g class="xs-cloud" fill="#fff" opacity=".55"><ellipse cx="250" cy="70" rx="46" ry="11"/><ellipse cx="275" cy="62" rx="24" ry="10"/><ellipse cx="60" cy="150" rx="38" ry="8"/></g>`}
-  s+=`<path d="M-10 250 L120 150 Q132 141 144 150 L300 250 Z" fill="${t.far}"/>
-    <path d="M108 160 L120 150 Q132 141 144 150 L157 160 L150 157 L142 164 L133 156 L124 164 L116 157 Z" fill="#fff" opacity="${k==="night"?.35:.85}"/>`;
-  const b=[[150,200,22],[174,212,18],[194,190,16],[212,206,24],[238,184,14],[254,198,20],[276,214,16],[330,196,18],[350,208,22],[374,190,20],[20,214,24],[46,202,18],[66,218,22],[90,206,16]];
-  let m=b.map(([x,y,w])=>`<rect x="${x}" y="${y}" width="${w}" height="${260-y}" rx="1.5"/>`).join("");
-  if(c==="tokyo")m+=`<path d="M296 260 L304 196 L306 176 L308 160 L310 176 L312 196 L320 260 Z"/><rect x="302" y="196" width="12" height="4"/><rect x="304" y="176" width="8" height="3"/>
-    <path d="M118 260 L121 150 L122 112 L123 150 L126 260 Z"/><rect x="118.5" y="150" width="7" height="4" rx="1"/><rect x="119.5" y="132" width="5" height="3" rx="1"/>`;
-  else if(c==="kyoto"||c==="nara")m+=`<g transform="translate(300 260)">${[0,1,2,3,4].map(i=>`<path d="M${-26+i*4} ${-14-i*16} L${26-i*4} ${-14-i*16} L${18-i*4} ${-20-i*16} L${-18+i*4} ${-20-i*16} Z"/><rect x="${-12+i*3}" y="${-14-i*16}" width="${24-i*6}" height="16"/>`).join("")}<rect x="-1" y="-112" width="2" height="22"/></g>`;
-  else if(c==="osaka")m+=`<g transform="translate(296 260)"><rect x="-40" y="-26" width="80" height="26"/><path d="M-34 -26 L34 -26 L26 -34 L-26 -34 Z"/><rect x="-24" y="-56" width="48" height="22"/><path d="M-30 -56 L30 -56 L20 -66 L-20 -66 Z"/><rect x="-14" y="-82" width="28" height="16"/><path d="M-20 -82 L20 -82 L10 -94 L-10 -94 Z"/></g>`;
-  else if(c==="kobe")m+=`<path d="M300 260 Q306 200 302 170 L314 170 Q310 200 316 260 Z"/>`;
-  s+=`<g fill="${t.mid}">${m}</g>`;
-  if(k==="night")for(let i=0;i<46;i++){const [x,y,w]=b[i%b.length];s+=`<rect x="${x+3+(i*7)%Math.max(4,w-6)}" y="${y+6+(i*11)%40}" width="2.4" height="3" fill="#FFD98A" opacity="${.5+(i%3)*.2}"/>`}
-  return s+`<path d="M0 262 Q90 236 190 252 T390 246 L390 300 L0 300 Z" fill="${t.near}" opacity=".9"/><rect width="${W}" height="${H}" fill="url(#xs-f)"/></svg>`;
+  // far layer
+  if(L.far==="fuji")s+=`<path d="M-10 250 L120 150 Q132 141 144 150 L300 250 Z" fill="${t.far}"/><path d="M108 160 L120 150 Q132 141 144 150 L157 160 L150 157 L142 164 L133 156 L124 164 L116 157 Z" fill="#fff" opacity="${k==="night"?.35:.85}"/>`;
+  if(L.far==="hills")s+=`<path d="M-10 240 Q60 170 140 205 Q200 160 270 196 Q330 168 400 210 L400 260 L-10 260 Z" fill="${t.far}"/><path d="M-10 250 Q90 205 180 232 Q270 200 400 236 L400 262 L-10 262 Z" fill="${t.mid}" opacity=".55"/>`;
+  if(L.far==="rokko")s+=`<path d="M-10 225 Q50 175 120 196 Q190 160 260 190 Q330 170 400 196 L400 250 L-10 250 Z" fill="${t.far}"/>`;
+  if(L.far==="low")s+=`<path d="M-10 238 Q120 214 230 228 T400 222 L400 260 L-10 260 Z" fill="${t.far}" opacity=".8"/>`;
+  if(L.far==="sea")s+=`<rect y="212" width="${W}" height="60" fill="${t.far}"/><g stroke="#fff" stroke-width="1.4" opacity=".35">${[0,1,2,3,4,5].map(i=>`<path d="M${(i*71)%360} ${222+(i%3)*12} q10 -4 20 0" fill="none"/>`).join("")}</g>`;
+  // the city behind the landmarks
+  if(c!=="kamakura"&&c!=="nara"){const b=[[150,214,22],[174,224,18],[196,206,16],[214,220,22],[236,212,14],[20,222,24],[46,212,18],[66,226,22],[340,216,18],[360,226,24]];
+    s+=`<g fill="${t.mid}" opacity=".85">${b.map(([x,y,w])=>`<rect x="${x}" y="${y}" width="${w}" height="${262-y}" rx="1.5"/>`).join("")}</g>`;
+    if(k==="night")for(let i=0;i<30;i++){const [x,y,w]=b[i%b.length];s+=`<rect x="${x+3+(i*7)%Math.max(4,w-6)}" y="${y+5+(i*11)%30}" width="2.4" height="3" fill="#FFD98A" opacity="${.5+(i%3)*.2}"/>`}}
+  // landmarks: real colours by day, warmer at sunset, dark with lights at night
+  const flt=k==="sunset"?` filter="url(#xs-dusk)"`:k==="night"?` filter="url(#xs-dark)"`:"";
+  L.parts.forEach(p=>{
+    if(k==="night"&&p.lit){s+=`<g filter="url(#xs-dusk)">${p.g}</g>`;s+=`<g opacity=".55" style="mix-blend-mode:screen">${p.g.replace(/fill="#[0-9A-Fa-f]{6}"/g,`fill="${p.lit}"`)}</g>`}
+    else s+=`<g${flt}>${p.g}</g>`});
+  if(L.sea&&L.far!=="sea")s+=`<rect y="250" width="${W}" height="20" fill="${t.far}"/><g stroke="#fff" stroke-width="1.3" opacity=".35">${[0,1,2,3,4].map(i=>`<path d="M${(i*83)%370} ${255+(i%2)*6} q10 -4 20 0" fill="none"/>`).join("")}</g>`;
+  return s+`<path d="M0 266 Q90 244 190 258 T390 252 L390 300 L0 300 Z" fill="${t.near}" opacity=".9"/><rect width="${W}" height="${H}" fill="url(#xs-f)"/></svg>`;
 }
 
 // Apollo's lists: the stories, the moods and the season all open one.
