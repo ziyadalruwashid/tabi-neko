@@ -1113,3 +1113,14 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
   .member .pola{transform:none}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.cityb svg path{stroke-dashoffset:0}}
+
+/* Installed as an app (from the home screen, or the store apps) the page runs
+   edge to edge, so the top bar, the sheets and the phone chat keep clear of
+   the notch and the home bar. In a normal browser tab these insets are 0. */
+.top{padding-top:calc(22px + env(safe-area-inset-top))}
+@media (max-width:880px){.top{padding-top:calc(16px + env(safe-area-inset-top))}}
+.tpick{padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left))}
+@media (max-width:640px){
+  .apohead{padding-top:calc(11px + env(safe-area-inset-top))}
+  .apoform{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+}
