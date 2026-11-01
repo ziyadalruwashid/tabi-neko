@@ -36,7 +36,9 @@
 
 const MODEL = "claude-opus-5-5";
 const DATA = "https://raw.githubusercontent.com/ziyadalruwashid/tabi-neko/main/data/";
-const DEFAULT_ORIGINS = ["https://tabi-neko.vercel.app", "http://localhost:8000"];
+// The website, plus the store apps: Capacitor serves the app's own copy of
+// the site from capacitor://localhost on iPhone and https://localhost on Android.
+const DEFAULT_ORIGINS = ["https://tabi-neko.vercel.app", "http://localhost:8000", "capacitor://localhost", "https://localhost"];
 
 // Guard rails. The spend limit in the Claude Console is the real backstop;
 // these keep any one visitor, or a bored script, from running up the bill.

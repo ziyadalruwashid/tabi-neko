@@ -1,0 +1,25 @@
+{
+  "appId": "com.tabineko.app",
+  "appName": "Tabi Neko",
+  "webDir": "www",
+  "backgroundColor": "#FAF4E8",
+  "android": {
+    "backgroundColor": "#FAF4E8"
+  },
+  "ios": {
+    "backgroundColor": "#FAF4E8",
+    "contentInset": "never"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 800,
+      "backgroundColor": "#FAF4E8",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "LIGHT",
+      "backgroundColor": "#FAF4E8",
+      "overlaysWebView": false
+    }
+  }
+}
