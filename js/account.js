@@ -49,6 +49,31 @@ async function call(url,{method="GET",body,form,token}={}){
 }
 const ID=(what,body)=>call(`https://identitytoolkit.googleapis.com/v1/accounts:${what}?key=${FIREBASE.apiKey}`,{method:"POST",body});
 const signedIn=r=>({token:r.idToken,refresh:r.refreshToken,uid:r.localId,email:r.email,exp:Date.now()+(+r.expiresIn||3600)*1000});
+// Your name, travel buddy and whether your email is confirmed, from Firebase.
+async function lookup(){
+  try{const r=await ID("lookup",{idToken:await token()}),u=r&&r.users&&r.users[0];if(!u||!auth)return;
+    auth={...auth,email:u.email||auth.email,name:u.displayName||"",photo:u.photoUrl||"",verified:!!u.emailVerified,pwAt:+u.passwordUpdatedAt||0};saveAuth()}
+  catch(e){if(e&&e.status===401)loggedOut(true)}
+}
+// Change your name or picture (the travel buddy's web address).
+async function updateProfile(fields){await ID("update",{idToken:await token(),...fields,returnSecureToken:false});await lookup()}
+const BUDDY_BASE="https://tabi-neko.vercel.app/";
+const buddyOf=a=>typeof BUDDIES==="undefined"?null:BUDDIES.find(b=>a&&a.photo&&a.photo.endsWith("/"+b.img))||BUDDIES[0];
+const myName=()=>auth&&(auth.name||(auth.email||"").split("@")[0])||"";
+// How strong a new password is: 0 to 4.
+function pwScore(p){p=p||"";let s=0;if(p.length>=8)s++;if(p.length>=12)s++;if(/[a-z]/.test(p)&&/[A-Z0-9]/.test(p))s++;if(/[^A-Za-z0-9]/.test(p)||p.length>=16)s++;return p.length<8?Math.min(s,1):s}
+const pwHint=p=>!p?"":p.length<8?T("At least 8 characters"):[T("Weak password"),T("Weak password"),T("Good password ✓"),T("Good password ✓"),T("Strong password ✓")][pwScore(p)];
+// A password box with a show/hide eye, and (for a new one) a strength bar.
+function pwField(id,ph,ac,meter){
+  return `<div class="acct-pwrap"><input type="password" class="thome-q" id="${id}" placeholder="${esc(T(ph))}" aria-label="${esc(T(ph))}" autocomplete="${ac}" required dir="ltr">
+    <button type="button" class="acct-eye" data-for="${id}" aria-label="${esc(T("Show password"))}" aria-pressed="false">👁</button></div>
+    ${meter?`<div class="acct-meter" data-for="${id}" aria-live="polite"><span><i></i><i></i><i></i><i></i></span><small></small></div>`:""}`;
+}
+function wirePw(box){
+  box.querySelectorAll(".acct-eye").forEach(b=>b.onclick=()=>{const i=box.querySelector("#"+b.dataset.for),show=i.type==="password";i.type=show?"text":"password";b.setAttribute("aria-pressed",String(show));b.setAttribute("aria-label",T(show?"Hide password":"Show password"));i.focus()});
+  box.querySelectorAll(".acct-meter").forEach(m=>{const i=box.querySelector("#"+m.dataset.for),f=()=>{const sc=i.value?pwScore(i.value):0;
+    m.querySelectorAll("i").forEach((x,k)=>x.className=k<sc?(sc>=2?"g":"w"):"");m.querySelector("small").textContent=pwHint(i.value);m.querySelector("small").className=sc>=2?"g":""};i.addEventListener("input",f);f()});
+}
 
 // A login token lasts an hour; the long-lived refresh token gets a new one.
 async function token(){
@@ -307,17 +332,21 @@ const acctFail=e=>{if(e&&e.status===401)return loggedOut(true);if(acct){acct.bus
 function renderAcct(){
   const el=$("acct"),a=acct;if(!el||!a)return;
   const err=a.msg?`<p class="thome-msg${a.ok?" ok":""}" role="alert">${esc(a.msg)}</p>`:"";
-  const pwBox=(ph,ac)=>`<input type="password" class="thome-q" id="acct-pw" placeholder="${esc(T(ph))}" aria-label="${esc(T("Password"))}" autocomplete="${ac}" required dir="ltr">`;
   let h="";
   if(a.step==="login"||a.step==="signup"){const up=a.step==="signup";
     h=`<h2 id="acct-h">${T(up?"Create your account":"Log in to Tabi Neko")}</h2>
     <p>${T(invite?"Log in, or create an account, to join the trip you were invited to.":a.why==="plan"?"Log in, or create a free account, and Apollo will plan your trip. Your plan is saved to your account too.":a.why==="chat"?"Log in, or create a free account, to chat with Apollo. Ask him anything about your trip.":"Keep your trip safe and open it on any phone or laptop.")}</p>
-    <form class="acct-f" novalidate><input type="email" class="thome-q" id="acct-email" value="${esc(a.email)}" placeholder="${esc(T("your@email.com"))}" aria-label="${esc(T("Email"))}" autocomplete="email" required dir="ltr">
-      ${pwBox(up?"Password (8 or more characters)":"Password",up?"new-password":"current-password")}
+    <form class="acct-f" novalidate>${up?`<input type="text" class="thome-q" id="acct-name" value="${esc(a.name||"")}" placeholder="${esc(T("Your name"))}" aria-label="${esc(T("Your name"))}" autocomplete="given-name" maxlength="40" required>`:""}<input type="email" class="thome-q" id="acct-email" value="${esc(a.email)}" placeholder="${esc(T("your@email.com"))}" aria-label="${esc(T("Email"))}" autocomplete="email" required dir="ltr">
+      ${pwField("acct-pw",up?"Password (8 or more characters)":"Password",up?"new-password":"current-password",up)}
       <button type="submit" class="store"${a.busy?" disabled":""}>${a.busy?T("One moment…"):T(up?"Create account":"Log in")}</button></form>${err}
     <p class="acct-small">${up?`${T("Already have an account?")} <button type="button" class="tclear acct-mode">${T("Log in")}</button>`
       :`${T("New here?")} <button type="button" class="tclear acct-mode">${T("Create an account")}</button> · <button type="button" class="tclear acct-forgot">${T("Forgot password?")}</button>`}</p>
     <p class="acct-small">${T("We only keep your email and your trip, and you can delete both anytime.")} <a href="#privacy" class="acct-priv">${T("Privacy")}</a></p>`}
+  else if(a.step==="welcome"){const cur=a.buddy||(buddyOf(auth)||{}).k;
+    h=`<h2 id="acct-h">${esc(T("Welcome, {n}! 🎉",{n:myName()}))}</h2><p>${T("Pick your travel buddy. It's your picture in the app.")}</p>
+    <div class="acct-buddies" role="radiogroup" aria-label="${esc(T("Travel buddy"))}">${(typeof BUDDIES==="undefined"?[]:BUDDIES).map(b=>`<button type="button" role="radio" class="acct-bud${b.k===cur?" on":""}" data-b="${b.k}" aria-checked="${b.k===cur}"><img src="${esc(b.img)}" alt=""><small>${esc(b.n)}</small></button>`).join("")}</div>
+    <p class="acct-note">📩 <span>${T("We sent a link to {e}. Tap it to confirm your email.",{e:`<b dir="ltr">${esc(auth&&auth.email||"")}</b>`})}</span></p>
+    <form class="acct-f"><button type="submit" class="store"${a.busy?" disabled":""}>${a.busy?T("One moment…"):T("Let's go")}</button></form>${err}`}
   else if(a.step==="choose")h=`<h2 id="acct-h">${T("You have two trips")}</h2>
     <p>${T("There's a trip on this phone and a different one in your account. Which one do you want to keep?")}</p>
     <div class="acct-two"><button type="button" class="store" data-keep="server">☁️ ${T("The one in my account")}<small>${esc(a.rec.data&&a.rec.data.name||T("My Japan trip"))}</small></button>
@@ -325,7 +354,7 @@ function renderAcct(){
     <p class="acct-small">${T("The other one is replaced.")}</p>`;
   else if(a.step==="delete")h=`<h2 id="acct-h">${T("Delete your account?")}</h2>
     <p>${T("This deletes your account and the trip saved in it. The trip on this phone stays. Type your password to confirm.")}</p>
-    <form class="acct-f acct-danger" novalidate>${pwBox("Password","current-password")}
+    <form class="acct-f acct-danger" novalidate>${pwField("acct-pw","Password","current-password")}
       <button type="submit" class="store"${a.busy?" disabled":""}>${a.busy?T("One moment…"):T("Delete my account and trip")}</button></form>${err}
     <p class="acct-small"><button type="button" class="tclear acct-back">${T("Cancel")}</button></p>`;
   else if(a.step==="share"){
@@ -353,17 +382,23 @@ function renderAcct(){
   if(q(".acct-x"))q(".acct-x").onclick=closeAcct;
   el.querySelectorAll(".acct-priv").forEach(l=>l.onclick=e=>{e.preventDefault();closeAcct();show("privacy");history.replaceState(null,"","#privacy")});
   if(a.step==="login"||a.step==="signup"){
-    q(".acct-f").onsubmit=e=>{e.preventDefault();logIn(q("#acct-email").value,q("#acct-pw").value,a.step==="signup")};
+    wirePw(el);
+    q(".acct-f").onsubmit=e=>{e.preventDefault();logIn(q("#acct-email").value,q("#acct-pw").value,a.step==="signup",q("#acct-name")&&q("#acct-name").value)};
     q(".acct-mode").onclick=()=>{acct={step:a.step==="signup"?"login":"signup",email:q("#acct-email").value,msg:"",why:a.why};renderAcct()};
     if(q(".acct-forgot"))q(".acct-forgot").onclick=()=>forgot(q("#acct-email").value);
-    if(!a.busy)(a.email?q("#acct-pw"):q("#acct-email")).focus()}
+    if(!a.busy)(a.step==="signup"&&!a.name?q("#acct-name"):a.email?q("#acct-pw"):q("#acct-email")).focus()}
+  if(a.step==="welcome"){
+    el.querySelectorAll(".acct-bud").forEach(b=>b.onclick=()=>{acct.buddy=b.dataset.b;renderAcct()});
+    q(".acct-f").onsubmit=async e=>{e.preventDefault();const b=BUDDIES.find(x=>x.k===acct.buddy);
+      if(b&&b!==buddyOf(auth)){acct.busy=true;renderAcct();try{await updateProfile({photoUrl:BUDDY_BASE+b.img})}catch(err){}}
+      closeAcct()}}
   if(a.step==="choose")el.querySelectorAll("[data-keep]").forEach(b=>b.onclick=()=>{
     if(b.dataset.keep==="server")applyServer(a.rec);else{sync={...SYNC0,at:a.rec.at,dirty:true,base:tripJSON(cleanTrip(a.rec.data))};saveSync();push()}
     closeAcct();joinIfAsked()});
   if(a.step==="me"){q(".acct-out").onclick=()=>{loggedOut(false);closeAcct();toast(T("Logged out. Your trip stays on this phone."))};
     if(q(".acct-admin"))q(".acct-admin").onclick=()=>{closeAcct();show("admin");history.replaceState(null,"","#admin");renderAdmin()};
     q(".acct-del").onclick=()=>{acct={step:"delete",msg:""};renderAcct()}}
-  if(a.step==="delete"){q(".acct-f").onsubmit=e=>{e.preventDefault();deleteAccount(q("#acct-pw").value)};
+  if(a.step==="delete"){wirePw(el);q(".acct-f").onsubmit=e=>{e.preventDefault();deleteAccount(q("#acct-pw").value)};
     q(".acct-back").onclick=()=>{acct={step:"me",msg:""};renderAcct()};if(!a.busy)q("#acct-pw").focus()}
   if(a.step==="share"){
     if(q(".acct-f"))q(".acct-f").onsubmit=e=>{e.preventDefault();setCode(true)};
@@ -380,17 +415,23 @@ const failMsg=e=>e&&(e.status===429||e.code==="TOO_MANY_ATTEMPTS_TRY_LATER")?T("
 const WRONG=["INVALID_LOGIN_CREDENTIALS","INVALID_PASSWORD","EMAIL_NOT_FOUND","INVALID_EMAIL"];
 const okEmail=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 const say=(m,ok)=>{acct.msg=m;acct.ok=!!ok;acct.busy=false;renderAcct()};
-async function logIn(email,pw,signup){
-  email=(email||"").trim().toLowerCase();acct.email=email;
+async function logIn(email,pw,signup,name){
+  email=(email||"").trim().toLowerCase();acct.email=email;name=String(name||"").trim().slice(0,40);acct.name=name;
+  if(signup&&!name)return say(T("Type your name."));
   if(!okEmail(email))return say(T("That email doesn't look right."));
   if(!pw)return say(T("Type your password."));
   if(signup&&pw.length<8)return say(T("Your password needs at least 8 characters."));
   acct={...acct,busy:true,msg:"",ok:false};renderAcct();
   try{
     const r=await ID(signup?"signUp":"signInWithPassword",{email,password:pw,returnSecureToken:true});
-    auth=signedIn({...r,email:r.email||email});saveAuth();
+    auth=signedIn({...r,email:r.email||email});
+    // A new account gets its name, and an email to confirm the address.
+    if(signup){auth.name=name;try{await ID("update",{idToken:r.idToken,displayName:name,returnSecureToken:false})}catch(e){}
+      try{await ID("sendOobCode",{requestType:"VERIFY_EMAIL",idToken:r.idToken})}catch(e){}}
+    saveAuth();
     toast(T(signup?"Account created ✓ Your trip is saved to your account.":"Logged in ✓ Your trip is saved to your account."));
     acct.busy=false;await afterLogin();
+    if(signup){if(!(acct&&acct.step==="choose"))openAcct("welcome")}else lookup();
   }catch(e){
     const c=e&&e.code;
     say(c==="EMAIL_EXISTS"?T("There's already an account with this email. Log in instead."):c==="WEAK_PASSWORD"?T("Your password needs at least 8 characters.")
@@ -470,4 +511,4 @@ function userBtn(){
 if(auth&&!auth.refresh){auth=null;saveAuth()}
 if(sync.share)share=sync.share;
 userBtn();readInvite();renderTrip();
-if(FB_ON&&auth)pull();
+if(FB_ON&&auth){pull();lookup()}
