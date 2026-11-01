@@ -49,7 +49,7 @@ function renderTabs(){
 // Tabs swap in place (no history), like any app; pages opened from More
 // and place pages are added to history, so the back button returns.
 function go(t,keep){
-  closePlaceNow();if(typeof closeList==="function")closeList();
+  closePlaceNow();if(typeof closeList==="function")closeList();if(window.closeSearchNow)closeSearchNow(true);
   try{history.replaceState(null,"","#"+t)}catch(_){}show(t,true);
   if(!keep)window.scrollTo(0,0);
 }
@@ -202,8 +202,7 @@ function renderExplore(){
     openList(D(h,"n"),D(h,"vibe"),photoFirst(P.filter(p=>p.city===h.city&&p.area===h.area)))});
   weather();
   el.querySelectorAll(".ax-city").forEach(b=>b.onclick=()=>{exploreCity=b.dataset.c;city=exploreCity;store.set("tabineko-city",city);renderExplore()});
-  el.querySelector(".xs-search").onclick=()=>{city=exploreCity;store.set("tabineko-city",city);active=new Set(Object.keys(CATS));halalOnly=false;renderAll();go("map");
-    setTimeout(()=>{const q=$("mp-q")&&!$("amap").hidden?$("mp-q"):$("q");if(q)q.focus()},80)};
+  el.querySelector(".xs-search").onclick=()=>{city=exploreCity;store.set("tabineko-city",city);if(window.openSearch)openSearch("")};
   if(el.querySelector(".xs-pick"))el.querySelector(".xs-pick").onclick=()=>openPlace(pick.id);
   el.querySelectorAll(".xs-st").forEach(b=>b.onclick=()=>{const s=STORIES.find(x=>x[0]===b.dataset.story);
     if(!s[3]){location.hash="#trips";return}openList(T(s[1]),cityOf(exploreCity),s[3]())});
@@ -259,6 +258,7 @@ addEventListener("popstate",e=>{const st=e.state||{};
   if(st.tnPlace)openPlace(st.tnPlace,true);else closePlaceNow();
   if(!st.tnPlace&&!st.tnList&&typeof closeList==="function")closeList()});
 window.openPlace=openPlace; // the real map (js/appmap.js) opens places too
+window.goTab=go;window.openListPage=openList; // and so does search (js/appsearch.js)
 // Every way of picking a place opens its page instead of unfolding the card.
 const _select=select;select=function(id){if(!id)return;if(typeof closeApollo==="function")closeApollo();openPlace(id)};
 
