@@ -588,9 +588,12 @@ addEventListener("keydown",e=>{
   e.preventDefault();albumGo((e.key==="ArrowRight")!==isAR()?1:-1)});
 // quiet=true swaps the page without moving the viewport, so a search jump can
 // scroll to its own card instead of fighting this function for the scroll.
-const PAGES=["trip","hoods","apps","trips","memories","crew","privacy","admin"];
+// Explore and More only exist in the app layout (see js/appshell.js).
+const IS_APP=document.documentElement.classList.contains("tn-app");
+const APP_ONLY=["explore","menu"];
+const PAGES=["trip","hoods","apps","trips","memories","crew","privacy","admin",...APP_ONLY];
 function show(target,quiet){
-  const pg=PAGES.includes(target)?target:null;
+  const pg=PAGES.includes(target)&&(IS_APP||!APP_ONLY.includes(target))?target:null;
   $("home").hidden=!!pg;PAGES.forEach(k=>$(k).hidden=pg!==k);
   if(typeof syncApollo==="function")syncApollo();
   document.querySelectorAll(".top nav a").forEach(a=>a.classList.toggle("cur",a.dataset.go===(pg||"map")));
@@ -832,4 +835,4 @@ function hl(s,terms){
 })();
 
 addEventListener("hashchange",()=>show(location.hash.slice(1)));
-if(PAGES.includes(location.hash.slice(1)))show(location.hash.slice(1));else document.querySelector('.top nav a[data-go="map"]').classList.add("cur");
+if(PAGES.includes(location.hash.slice(1))&&(IS_APP||!APP_ONLY.includes(location.hash.slice(1))))show(location.hash.slice(1));else document.querySelector('.top nav a[data-go="map"]').classList.add("cur");
