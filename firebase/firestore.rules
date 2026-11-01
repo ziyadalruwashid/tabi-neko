@@ -73,6 +73,17 @@ service cloud.firestore {
         && request.resource.data.get('add', []).size() <= 200 && request.resource.data.get('skip', []).size() <= 500;
     }
 
+    // Apollo's stamp book: stamps/<id> is one person's stamps, as a JSON
+    // string in "data" ({"city|place":"2026-11-02"}). Only they can read
+    // and change it; the site owner can read it for the dashboard.
+    match /stamps/{uid} {
+      allow read: if admin() || (request.auth != null && me() == uid);
+      allow delete: if request.auth != null && me() == uid;
+      allow create, update: if request.auth != null && me() == uid
+        && request.resource.data.keys().hasOnly(['data'])
+        && request.resource.data.data is string && request.resource.data.data.size() < 20000;
+    }
+
     match /users/{uid} {
       allow read: if admin() || (request.auth != null && me() == uid);
       allow delete: if request.auth != null && me() == uid;
