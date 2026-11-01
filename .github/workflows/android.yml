@@ -1,0 +1,37 @@
+# Builds the Android app (a debug APK to install and try) from app/.
+# Run it from the Actions tab ("Run workflow"), or it runs by itself when
+# the app or the site changes on main. The APK is attached to the run.
+name: Android app
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [app/**, index.html, css/**, js/**, data/**, assets/**]
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Copy the site into the app
+        working-directory: app
+        run: npm ci && npm run web && npx cap sync android
+      - name: Build the APK
+        working-directory: app/android
+        run: ./gradlew assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tabi-neko-debug-apk
+          path: app/android/app/build/outputs/apk/debug/*.apk
+          retention-days: 14
