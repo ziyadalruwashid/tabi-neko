@@ -32,7 +32,7 @@ const SYNC0={owner:"",at:"",dirty:false,base:""};
 let auth=null,sync={...SYNC0},syncState="",share={members:[],emails:{},code:""};
 try{auth=JSON.parse(store.get(AUTH_KEY))||null}catch(e){auth=null}
 try{sync={...sync,...JSON.parse(store.get(SYNC_KEY))}}catch(e){}
-const saveAuth=()=>{store.set(AUTH_KEY,auth?JSON.stringify(auth):"");userBtn()};
+const saveAuth=()=>{store.set(AUTH_KEY,auth?JSON.stringify(auth):"");setGuide();userBtn()};
 const saveSync=()=>store.set(SYNC_KEY,JSON.stringify(sync));
 
 // fetch with JSON in and out; anything that isn't a 2xx throws
@@ -59,6 +59,8 @@ async function lookup(){
 async function updateProfile(fields){await ID("update",{idToken:await token(),...fields,returnSecureToken:false});await lookup()}
 const BUDDY_BASE="https://tabi-neko.vercel.app/";
 const buddyOf=a=>typeof BUDDIES==="undefined"?null:BUDDIES.find(b=>a&&a.photo&&a.photo.endsWith("/"+b.img))||BUDDIES[0];
+// The buddy you picked guides you through the app (see GUIDE in js/app.js).
+function setGuide(){const b=auth&&typeof BUDDIES!=="undefined"?buddyOf(auth):null;GUIDE=b&&b.k!=="apollo"?b:null}
 const myName=()=>auth&&(auth.name||(auth.email||"").split("@")[0])||"";
 // How strong a new password is: 0 to 4.
 function pwScore(p){p=p||"";let s=0;if(p.length>=8)s++;if(p.length>=12)s++;if(/[a-z]/.test(p)&&/[A-Z0-9]/.test(p))s++;if(/[^A-Za-z0-9]/.test(p)||p.length>=16)s++;return p.length<8?Math.min(s,1):s}
@@ -509,6 +511,7 @@ function userBtn(){
 // Start: a saved login from the old setup (or a broken one) is dropped;
 // otherwise check for changes made elsewhere, and pick up an invite link.
 if(auth&&!auth.refresh){auth=null;saveAuth()}
+setGuide();
 if(sync.share)share=sync.share;
 userBtn();readInvite();renderTrip();
 if(FB_ON&&auth){pull();lookup()}

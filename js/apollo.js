@@ -41,11 +41,12 @@ function goPlace(id){
 }
 
 function renderApollo(){
-  $("apollob").innerHTML=`<img src="assets/cat.png" alt=""><span>${T("Ask Apollo")}</span>`;
+  $("apollob").innerHTML=`<img src="${GI()}" alt=""><span>${T("Ask Apollo")}</span>`;
   $("apollob").setAttribute("aria-label",T("Ask Apollo"));
   $("apollo").setAttribute("aria-label",T("Chat with Apollo"));
   $("apollox").setAttribute("aria-label",T("Close chat"));
   $("apollotitle").textContent=T("Ask Apollo");
+  const hi=document.querySelector("#apollo .apohead img");if(hi)hi.src=GI();
   $("apollosub").textContent=T("your travel cat 🐾");
   $("apolloq").placeholder=T("Ask me anything about Japan…");
   $("apollosend").setAttribute("aria-label",T("Send"));

@@ -251,7 +251,7 @@ function renderTrip(){
       ${typeof auth!=="undefined"&&FB_ON&&!auth?`<em class="tmagic-lock">🔒 ${T("Log in to use it. It's free.")}</em>`:""}</span><span class="tmagic-go" aria-hidden="true">→</span></button>`;
     if(typeof openReady==="function")h+=`<button type="button" class="tmagic tready treadyb"><span class="tmagic-s" aria-hidden="true">🗾</span><span><b>${T("Start from a ready plan")}</b>
       <small>${T("The classic Tokyo, Kyoto and Osaka trip for first-timers, 7 or 10 days. Free, no login.")}</small></span><span class="tmagic-go" aria-hidden="true">→</span></button>`;
-    h+=`<div class="tempty"><img src="assets/cat.png" alt=""><div>${cityChooser(T("Where are you headed first?"),T("Pick a city, tell Apollo where you're staying, then fill your days."))}</div></div>`;
+    h+=`<div class="tempty"><img src="${GI()}" alt=""><div>${cityChooser(T("Where are you headed first?"),T("Pick a city, tell Apollo where you're staying, then fill your days."))}</div></div>`;
   }
   if(t.ideas.length||(!ro&&n)){
     h+=`<section class="tideas tlist-drop" data-day="ideas"><h2>${T("Ideas")}<small>${t.ideas.length?T("sort these into your days ↓"):T("places you add from the map land here first")}</small></h2>

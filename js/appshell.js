@@ -39,7 +39,7 @@ const bar=document.createElement("nav");bar.id="tabbar";document.body.appendChil
 function renderTabs(){
   bar.setAttribute("aria-label",T("Main"));
   bar.innerHTML=TABS.map(([k,l])=>k==="apollo"
-    ?`<button type="button" class="tb tb-apo" data-t="apollo"><span class="tb-cat"><img src="assets/cat.png" alt=""></span><b>${T(l)}</b></button>`
+    ?`<button type="button" class="tb tb-apo" data-t="apollo"><span class="tb-cat"><img src="${GI()}" alt=""></span><b>${T(l)}</b></button>`
     :`<a class="tb" href="#${k}" data-t="${k}">${SVG(I[k])}<b>${T(l)}</b></a>`).join("");
   bar.querySelectorAll("a.tb").forEach(a=>a.onclick=e=>{e.preventDefault();go(a.dataset.t)});
   bar.querySelector(".tb-apo").onclick=()=>openApollo();
@@ -207,7 +207,7 @@ const TIPS=["Put a Suica or PASMO card in your phone's wallet: tap it on trains,
   "Take your shoes off where you see a step up or slippers at the door.",
   "In Nara, the deer bow before you feed them. Show empty hands when you're out of crackers."];
 function tipCard(){const t=TIPS[jst().day%TIPS.length];
-  return `<div class="xs-tip"><img src="assets/cat.png" alt=""><span><small>${T("Apollo's tip of the day 💡")}</small><b>${esc(T(t))}</b></span></div>`}
+  return `<div class="xs-tip"><img src="${GI()}" alt=""><span><small>${T("Apollo's tip of the day 💡")}</small><b>${esc(T(t))}</b></span></div>`}
 // The city's neighbourhoods, from the Areas page, as wide photo cards.
 function areasRow(){const hs=HOODS.filter(h=>h.city===exploreCity&&h.photo);if(!hs.length)return "";
   return `<section class="ax-row"><header><h2>${T("Areas to explore 🏘️")}</h2><button type="button" class="ax-all xs-areas-all">${T("See all")}</button></header><div class="ax-hs">${hs.map(h=>`<button type="button" class="xs-area" data-h="${esc(h.n)}">
@@ -315,7 +315,7 @@ function renderExplore(){
     ${s?`<p class="ax-sub">${esc(s)}</p>`:""}<div class="ax-hs">${ps.slice(0,12).map(pcard).join("")}</div></section>`:"";
   el.innerHTML=`<div class="xs xs-${k}">${scene(k,exploreCity)}
       <div class="xs-hi"><div><b>${esc(who?T(G.greet+", {n}!",{n:who}):T(G.greet+"!"))} ${{morning:"☀️",afternoon:"🌤️",sunset:"🌇",night:"🌙"}[k]}</b><small><span class="xs-time">${esc(jstText())}</span><span class="xs-wx"></span></small><p class="xs-hint">${esc(T(G.hint))}</p></div>
-        <button type="button" class="xs-cat" aria-label="${esc(T("More"))}"><img src="assets/cat.png" alt=""></button></div></div>
+        <button type="button" class="xs-cat" aria-label="${esc(T("More"))}"><img src="${GI()}" alt=""></button></div></div>
     <button type="button" class="ax-search xs-search">${SVG(I.search)}<span>${T("Search places, areas, food…")}</span></button>
     <div class="ax-cities" role="tablist">${cities.map(c=>`<button type="button" role="tab" class="ax-city${c===exploreCity?" on":""}" data-c="${c}" aria-selected="${c===exploreCity}">${esc(cityOf(c))}</button>`).join("")}</div>
     ${(()=>{const td=todayCard();lastToday=td;if(td)return td;const tt=tripTop();return tt?tt+nowCard(k):nowCard(k)+(trip.stays.length||trip.ideas.length?"":`<button type="button" class="hx-cta"><span>✈️</span><span><b>${T("Start your trip with Apollo")}</b><small>${T("Pick your cities and he sorts your days.")}</small></span><i>${isAR()?"←":"→"}</i></button>`)})()}
@@ -368,7 +368,7 @@ function renderPlace(){
         ${p.tier==="must"?`<span class="pv-ch must">🔥 ${T("don't skip this")}</span>`:""}${p.gem?`<span class="pv-ch gem">${T("⭐ hidden gem")}</span>`:""}</div>
       <h1><bdi>${esc(p.n)}</bdi></h1>${p.jp?`<p class="pv-jp" lang="ja">${esc(p.jp)}</p>`:""}
       <div class="pv-facts">${fact("When",D(p,"t"))}${fact("Cost",D(p,"cost"))}${fact("How long",D(p,"dur"))}</div>
-      <div class="pv-note"><img src="assets/cat.png" alt=""><p>${D(p,"tip")}</p></div>
+      <div class="pv-note"><img src="${GI()}" alt=""><p>${D(p,"tip")}</p></div>
       ${typeof tnStampSlot==="function"?tnStampSlot(p):""}
       ${p.book?`<a class="pv-book" href="${p.book}" target="_blank" rel="noopener">${T("Book it ↗")}</a>`:""}
       ${nearby.length?`<section class="ax-row pv-near"><header><h2>${T("Nearby")}</h2></header><div class="ax-hs">${nearby.map(pcard).join("")}</div></section>`:""}
@@ -493,7 +493,7 @@ function openArea(h,fromHistory){
       <div class="ar-ht">${h.jp?`<span class="ar-jp" lang="ja">${esc(h.jp)}</span>`:""}<h1>${esc(D(h,"n"))}</h1><p>${esc(D(h,"vibe"))}</p>
         <div class="ar-chips"><span>${esc(cityOf(h.city))}</span><span>📍 ${esc(T(ps.length===1?"1 place":"{n} places",{n:ps.length}))}</span>${hl?`<span>🍜 ${esc(T("{n} halal",{n:hl}))}</span>`:""}</div></div></div>
     <div class="ar-body">
-      ${D(h,"story")?`<div class="ar-story"><img src="assets/cat.png" alt=""><p>${esc(D(h,"story"))}</p></div>`:""}
+      ${D(h,"story")?`<div class="ar-story"><img src="${GI()}" alt=""><p>${esc(D(h,"story"))}</p></div>`:""}
       ${h.stats?`<h2 class="ar-h">${T("The area at a glance")}</h2><div class="ar-stats">${ST.map(([k,e,l])=>`<div><span>${e} ${esc(T(l))}</span><i role="img" aria-label="${esc(T("{n} out of 5",{n:h.stats[k]||0}))}">${[1,2,3,4,5].map(i=>`<b class="${i<=(h.stats[k]||0)?"on":""}"></b>`).join("")}</i></div>`).join("")}</div>`:""}
       <div class="ar-two">${D(h,"best")?`<div class="ar-best"><small>⏰ ${T("Best time")}</small><b>${esc(D(h,"best"))}</b></div>`:""}${D(h,"tip")?`<div class="ar-tip"><small>🐾 ${T("Apollo's tip")}</small><b>${esc(D(h,"tip"))}</b></div>`:""}</div>
       ${miss.length?`<h2 class="ar-h">${T("Don't miss 🔥")}</h2><div class="ar-miss">${miss.map(p=>`<div class="ar-mc" style="--c:var(--${p.cat})"><button type="button" class="ar-go" data-id="${p.id}"><span class="ar-mi${p.photo?"":" art"}"><img src="${p.photo||CATS[p.cat].img}" alt="" loading="lazy"></span>
@@ -554,9 +554,9 @@ function renderBars(){
 }
 
 // ---- keep everything in step ----
-function renderShell(){renderTabs();renderExplore();renderMore();renderBars();if(pvId)renderPlace()}
+function renderShell(){renderTabs();renderExplore();renderMore();renderBars();if(pvId)renderPlace();if(typeof renderApollo==="function")renderApollo()}
 const _setLang=setLang;setLang=function(l){_setLang(l);if(l==="ar"&&!AR_ON())return;renderShell()};
-if(typeof userBtn==="function"){const _u=userBtn;userBtn=function(){_u();renderExplore();renderMore()}}
+if(typeof userBtn==="function"){const _u=userBtn;userBtn=function(){_u();renderShell()}}
 renderShell();
 // The app opens on Explore unless a page was asked for.
 const h=location.hash.slice(1);
