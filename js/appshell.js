@@ -262,12 +262,37 @@ function todayCard(){
       :`<p class="hx-done">${esc(T(t.d.ids.length?"That's today done! 🎉 Rest well.":"Nothing planned today yet. Add some places?"))}</p>`}
     ${rest.length?`<div class="hx-rest">${rest.map(x=>`<div class="${x.k==="lunch"?"h":""}"><em>${esc(t.clock(x.t))}</em><b><bdi>${esc(nm(x))}</bdi></b>${x.k==="lunch"?`<span>${esc(T("Apollo's pick"))}</span>`:""}</div>`).join("")}</div>`:""}
     <button type="button" class="hx-open" data-s="${t.a}" data-d="${t.b}">${esc(T("Open your day"))} ${isAR()?"←":"→"}</button></section>`}
-const BENTO=[["halal","🍜","Halal",()=>halalHere(),"big"],["views","🌃","Views",()=>photoFirst(inCity().filter(p=>p.cat==="views"))],["coffee","☕","Coffee",()=>photoFirst(inCity().filter(p=>p.cat==="coffee"))],
-  ["shrine","⛩️","Temples",()=>photoFirst(inCity().filter(p=>p.cat==="shrine"))],["gems","⭐","Hidden",()=>photoFirst(inCity().filter(p=>p.gem))],["shop","🛍️","Shopping",()=>photoFirst(inCity().filter(p=>p.cat==="shop")),"wide"]];
-function bento(){
-  const tiles=BENTO.map(b=>({b,ps:b[3]()})).filter(x=>x.ps.length);
-  return `<h2 class="hx-h">${T("What's your mood?")}</h2><div class="hx-bento">${tiles.map(({b,ps},i)=>{const img=(ps.find(p=>p.photo)||{}).photo;
-    return `<button type="button" class="hx-b ${b[4]||""}" data-b="${b[0]}"${img?` style="background-image:url('${img}')"`:""}><span>${b[1]} ${esc(T(b[2]))}</span>${b[4]?`<small>${esc(T(ps.length===1?"1 place":"{n} places",{n:ps.length}))}</small>`:""}</button>`}).join("")}</div>`}
+// "What's your mood?": Apollo's stickers in a row; tap one and its top three
+// places show right under it, each with ＋ for the trip, and "All N" for the list.
+const MOOD=[["halal","Halal","ramen.png","#E8F3E3","#2E8B3E",()=>halalHere()],["views","Views","fuji.png","#E3EEF8","#1D52A0",()=>pickNear(inCity().filter(p=>p.cat==="views"))],
+  ["coffee","Coffee & sweets","coffee.png","#F6EBDD","#9A6233",()=>pickNear(inCity().filter(p=>p.cat==="coffee"))],["shrine","Temples","torii.png","#FBE5DE","#E0402A",()=>pickNear(inCity().filter(p=>p.cat==="shrine"))],
+  ["gems","Hidden","c-gem.png","#FFF3CC","#B8860B",()=>pickNear(inCity().filter(p=>p.gem))],["shop","Shopping","c-shop.png","#FCE4EC","#C2185B",()=>pickNear(inCity().filter(p=>p.cat==="shop"))],
+  ["nature","Nature","c-nature.png","#E6F1DE","#4F7A1E",()=>pickNear(inCity().filter(p=>p.cat==="nature"))],["experience","Experiences","c-experience.png","#EEE6F6","#7B5EA7",()=>pickNear(inCity().filter(p=>p.cat==="experience"))]];
+let moodSel="halal";
+function moodRes(){
+  const m=MOOD.find(x=>x[0]===moodSel)||MOOD[0],ps=m[5](),h=window.tnMe||(near&&nearKind==="me"?near:null);
+  return `<div class="hx-mres" style="--bg:${m[3]};--c:${m[4]}">${ps.slice(0,3).map(p=>{const k=PKEY(p),on=inTrip(k);
+    return `<div class="hx-mr"><button type="button" class="hx-mgo" data-id="${p.id}"><span class="hx-mi${p.photo?"":" art"}" style="--c2:var(--${p.cat})"><img src="${p.photo||CATS[p.cat].img}" alt="" loading="lazy"></span>
+      <span class="hx-mt"><b><bdi>${esc(p.n)}</bdi></b><small>${esc(AREA(p.area))}${h?" · "+esc(shortKm(KM(h,p))):""}${p.halal&&m[0]!=="halal"?" · "+esc(T("halal ✓")):""}</small></span></button>
+      <button type="button" class="hx-madd${on?" on":""}" data-k="${esc(k)}" aria-pressed="${on}" aria-label="${esc(T("＋ Add to my trip"))}">${on?"✓":"＋"}</button></div>`}).join("")
+    ||`<p class="hx-mnone">${esc(T("Nothing here yet in this city. Try another city."))}</p>`}
+    ${ps.length>3?`<button type="button" class="hx-mall">${esc(T("All {n} {x}",{n:ps.length,x:T(m[1])}))} ${isAR()?"←":"→"}</button>`:""}</div>`}
+function moodPicker(){
+  const ms=MOOD.filter(x=>x[5]().length);if(!ms.some(x=>x[0]===moodSel))moodSel=(ms[0]||MOOD[0])[0];
+  return `<h2 class="hx-h">${T("What's your mood?")}</h2><div class="hx-moods" role="tablist">${ms.map(x=>`<button type="button" role="tab" class="hx-mood${x[0]===moodSel?" on":""}" data-m="${x[0]}" aria-selected="${x[0]===moodSel}" style="--bg:${x[3]};--c:${x[4]}">
+    <span><img src="assets/${x[2]}" alt=""></span><b>${esc(T(x[1]))}</b></button>`).join("")}</div><div class="hx-mwrap">${moodRes()}</div>`}
+function wireMood(el){
+  const w=el.querySelector(".hx-mwrap");if(!w)return;
+  const wireRes=()=>{
+    w.querySelectorAll(".hx-mgo").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
+    w.querySelectorAll(".hx-madd").forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(inTrip(k))removeKey(k);else{trip.ideas.push(k);toast(T("Added to your trip ✓"))}
+      saveTrip();const on=inTrip(k);b.classList.toggle("on",on);b.textContent=on?"✓":"＋";b.setAttribute("aria-pressed",String(on))});
+    const all=w.querySelector(".hx-mall");if(all)all.onclick=()=>{const m=MOOD.find(x=>x[0]===moodSel);openList(T(m[1]),cityOf(exploreCity),m[5]())}};
+  el.querySelectorAll(".hx-mood").forEach(b=>b.onclick=()=>{moodSel=b.dataset.m;
+    el.querySelectorAll(".hx-mood").forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-selected",String(on))});
+    w.innerHTML=moodRes();wireRes()});
+  wireRes();
+}
 let autoCity=false,lastToday="";
 function renderExplore(){
   // On the trip, Explore starts in the city you're in today (once; your own pick wins after that).
@@ -287,7 +312,7 @@ function renderExplore(){
     <button type="button" class="ax-search xs-search">${SVG(I.search)}<span>${T("Search places, areas, food…")}</span></button>
     <div class="ax-cities" role="tablist">${cities.map(c=>`<button type="button" role="tab" class="ax-city${c===exploreCity?" on":""}" data-c="${c}" aria-selected="${c===exploreCity}">${esc(cityOf(c))}</button>`).join("")}</div>
     ${(()=>{const td=todayCard();lastToday=td;if(td)return td;const tt=tripTop();return tt?tt+nowCard(k):nowCard(k)+(trip.stays.length||trip.ideas.length?"":`<button type="button" class="hx-cta"><span>✈️</span><span><b>${T("Start your trip with Apollo")}</b><small>${T("Pick your cities and he sorts your days.")}</small></span><i>${isAR()?"←":"→"}</i></button>`)})()}
-    ${bento()}
+    ${moodPicker()}
     ${pick?`<button type="button" class="xs-pick" data-id="${pick.id}"><span class="xs-tape"></span><span class="xs-pola"><img src="${pick.photo}" alt=""><small>${esc(D(pick,"cap"))}</small></span>
       <span class="xs-pt"><small>${T("Apollo's pick for today 🐾")}</small><b><bdi>${esc(pick.n)}</bdi></b><i>${esc((D(pick,"tip")||"").split(/(?<=[.!؟?])\s/)[0])}</i><em>${T("See the place")} ${isAR()?"←":"→"}</em></span></button>`:""}
     ${tipCard()}
@@ -304,7 +329,7 @@ function renderExplore(){
   el.querySelectorAll(".hx-trip,.hx-cta").forEach(b=>b.onclick=()=>go("trip"));
   el.querySelectorAll(".hx-open").forEach(b=>b.onclick=()=>{go("trip");if(window.tnOpenDay)tnOpenDay(+b.dataset.s,+b.dataset.d)});
   el.querySelectorAll(".hx-next[data-id]").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
-  el.querySelectorAll(".hx-b").forEach(b=>b.onclick=()=>{const x=BENTO.find(y=>y[0]===b.dataset.b);openList(`${x[1]} ${T(x[2])}`,cityOf(exploreCity),x[3]())});
+  wireMood(el);
   el.querySelectorAll(".xs-area").forEach(b=>b.onclick=()=>{const h=HOODS.find(x=>x.city===exploreCity&&x.n===b.dataset.h);
     openList(D(h,"n"),D(h,"vibe"),photoFirst(P.filter(p=>p.city===h.city&&p.area===h.area)))});
   weather();
