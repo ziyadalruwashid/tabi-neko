@@ -94,7 +94,7 @@ function today(){
     const len=c.stays.reduce((a,s)=>a+s.days.length,0)||1,end=new Date(new Date(c.start+"T12:00:00").getTime()+(len-1)*DAY).toISOString().slice(0,10);
     if(c.start<=now&&now<=end)there++;else if(c.start>now&&c.start<=in30)soon++});
   const day=new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",timeZone:"Asia/Riyadh"});
-  const name=(auth.email||"").split("@")[0];
+  const name=typeof myName==="function"?myName():(auth.email||"").split("@")[0];
   const line=opens?`${n(oT)} app open${oT===1?"":"s"} today${oLW||oT?`, ${oT>=oLW?n(oT-oLW)+" more":n(oLW-oT)+" fewer"} than last ${new Date().toLocaleDateString("en-GB",{weekday:"long",timeZone:"Asia/Riyadh"})}`:""}. ${n(newT)} new account${newT===1?"":"s"} and ${n(stT)} stamp${stT===1?"":"s"} collected.`:"App opens start counting once the new rules are published.";
   return `<div class="ad-hi"><small>${esc(day.toUpperCase())}</small><b>Hi ${esc(name)} 🐾</b><p>${esc(line)}</p><img src="assets/cat.png" alt=""></div>
     <div class="ad-tiles">${tile(n(oT),"app opens today",opens?pct(oT,oLW)+" vs last week":"not counting yet",oT<oLW)}${tile(n(o7),"opens, last 7 days",opens?pct(o7,oP7):"",o7<oP7)}

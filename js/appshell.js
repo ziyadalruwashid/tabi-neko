@@ -306,7 +306,7 @@ function renderExplore(){
   // On the trip, Explore starts in the city you're in today (once; your own pick wins after that).
   if(!autoCity&&window.tnToday){autoCity=true;const t=tnToday();if(t&&t.s.city!==exploreCity&&TRIP_CITIES.includes(t.s.city)){exploreCity=t.s.city;city=exploreCity}}
   const el=$("explore");if(!el)return;
-  const who=typeof auth!=="undefined"&&auth&&auth.email?auth.email.split("@")[0]:"";
+  const who=typeof myName==="function"?myName():"";
   const cities=["tokyo","kyoto","osaka","nara","kobe","kamakura"].filter(c=>TRIP_CITIES.includes(c)),k=period(jst().h),P0=PERIODS[k];
   // After 11pm the sky stays night, but the words stop sending you out.
   const late=jst().h>=23||jst().h<5,G=late?{greet:"Late night",hint:"Japan is asleep, a good time to plan"}:P0;
@@ -407,13 +407,14 @@ let backAt=0;
 function onBack(){
   if(window.tnOnbBack&&tnOnbBack())return;
   if(window.tnStampBack&&tnStampBack())return;
+  if(window.tnProfBack&&tnProfBack())return;
   const H=document.documentElement,top=[...document.querySelectorAll(".tpick,#atsheet")].filter(e=>!e.hidden).pop();
   if(top){top.dispatchEvent(new MouseEvent("click",{bubbles:true}));return}
   if(H.classList.contains("picking")&&typeof endPick==="function"){endPick(true);return}
   if(H.classList.contains("chat-open")&&typeof closeApollo==="function"){closeApollo();return}
   const mc=document.querySelector(".mp-cities:not([hidden])");if(mc){mc.hidden=true;return}
   const st=history.state||{};
-  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay||st.tnTrip||st.tnBook){history.back();return}
+  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay||st.tnTrip||st.tnBook||st.tnProf){history.back();return}
   const c=current(),h=location.hash.slice(1);
   if(h==="hoods"){go("explore");return}
   if(SUB.includes(h)){go("menu");return}
@@ -527,7 +528,7 @@ function renderMore(){
   const el=$("menu");if(!el)return;
   const me=typeof auth!=="undefined"&&auth;
   el.innerHTML=`<header class="ax-h"><div><h1>${T("More")}</h1></div></header>
-    <button type="button" class="am-prof"><img src="assets/cat.png" alt=""><div><b>${esc(me?me.email.split("@")[0]:T("Your account"))}</b>
+    <button type="button" class="am-prof"><img src="${esc(me&&typeof buddyOf==="function"&&buddyOf(me)?buddyOf(me).img:"assets/cat.png")}" alt=""><div><b>${esc(me?myName():T("Your account"))}</b>
       <small>${esc(me?me.email:T("Log in or create a free account"))}</small></div><i aria-hidden="true">‹</i></button>
     ${typeof tnStampCard==="function"?tnStampCard():""}
     ${typeof isAdmin==="function"&&isAdmin()?`<div class="am-list am-dash"><button type="button" class="am-li" data-k="admin"><span aria-hidden="true">📊</span><b>${T("Dashboard")}</b>${window.tnScoutWaiting&&tnScoutWaiting()?`<small class="ad-badge">${tnScoutWaiting()}</small>`:""}<i aria-hidden="true">‹</i></button></div>`:""}
@@ -535,7 +536,7 @@ function renderMore(){
       ${k==="lang"?`<small>${isAR()?"العربية":"English"}</small>`:""}<i aria-hidden="true">‹</i></button>`).join("")}</div>`).join("")}
     <p class="am-foot">Tabi Neko · ${T("made in Riyadh")} 🐾</p>`;
   if(el.querySelector(".sb-card"))el.querySelector(".sb-card").onclick=()=>tnOpenStampBook();
-  el.querySelector(".am-prof").onclick=()=>{if(typeof openAcct==="function")openAcct(me?"me":"login")};
+  el.querySelector(".am-prof").onclick=()=>{if(me&&typeof tnOpenProfile==="function")return tnOpenProfile();if(typeof openAcct==="function")openAcct(me?"me":"login")};
   el.querySelectorAll(".am-li").forEach(b=>b.onclick=()=>{const k=b.dataset.k;
     if(k==="lang"){setLang(isAR()?"en":"ar");return}
     location.hash="#"+k;window.scrollTo(0,0)});

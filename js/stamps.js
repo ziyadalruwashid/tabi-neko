@@ -235,6 +235,7 @@ function closeBookNow(){bk.hidden=true;document.documentElement.classList.remove
 function closeBook(){if(history.state&&history.state.tnBook)history.back();else closeBookNow()}
 addEventListener("popstate",e=>{const st=e.state||{};if(st.tnBook)openBook(null,flash,true);else if(!bk.hidden)closeBookNow()});
 window.tnOpenStampBook=()=>openBook();
+window.tnStampCount=()=>logged()?count():0;
 // The phone's back button: the stamp moment first.
 window.tnStampBack=()=>{if(moment){closeMoment();return true}return false};
 
