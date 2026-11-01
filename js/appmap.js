@@ -17,7 +17,7 @@ const SVG=d=>`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke
 const I_SEARCH='<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>',I_LOC='<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/>',
   I_LIST='<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',I_X='<path d="M6 6l12 12M18 6 6 18"/>';
 
-let gl=null,ready=false,failed=false,loading=null,sel=null,cat=null,halal=false,me=null,meMark=null,selMark=null,listOpen=false,shownCity=null,steer=false,q="";
+let gl=null,ready=false,failed=false,loading=null,sel=null,cat=null,halal=false,me=null,meMark=null,selMark=null,listOpen=false,shownCity=null,steer=false,only=null,fitOnly=false;
 // The map sits in its own box that is never redrawn; the search, filters,
 // cards and list are a layer on top (ui) that is.
 const host=document.createElement("div");host.id="amap";host.hidden=true;document.body.appendChild(host);
@@ -72,7 +72,7 @@ function restyle(){
     }catch(e){}
   }
 }
-const shown=()=>P.filter(p=>(!cat||p.cat===cat)&&(!halal||p.halal));
+const shown=()=>P.filter(p=>(!only||only.ids.has(p.id))&&(!cat||p.cat===cat)&&(!halal||p.halal));
 const geo=()=>({type:"FeatureCollection",features:shown().map(p=>({type:"Feature",geometry:{type:"Point",coordinates:[p.lng,p.lat]},properties:{id:p.id,color:COL[p.cat]||INK}}))});
 function onLoad(){
   ready=true;restyle();
@@ -89,16 +89,30 @@ function onLoad(){
   gl.on("click","pt",e=>pick(e.features[0].properties.id,true));
   for(const l of ["clu","pt"]){gl.on("mouseenter",l,()=>gl.getCanvas().style.cursor="pointer");gl.on("mouseleave",l,()=>gl.getCanvas().style.cursor="")}
   gl.on("moveend",()=>{if(steer){steer=false;return}cards()});
+  if(fitOnly)fitResults();
   cards();
 }
+// Search results on the map: just those pins, framed together.
+function fitResults(){
+  fitOnly=false;const ps=shown();if(!ps.length||!ready)return;
+  const lng=ps.map(p=>p.lng),lat=ps.map(p=>p.lat);
+  gl.fitBounds([[Math.min(...lng),Math.min(...lat)],[Math.max(...lng),Math.max(...lat)]],{padding:{top:150,bottom:190,left:50,right:50},maxZoom:15,duration:0});
+  cards();
+}
+window.mapOnly=(ps,title)=>{
+  if(!ps.length)return;
+  const n={};ps.forEach(p=>n[p.city]=(n[p.city]||0)+1);
+  const c=Object.keys(n).sort((a,b)=>n[b]-n[a])[0];
+  only={ids:new Set(ps.filter(p=>p.city===c).map(p=>p.id)),title};fitOnly=true;sel=null;
+  city=c;store.set("tabineko-city",c);active=new Set(Object.keys(CATS));halalOnly=false;cat=null;halal=false;
+};
 
 // ---- the panel around the map ----
 function render(){
   const cities=TRIP_CITIES.filter(c=>c!=="ise");
   ui.innerHTML=`<div class="mp-top">
-      <div class="mp-search">${SVG(I_SEARCH)}<input type="search" id="mp-q" placeholder="${esc(T("Search the map…"))}" autocomplete="off" enterkeyhint="search" value="${esc(q)}">
-        ${q?`<button type="button" class="mp-qx" aria-label="${esc(T("Clear search"))}">${SVG(I_X)}</button>`:""}</div>
-      <div class="mp-res" hidden></div>
+      <div class="mp-search${only?" has":""}">${SVG(I_SEARCH)}<input type="search" id="mp-q" readonly placeholder="${esc(T("Search places, areas, food…"))}" value="${esc(only?only.title:"")}">
+        ${only?`<button type="button" class="mp-qx" aria-label="${esc(T("Clear search"))}">${SVG(I_X)}</button>`:""}</div>
       <div class="mp-chips">
         <button type="button" class="mp-ch mp-city">${esc(D(CITIES[shownCity||city],"n"))} ▾</button>
         <button type="button" class="mp-ch${!cat&&!halal?" on":""}" data-c="">${T("All")}</button>
@@ -112,11 +126,11 @@ function render(){
     <div class="mp-peek"><div class="mp-cards"></div></div>
     <div class="mp-sheet" aria-hidden="true"><button type="button" class="mp-grab" aria-label="${esc(T("Close the list"))}"><i></i></button><header><b></b><small></small></header><div class="mp-ul"></div></div>`;
   const $$=s=>host.querySelector(s);
-  const box=$$("#mp-q"),res=$$(".mp-res");
-  box.oninput=()=>{q=box.value;search(res)};
-  box.onfocus=()=>{if(q)search(res)};
-  box.onkeydown=e=>{if(e.key==="Enter"){const b=res.querySelector("button");if(b)b.click();box.blur()}};
-  if($$(".mp-qx"))$$(".mp-qx").onclick=()=>{q="";render();cards()};
+  // The box opens the search screen (js/appsearch.js); its results come back
+  // here as the only pins on the map until the ✕ clears them.
+  const box=$$("#mp-q");
+  box.onclick=box.onfocus=()=>{box.blur();if(window.openSearch)openSearch(only?only.title:"")};
+  if($$(".mp-qx"))$$(".mp-qx").onclick=e=>{e.stopPropagation();only=null;refilter()};
   host.querySelectorAll(".mp-ch[data-c]").forEach(b=>b.onclick=()=>{cat=b.dataset.c||null;if(!b.dataset.c)halal=false;refilter()});
   $$(".mp-ch.hal").onclick=()=>{halal=!halal;refilter()};
   $$(".mp-city").onclick=()=>{const m=$$(".mp-cities");m.hidden=!m.hidden};
@@ -134,21 +148,10 @@ function render(){
   // Swiping the cards walks the map from place to place.
   const cs=$$(".mp-cards");let t;
   cs.addEventListener("scroll",()=>{clearTimeout(t);t=setTimeout(()=>{const c=centred(cs);if(c&&c!==sel)pick(c,false,true)},140)},{passive:true});
-  host.addEventListener("click",e=>{if(!e.target.closest(".mp-city,.mp-cities"))$$(".mp-cities").hidden=true;if(!e.target.closest(".mp-search,.mp-res"))res.hidden=true});
-}
-function search(res){
-  const w=LOW(q.trim());if(!w){res.hidden=true;return}
-  const hits=P.filter(p=>LOW(p.n).includes(w)||LOW(AREA(p.area)).includes(w)||LOW(p.area).includes(w)).slice(0,8);
-  res.hidden=false;
-  res.innerHTML=hits.length?hits.map(p=>`<button type="button" data-id="${p.id}"><img src="${p.photo||CATS[p.cat].img}" alt=""><span><b><bdi>${esc(p.n)}</bdi></b><small>${esc(D(CITIES[p.city],"n"))} · ${esc(AREA(p.area))}</small></span></button>`).join("")
-    :`<p>${esc(T("Nothing found. Try another word."))}</p>`;
-  res.querySelectorAll("button").forEach(b=>b.onclick=()=>{res.hidden=true;host.querySelector("#mp-q").blur();
-    const p=P.find(x=>x.id===b.dataset.id);if(p.city!==shownCity){shownCity=p.city;render()}
-    if((cat&&p.cat!==cat)||(halal&&!p.halal)){cat=null;halal=false;refilter()}
-    pick(p.id,true)});
+  host.addEventListener("click",e=>{if(!e.target.closest(".mp-city,.mp-cities"))$$(".mp-cities").hidden=true});
 }
 function refilter(){render();if(ready){gl.getSource("places").setData(geo());cards()}}
-function goCity(c){shownCity=c;city=c;store.set("tabineko-city",c);render();const b=BOX[c];if(ready&&b)gl.fitBounds([[b.w,b.s],[b.e,b.n]],{padding:40,duration:900})}
+function goCity(c){only=null;shownCity=c;city=c;store.set("tabineko-city",c);render();const b=BOX[c];if(ready&&b)gl.fitBounds([[b.w,b.s],[b.e,b.n]],{padding:40,duration:900})}
 
 // Places in view, nearest the middle first, as cards and as the list.
 function inView(){
@@ -194,7 +197,7 @@ function pick(id,fromMap,fromCards){
 function locate(){
   if(!navigator.geolocation)return toast(T("Couldn't find where you are."));
   navigator.geolocation.getCurrentPosition(pos=>{
-    me={lat:pos.coords.latitude,lng:pos.coords.longitude};
+    me={lat:pos.coords.latitude,lng:pos.coords.longitude};window.tnMe=me;
     if(!meMark){const el=document.createElement("span");el.className="mp-me";meMark=new maplibregl.Marker({element:el})}
     meMark.setLngLat([me.lng,me.lat]).addTo(gl);
     gl.flyTo({center:[me.lng,me.lat],zoom:15,duration:900});
@@ -229,7 +232,8 @@ function sync(){
   if(shownCity!==city)shownCity=city;render();
   ensure();
   if(ready){gl.resize();gl.getSource("places").setData(geo());const b=BOX[city];
-    if(b&&!gl.getBounds().contains([(b.w+b.e)/2,(b.s+b.n)/2]))gl.fitBounds([[b.w,b.s],[b.e,b.n]],{padding:40,duration:0});cards()}
+    if(fitOnly)fitResults();
+    else{if(b&&!gl.getBounds().contains([(b.w+b.e)/2,(b.s+b.n)/2]))gl.fitBounds([[b.w,b.s],[b.e,b.n]],{padding:40,duration:0});cards()}}
 }
 const _show=show;show=function(t,q){_show(t,q);sync()};
 const _setLang=setLang;setLang=function(l){_setLang(l);if(isMapTab())sync()};
