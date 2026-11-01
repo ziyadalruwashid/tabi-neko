@@ -323,6 +323,13 @@ addEventListener("popstate",e=>{const st=e.state||{};
   if(st.tnPlace)openPlace(st.tnPlace,true);else closePlaceNow();
   if(!st.tnPlace&&!st.tnList&&typeof closeList==="function")closeList()});
 window.openPlace=openPlace; // the real map (js/appmap.js) opens places too
+// Pop-up lists (the add-places picker, the account, Apollo's planner) slide
+// up as bottom sheets. They're redrawn on every tap, so the slide plays only
+// when one opens: after that it's marked "again".
+(function(){const arm=el=>{el.classList.remove("again");clearTimeout(el._sheetT);el._sheetT=setTimeout(()=>el.classList.add("again"),320)};
+  new MutationObserver(ms=>ms.forEach(m=>{const t=m.target;if(m.type==="attributes"&&t.classList&&t.classList.contains("tpick")&&!t.hidden)arm(t);
+    (m.addedNodes||[]).forEach(n=>{if(n.classList&&n.classList.contains("tpick")&&!n.hidden)arm(n)})}))
+    .observe(document.body,{attributes:true,attributeFilter:["hidden"],subtree:true,childList:true})})();
 window.goTab=go;window.openListPage=openList; // and so does search (js/appsearch.js)
 // Every way of picking a place opens its page instead of unfolding the card.
 const _select=select;select=function(id){if(!id)return;if(typeof closeApollo==="function")closeApollo();openPlace(id)};
