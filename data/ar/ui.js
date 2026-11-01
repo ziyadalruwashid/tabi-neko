@@ -113,6 +113,7 @@ AR.ui={
 "This replaces the days in your current trip. Your ideas and where you're staying are kept.":"هذا بيستبدل أيام رحلتك الحالية، بس أفكارك ومكان سكنك باقية.",
 "Use this plan":"اعتمد هالخطة",
 "Explore":"استكشف",
+"Dashboard":"لوحة التحكم",
 "Allow location for Tabi Neko in your phone's settings, then try again.":"اسمح لتابي نيكو يشوف موقعك من إعدادات جوالك، وجرّب مرة ثانية.",
 "Apollo's stamp book":"دفتر أختام أبولو",
 "Apollo's stamp 🐾":"ختم أبولو 🐾",
