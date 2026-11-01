@@ -22,6 +22,10 @@
       "style": "LIGHT",
       "backgroundColor": "#FAF4E8",
       "overlaysWebView": false
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_tabineko",
+      "iconColor": "#F14E24"
     }
   }
 }
