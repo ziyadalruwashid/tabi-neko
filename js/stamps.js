@@ -188,7 +188,7 @@ function celebrate(s){
   moment=document.createElement("div");moment.className="sb-moment";moment.setAttribute("role","dialog");moment.setAttribute("aria-label",T("Stamped!"));
   moment.innerHTML=`<div class="sb-paper"><div class="sb-land">${stampSVG(s,{size:190,got:true,date:mine[KEY(s)],spin:tilt(s)})}</div>
     <h3>${T("Stamped! 🎉")}</h3><p>${esc(T("{n} of {all} stamps in {c}",{n,all,c:cityName(s.c)}))}</p>
-    <div class="sb-bub"><img src="assets/cat.png" alt=""><span>${esc(firstLine(D(s.p,"tip")))}</span></div>
+    <div class="sb-bub"><img src="${GI()}" alt=""><span>${esc(firstLine(D(s.p,"tip")))}</span></div>
     <div class="sb-btns"><button type="button" class="sb-done">${T("Done")}</button><button type="button" class="btn sb-book">${T("See my book")}</button></div></div>`;
   document.body.appendChild(moment);
   try{navigator.vibrate&&setTimeout(()=>navigator.vibrate(35),420)}catch(e){}

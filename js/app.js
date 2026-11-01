@@ -18,7 +18,17 @@ let lang=document.documentElement.lang==="ar"&&typeof AR!=="undefined"?"ar":"en"
 const isAR=()=>lang==="ar";
 const AR_ON=()=>typeof AR!=="undefined"&&!!AR.places;
 const fill=(s,v)=>v?s.replace(/\{(\w+)\}/g,(_,k)=>v[k]):s;
-const T=(s,v)=>fill(isAR()&&AR.ui[s]||s,v);
+// The app's guide: Apollo, or the travel buddy you picked (data/buddies.js,
+// set by js/account.js). With another buddy, "Apollo" in the app's text
+// becomes their name, except where Apollo is the brand (his stamp book).
+let GUIDE=null;
+const KEEP_APOLLO=new Set(["Apollo's stamp book","Apollo's stamp 🐾"]);
+const guideText=(s,out)=>!GUIDE||KEEP_APOLLO.has(s)||typeof out!=="string"?out:out
+  .replace(/Meow!/g,GUIDE.hello||"Hi!").replace(/مياو!/g,GUIDE.helloAr||"هلا!")
+  .replace(/travel cat/g,GUIDE.kind||"travel buddy").replace(/قطوك المسافر/g,GUIDE.kindAr||"رفيقك المسافر")
+  .replace(/Apollo/g,GUIDE.n).replace(/أبولو/g,GUIDE.ar||GUIDE.n);
+const GI=()=>GUIDE?GUIDE.img:"assets/cat.png"; // the guide's picture
+const T=(s,v)=>guideText(s,fill(isAR()&&AR.ui[s]||s,v));
 // A field of a data entry in the current language, e.g. D(place,"tip").
 const D=(o,f)=>isAR()&&o._ar&&o._ar[f]||o[f];
 const AREA=a=>isAR()&&AR.areas[a]||a;

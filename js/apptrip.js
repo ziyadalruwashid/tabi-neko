@@ -163,9 +163,9 @@ function tripCard(t){
 function listHTML(){
   const all=[...(hasContent(trip)?[trip]:[]),...lib()];
   let h=`<header class="tv-lh"><h1>${T("My trips")}</h1><button type="button" class="tv-plus" aria-label="${esc(T("New trip"))}">${SVG(I.plus,24)}</button></header>`;
-  if(!all.length)return h+`<div class="tv-empty"><img src="assets/cat.png" alt=""><h2>${T("No trips yet ✈️")}</h2><p>${T("Apollo's ready with his backpack! Make your first trip to Japan and he'll help with every day.")}</p>
+  if(!all.length)return h+`<div class="tv-empty"><img src="${GI()}" alt=""><h2>${T("No trips yet ✈️")}</h2><p>${T("Apollo's ready with his backpack! Make your first trip to Japan and he'll help with every day.")}</p>
       <button type="button" class="tv-big tv-new">${SVG(I.plus,20)} ${T("Make your first trip")}</button>
-      ${typeof openPlanner==="function"?`<button type="button" class="tv-ghost tplanb"><img src="assets/cat.png" alt=""><span><b>✨ ${T("Let Apollo plan it for you")}</b><small>${T("Tell him the cities and how long, he sorts everything in seconds")}</small></span></button>`:""}</div>
+      ${typeof openPlanner==="function"?`<button type="button" class="tv-ghost tplanb"><img src="${GI()}" alt=""><span><b>✨ ${T("Let Apollo plan it for you")}</b><small>${T("Tell him the cities and how long, he sorts everything in seconds")}</small></span></button>`:""}</div>
     <div class="tv-how"><b>${T("How it works")}</b><ol><li>${T("Pick a name, dates and cities")}</li><li>${T("Add your flight and hotel")}</li><li>${T("Fill your days with places from the notebook 🐾")}</li></ol></div>`;
   const up=all.filter(t=>!isPast(t)),past=all.filter(isPast),show=seg==="past"?past:up;
   h+=`<div class="tv-seg" role="tablist"><button type="button" role="tab" data-seg="up" class="${seg==="up"?"on":""}">${T("Upcoming")}</button><button type="button" role="tab" data-seg="past" class="${seg==="past"?"on":""}">${T("Past")}</button></div>`;
@@ -300,7 +300,7 @@ function drawNew(){
       <label class="nt-f"><small>${T("Trip name")}</small><input class="nt-name" value="${esc(nt.name)}" placeholder="${esc(T("My Japan trip 🇯🇵"))}" maxlength="60"></label>
       <button type="button" class="nt-f nt-when${nt.start?"":" emp"}"><small>${T("When?")}</small><b>${SVG(I.cal,16)} ${esc(nt.start?(nt.end?`${md(new Date(nt.start))} – ${md(new Date(nt.end))}`:md(new Date(nt.start))):T("Pick the dates"))}</b></button>
       <button type="button" class="nt-f nt-where${nt.cities.length?"":" emp"}"><small>${T("Where?")}</small><b>🗾 ${esc(nt.cities.length?nt.cities.map(c=>`${cityName(c.c)} ${num(c.n)}`).join(isAR()?" ← ":" → "):T("Pick the cities"))}</b></button>
-      <button type="button" class="nt-apo"><img src="assets/cat.png" alt=""><span><b>✨ ${T("Let Apollo fill the days")}</b><small>${T("Places from the notebook and halal food nearby. You can change them after.")}</small></span><i class="nt-tg${nt.fill?" on":""}" role="switch" aria-checked="${nt.fill}"><i></i></i></button>`;
+      <button type="button" class="nt-apo"><img src="${GI()}" alt=""><span><b>✨ ${T("Let Apollo fill the days")}</b><small>${T("Places from the notebook and halal food nearby. You can change them after.")}</small></span><i class="nt-tg${nt.fill?" on":""}" role="switch" aria-checked="${nt.fill}"><i></i></i></button>`;
   }
   sh.innerHTML=h+`</div>`;
   const $$=s=>sh.querySelectorAll(s);

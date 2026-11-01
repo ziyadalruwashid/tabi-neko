@@ -92,7 +92,7 @@ function draw(){
     <small>${esc(T(hits.length===1?"1 place":"{n} places",{n:hits.length}))}${hits.some(p=>p.halal)?" · "+esc(T("halal first")):""}</small></span><i class="sv-go">${SVG(I.go,18)}</i></button>`;
   if(hits.length)h+=head(T("Places"))+hits.slice(0,25).map(p=>row(p,ws)).join("")
     +`<button type="button" class="sv-map">${SVG(I.map,20)}${esc(T("Show all on the map"))}</button>`;
-  if(!hits.length&&!found.length)h+=`<div class="sv-none"><img src="assets/cat.png" alt=""><b>${esc(T("Apollo hasn't been there yet."))}</b><small>${esc(T("Try another word, or a place name in English."))}</small></div>`;
+  if(!hits.length&&!found.length)h+=`<div class="sv-none"><img src="${GI()}" alt=""><b>${esc(T("Apollo hasn't been there yet."))}</b><small>${esc(T("Try another word, or a place name in English."))}</small></div>`;
   body.innerHTML=h;wire();
 }
 function drawEmpty(){

@@ -57,7 +57,7 @@ function renderPlanner(){
       <div class="acct-f"><button type="button" class="store pl-go"${p.cities.length?"":" disabled"}>✨ ${T(p.cities.length?"Plan my {n}-day trip":"Pick at least one city",{n:total})}</button></div>
       <p class="acct-small">${T("Apollo can make mistakes. Check opening times and halal status before you go.")}</p>`;
   }else if(p.step==="busy"){
-    h=`<div class="pl-busy"><img src="assets/cat.png" alt="" class="pl-cat"><h2 id="plan-h">${T("Apollo is planning…")}</h2>
+    h=`<div class="pl-busy"><img src="${GI()}" alt="" class="pl-cat"><h2 id="plan-h">${T("Apollo is planning…")}</h2>
       <p class="pl-say" role="status">${esc(T(PLAN_STEPS[0]))}</p><div class="pl-dots" aria-hidden="true"><i></i><i></i><i></i></div></div>`;
   }else{
     const r=p.plan,n=r.stays.reduce((a,s)=>a+s.days.length,0),places=r.stays.flatMap(s=>s.days.flatMap(d=>d.ids)),halal=places.filter(k=>BYKEY.get(k).halal).length;
