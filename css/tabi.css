@@ -2183,3 +2183,4 @@ html.onb-open #tabbar{display:none}
 .ob-om b{font:700 12px var(--body);color:rgba(255,255,255,.8)}
 .ob-om.on{background:linear-gradient(#F14E24,#C23A15);border-color:#FFD9A0;transform:translateY(-4px)}
 .ob-om.on span,.ob-om.on b{color:#fff}
+html.tn-app body{margin:0}
