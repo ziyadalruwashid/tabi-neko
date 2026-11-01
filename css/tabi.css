@@ -2592,3 +2592,45 @@ html.tn-app .ax-d em{display:inline-block;font:800 10.5px var(--body);font-style
 html.tn-app .ax-dots{display:flex;gap:3px;margin-top:5px}
 html.tn-app .ax-dots i{width:16px;height:6px;border-radius:9px;background:#EADFCF}
 html.tn-app .ax-dots i.f{background:var(--lantern)}
+
+/* ---- the crew, as a character select (js/appcrew.js) ---- */
+html.tn-app #crewcs:not([hidden]){position:fixed;inset:0;z-index:66;display:flex;flex-direction:column;overflow:hidden auto;color:var(--ink);background:#C9562A}
+html.tn-app.cs-open body{overflow:hidden}
+#crewcs .cs-bg{position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--c) 14%,#FFF1DC),color-mix(in srgb,var(--c) 52%,#F4C08A) 42%,color-mix(in srgb,var(--c) 70%,#4a1d0c) 100%);transition:background .4s}
+#crewcs .cs-ray{position:fixed;left:50%;top:30vh;width:200vmax;height:200vmax;margin:-100vmax 0 0 -100vmax;border-radius:50%;background:repeating-conic-gradient(#ffffff2e 0 9deg,transparent 9deg 18deg);animation:csSpin 60s linear infinite;pointer-events:none}
+@keyframes csSpin{to{transform:rotate(1turn)}}
+#crewcs .cs-top{position:relative;z-index:3;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 14px 0}
+#crewcs .cs-top b{font:400 22px var(--display);color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.25);flex:1}
+#crewcs .cs-top span{font:800 12px var(--body);color:#fff;background:#0003;border-radius:99px;padding:4px 10px}
+#crewcs .cs-x{width:40px;height:40px;border-radius:50%;border:0;background:var(--sheet);color:var(--ink);font:900 22px var(--body);display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 10px rgba(63,33,22,.18)}
+html[dir=rtl] #crewcs .cs-x{transform:scaleX(-1)}
+#crewcs .cs-stage{position:relative;z-index:2;flex:1 0 auto;min-height:max(260px,40vh);touch-action:pan-y;user-select:none}
+#crewcs .cs-hero{position:absolute;left:50%;bottom:30px;height:min(34vh,250px);max-width:62vw;object-fit:contain;transform:translateX(-50%);filter:drop-shadow(0 18px 18px rgba(90,30,10,.45));animation:csBob 3.2s ease-in-out infinite;-webkit-user-drag:none;pointer-events:none}
+#crewcs .cs-hero.in-r{animation:csInR .38s cubic-bezier(.2,.9,.3,1.3),csBob 3.2s ease-in-out .38s infinite}
+#crewcs .cs-hero.in-l{animation:csInL .38s cubic-bezier(.2,.9,.3,1.3),csBob 3.2s ease-in-out .38s infinite}
+html[dir=rtl] #crewcs .cs-hero.in-r{animation-name:csInL,csBob}html[dir=rtl] #crewcs .cs-hero.in-l{animation-name:csInR,csBob}
+@keyframes csBob{50%{transform:translate(-50%,-6px)}}
+@keyframes csInR{from{opacity:0;transform:translate(10%,0) scale(.8)}}
+@keyframes csInL{from{opacity:0;transform:translate(-110%,0) scale(.8)}}
+#crewcs .cs-plat{position:absolute;left:50%;bottom:14px;width:min(56vw,230px);height:44px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,#5a1e0acc,#7a2c1200)}
+#crewcs .cs-side{position:absolute;bottom:60px;height:min(13vh,90px);max-width:22vw;object-fit:contain;opacity:.55;filter:grayscale(.3) drop-shadow(0 6px 8px rgba(0,0,0,.25));cursor:pointer;-webkit-user-drag:none}
+#crewcs .cs-side.l{inset-inline-start:10px}#crewcs .cs-side.r{inset-inline-end:10px}
+#crewcs .cs-arr{position:absolute;bottom:4px;width:42px;height:42px;border-radius:50%;border:0;background:#fff;color:var(--ink);font:900 20px var(--body);display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:2}
+#crewcs .cs-arr.prev{inset-inline-start:calc(50% - 140px)}#crewcs .cs-arr.next{inset-inline-end:calc(50% - 140px)}
+#crewcs .cs-panel{position:relative;z-index:2;margin:12px 12px calc(14px + env(safe-area-inset-bottom));background:var(--sheet);border-radius:24px;padding:16px 16px 14px;box-shadow:0 -10px 30px -10px rgba(63,33,22,.4)}
+#crewcs .cs-nm{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+#crewcs .cs-nm b{font:400 30px/1.1 var(--display)}
+#crewcs .cs-jp{font:700 13px var(--jp);color:var(--muted)}
+#crewcs .cs-pill{margin-inline-start:auto;font:800 10.5px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--c);border-radius:99px;padding:3px 10px;align-self:center}
+#crewcs .cs-panel p{font:600 13.5px/1.55 var(--body);color:#5b4436;margin:6px 0 0}
+#crewcs .cs-bub{margin-top:10px;background:color-mix(in srgb,var(--c) 12%,#fff);border-radius:16px 16px 16px 4px;padding:9px 12px;font:400 17.5px/1.3 var(--hand);color:color-mix(in srgb,var(--c) 70%,#3F2116)}
+html[dir=rtl] #crewcs .cs-bub{border-radius:16px 16px 4px 16px;font-family:var(--body);font-size:14.5px;font-weight:700}
+#crewcs .cs-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+#crewcs .cs-stats div{background:#F5EDE0;border-radius:12px;padding:7px 4px;text-align:center;font:700 11.5px/1.25 var(--body);color:var(--muted)}
+#crewcs .cs-stats b{display:block;font:900 16px var(--body);color:var(--ink)}
+#crewcs .cs-links{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+#crewcs .cs-links a{font:800 12.5px var(--body);color:var(--ink);background:#F5EDE0;border-radius:99px;padding:5px 11px;text-decoration:none}
+#crewcs .cs-dots{display:flex;gap:6px;justify-content:center;margin-top:12px}
+#crewcs .cs-dots button{width:8px;height:8px;border-radius:9px;border:0;padding:0;background:#E3D6C4;cursor:pointer;transition:width .25s}
+#crewcs .cs-dots button.on{width:22px;background:var(--c)}
+@media (prefers-reduced-motion:reduce){#crewcs .cs-ray,#crewcs .cs-hero{animation:none!important}}
