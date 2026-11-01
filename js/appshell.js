@@ -529,9 +529,9 @@ function axDraw(){
   const cities=[...new Set(HOODS.map(h=>h.city))].filter(c=>CITIES[c]);
   if(!cities.includes(axCity))axCity=cities[0];
   const all=HOODS.filter(h=>h.city===axCity),m=AX_MOODS.find(x=>x[0]===axMood)||AX_MOODS[0];
-  const card=(h,i,big)=>{const hl=axHalal(h);return `<button type="button" class="ax-card${big?" big":""}" data-i="${i}"><img src="${esc(h.photo)}" alt="" loading="lazy"${h.pos?` style="object-position:${esc(h.pos)}"`:""}>
-    <span class="ax-no" dir="ltr">No.${String(i+1).padStart(2,"0")}</span>${hl?`<span class="ax-hl">✓ ${esc(T("{n} halal",{n:axNum(hl)}))}</span>`:""}
-    <span class="ax-t"><b>${esc(D(h,"n"))}</b>${h.jp?`<span lang="ja">${esc(h.jp)}</span>`:""}<small>${esc(D(h,"vibe"))}</small></span></button>`};
+  const card=(h,i,big)=>`<button type="button" class="ax-card${big?" big":""}" data-i="${i}"><img src="${esc(h.photo)}" alt="" loading="lazy"${h.pos?` style="object-position:${esc(h.pos)}"`:""}>
+    <span class="ax-no" dir="ltr">No.${String(i+1).padStart(2,"0")}</span>
+    <span class="ax-t"><b>${esc(D(h,"n"))}</b>${h.jp?`<span lang="ja">${esc(h.jp)}</span>`:""}<small>${esc(D(h,"vibe"))}</small></span></button>`;
   const dots=v=>`<span class="ax-dots" role="img" aria-label="${esc(T("{n} out of 5",{n:v||0}))}">${[1,2,3,4,5].map(k=>`<i class="${k<=v?"f":""}"></i>`).join("")}</span>`;
   let body;
   if(!axMood)body=`<p class="ax-hint">${esc(T("{n} neighbourhoods, each rated by Apollo 🐾",{n:axNum(all.length)}))}</p><div class="ax-grid">${all.map((h,i)=>card(h,i,i===0)).join("")}</div>`;
