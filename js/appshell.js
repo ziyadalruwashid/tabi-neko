@@ -29,7 +29,7 @@ const cityOf=c=>D(CITIES[c],"n");
 const placeById=id=>P.find(p=>p.id===id);
 // A place as a photo card. Places without a photo show their category art.
 const pcard=p=>`<button type="button" class="pc" data-id="${p.id}" style="--c:var(--${p.cat})">
-  <span class="pimg${p.photo?"":" art"}"><img src="${p.photo||CATS[p.cat].img}" alt="" loading="lazy">${p.halal?`<i class="hb">${p.hl==="friendly"?T("Muslim-friendly"):T("halal ✓")}</i>`:""}${p.gem?`<i class="gb">⭐</i>`:""}</span>
+  <span class="pimg${p.photo?"":" art"}"><img src="${p.photo||CATS[p.cat].img}" alt="" loading="lazy">${p.halal?`<i class="hb">${p.hl==="friendly"?T("Muslim-friendly"):T("halal ✓")}</i>`:""}${p.gem?`<i class="gb">${T("⭐ hidden gem")}</i>`:""}</span>
   <b><bdi>${esc(p.n)}</bdi></b><small><i></i>${esc(D(CATS[p.cat],"n"))} · ${esc(AREA(p.area))}</small></button>`;
 const wireCards=box=>box.querySelectorAll(".pc").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
 
@@ -55,7 +55,7 @@ function go(t,keep){
 }
 const SUB=["hoods","apps","trips","memories","crew","privacy","admin"];
 function current(){const h=location.hash.slice(1);
-  if(h==="explore"||h==="trip"||h==="menu")return h;if(SUB.includes(h))return "menu";
+  if(h==="explore"||h==="trip"||h==="menu")return h;if(h==="hoods")return "explore";if(SUB.includes(h))return "menu";
   return $("home").hidden?"explore":"map"}
 function syncTabs(){const c=current();bar.querySelectorAll(".tb").forEach(b=>b.classList.toggle("on",b.dataset.t===c))}
 const _show=show;show=function(t,q){_show(t,q);syncTabs()};
@@ -203,7 +203,7 @@ function tipCard(){const t=TIPS[jst().day%TIPS.length];
   return `<div class="xs-tip"><img src="assets/cat.png" alt=""><span><small>${T("Apollo's tip of the day 💡")}</small><b>${esc(T(t))}</b></span></div>`}
 // The city's neighbourhoods, from the Areas page, as wide photo cards.
 function areasRow(){const hs=HOODS.filter(h=>h.city===exploreCity&&h.photo);if(!hs.length)return "";
-  return `<section class="ax-row"><header><h2>${T("Areas to explore 🏘️")}</h2></header><div class="ax-hs">${hs.map(h=>`<button type="button" class="xs-area" data-h="${esc(h.n)}">
+  return `<section class="ax-row"><header><h2>${T("Areas to explore 🏘️")}</h2><button type="button" class="ax-all xs-areas-all">${T("See all")}</button></header><div class="ax-hs">${hs.map(h=>`<button type="button" class="xs-area" data-h="${esc(h.n)}">
     <img src="${h.photo}" alt="" loading="lazy" style="object-position:${h.pos||"50% 50%"}"><span><b>${esc(D(h,"n"))}</b><small>${esc(D(h,"vibe"))}</small></span></button>`).join("")}</div></section>`}
 // The weather now in the city, from Open-Meteo (free, no key). No answer, no chip.
 const WX={};
@@ -293,6 +293,8 @@ function wireMood(el){
     w.innerHTML=moodRes();wireRes()});
   wireRes();
 }
+// The newest places in the city: data/places.js grows by appending a line.
+const fresh=()=>P.filter(p=>p.city===exploreCity&&p.photo).slice(-12).reverse();
 let autoCity=false,lastToday="";
 function renderExplore(){
   // On the trip, Explore starts in the city you're in today (once; your own pick wins after that).
@@ -300,10 +302,7 @@ function renderExplore(){
   const el=$("explore");if(!el)return;
   const who=typeof auth!=="undefined"&&auth&&auth.email?auth.email.split("@")[0]:"";
   const cities=["tokyo","kyoto","osaka","nara","kobe","kamakura"].filter(c=>TRIP_CITIES.includes(c)),k=period(jst().h),P0=PERIODS[k];
-  const must=photoFirst(inCity().filter(p=>p.tier==="must")),pick=dailyPick(),sea=season();
-  const big=p=>`<button type="button" class="pc bigc" data-id="${p.id}" style="--c:var(--${p.cat})"><span class="pimg${p.photo?"":" art"}"><img src="${p.photo||CATS[p.cat].img}" alt="" loading="lazy"></span>
-    <span class="bigc-badge">🔥 ${T("don't skip this")}</span>${p.halal?`<i class="hb">${p.hl==="friendly"?T("Muslim-friendly"):T("halal ✓")}</i>`:""}
-    <span class="bigc-t"><b><bdi>${esc(p.n)}</bdi></b><small>${esc(D(CATS[p.cat],"n"))} · ${esc(AREA(p.area))}</small></span></button>`;
+  const pick=dailyPick();
   const row=(t,s,ps,key)=>ps.length?`<section class="ax-row"><header><h2>${T(t)}</h2>${key?`<button type="button" class="ax-all" data-list="${key}">${T("See all")}</button>`:""}</header>
     ${s?`<p class="ax-sub">${esc(s)}</p>`:""}<div class="ax-hs">${ps.slice(0,12).map(pcard).join("")}</div></section>`:"";
   el.innerHTML=`<div class="xs xs-${k}">${scene(k,exploreCity)}
@@ -315,15 +314,9 @@ function renderExplore(){
     ${moodPicker()}
     ${pick?`<button type="button" class="xs-pick" data-id="${pick.id}"><span class="xs-tape"></span><span class="xs-pola"><img src="${pick.photo}" alt=""><small>${esc(D(pick,"cap"))}</small></span>
       <span class="xs-pt"><small>${T("Apollo's pick for today 🐾")}</small><b><bdi>${esc(pick.n)}</bdi></b><i>${esc((D(pick,"tip")||"").split(/(?<=[.!؟?])\s/)[0])}</i><em>${T("See the place")} ${isAR()?"←":"→"}</em></span></button>`:""}
-    ${tipCard()}
-    ${must.length?`<section class="ax-row ax-must"><header><h2>${T("Don't miss 🔥")}</h2></header><p class="ax-sub">${esc(T("Apollo's first picks in {c}",{c:cityOf(exploreCity)}))}</p><div class="ax-hs">${must.slice(0,10).map(big).join("")}</div></section>`:""}
-    ${areasRow()}
-    ${sea.ps.length?`<button type="button" class="xs-season"><small>${esc(T("{m} in Japan",{m:(isAR()?MONTHS_AR:MONTHS_EN)[jst().mo]}))}</small><b>${T(sea.t)}</b><p>${T(sea.s)}</p>
-      <span class="xs-sp">${sea.ps.slice(0,3).map(p=>`<span><img src="${p.photo}" alt=""><b><bdi>${esc(p.n)}</bdi></b></span>`).join("")}</span></button>`:""}
-    ${row(near?"Halal near you 🍜":"Halal food 🍜","",halalHere(),"halal")}
+    ${row("New on Tabi Neko 🆕",T("Apollo just added these"),fresh(),"new")}
     ${row("Hidden gems ⭐",T("Even locals don't know these"),photoFirst(inCity().filter(p=>p.gem)),"gems")}
-    ${row("Famous sights 📸","",inCity().filter(p=>p.src===""&&p.photo&&!["food","coffee"].includes(p.cat)&&!p.gem),"")}
-    ${row("Coffee & sweets ☕","",photoFirst(inCity().filter(p=>p.cat==="coffee")),"coffee")}`;
+    ${areasRow()}`;
   wireCards(el);
   el.querySelector(".xs-cat").onclick=()=>go("menu");
   el.querySelectorAll(".hx-trip,.hx-cta").forEach(b=>b.onclick=()=>go("trip"));
@@ -336,8 +329,8 @@ function renderExplore(){
   el.querySelectorAll(".ax-city").forEach(b=>b.onclick=()=>{exploreCity=b.dataset.c;city=exploreCity;store.set("tabineko-city",city);renderExplore()});
   el.querySelector(".xs-search").onclick=()=>{city=exploreCity;store.set("tabineko-city",city);if(window.openSearch)openSearch("")};
   if(el.querySelector(".xs-pick"))el.querySelector(".xs-pick").onclick=()=>openPlace(pick.id);
-  if(el.querySelector(".xs-season"))el.querySelector(".xs-season").onclick=()=>openList(T(sea.t),T(sea.s),sea.ps);
-  el.querySelectorAll(".ax-all").forEach(b=>b.onclick=()=>{const k2=b.dataset.list,L={halal:["Halal food 🍜",halalHere()],gems:["Hidden gems ⭐",photoFirst(inCity().filter(p=>p.gem))],coffee:["Coffee & sweets ☕",photoFirst(inCity().filter(p=>p.cat==="coffee"))]}[k2];
+  el.querySelectorAll(".xs-areas-all").forEach(b=>b.onclick=()=>{location.hash="#hoods";window.scrollTo(0,0)});
+  el.querySelectorAll(".ax-all[data-list]").forEach(b=>b.onclick=()=>{const k2=b.dataset.list,L={halal:["Halal food 🍜",halalHere()],gems:["Hidden gems ⭐",photoFirst(inCity().filter(p=>p.gem))],new:["New on Tabi Neko 🆕",fresh()]}[k2];
     openList(T(L[0]),cityOf(exploreCity),L[1])});
 }
 window.tnRenderExplore=renderExplore;
@@ -408,6 +401,7 @@ function onBack(){
   const st=history.state||{};
   if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay){history.back();return}
   const c=current(),h=location.hash.slice(1);
+  if(h==="hoods"){go("explore");return}
   if(SUB.includes(h)){go("menu");return}
   if(c!=="explore"){go("explore");return}
   if(Date.now()-backAt<2000){try{Capacitor.Plugins.App.exitApp()}catch(e){}return}
@@ -472,7 +466,7 @@ function openList(title,sub,ps,fromHistory){
 function closeList(){lv.hidden=true;if(pv.hidden)document.documentElement.classList.remove("pv-open")}
 
 // ---- More ----
-const MORE=[["Discover",[["🏘️","Areas","hoods"],["🚆","Day trips","trips"],["📱","Apps to download","apps"],["📸","Memories","memories"]]],
+const MORE=[["Discover",[["🚆","Day trips","trips"],["📱","Apps to download","apps"],["📸","Memories","memories"]]],
   ["Settings",[["🌐","Language","lang"],["🔒","Privacy","privacy"],["🐾","Contributors","crew"]]]];
 function renderMore(){
   const el=$("menu");if(!el)return;
