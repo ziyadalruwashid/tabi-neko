@@ -22,12 +22,15 @@
 // Inside the store apps (Capacitor), the page takes the app layout: tab bar,
 // Explore, a full place page. ?app=1 previews it in a browser tab.
 try{if(/[?&]app=1/.test(location.search))sessionStorage.setItem("tabineko-app","1");
-  if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()||sessionStorage.getItem("tabineko-app")==="1")document.documentElement.classList.add("tn-app")}catch(e){}
+  if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()||sessionStorage.getItem("tabineko-app")==="1"){document.documentElement.classList.add("tn-app");
+    // The boarding-pass opening (js/appsplash.js), once each time the app starts.
+    if(!sessionStorage.getItem("tabineko-splash"))document.documentElement.classList.add("tn-splash")}}catch(e){}
 try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.lang="ar";document.documentElement.dir="rtl";
   document.write('<script src="data/ar/ui.js"><\/script><script src="data/ar/content.js"><\/script>')}}catch(e){}
 </script>
 </head>
 <body>
+<div id="tnsplash" aria-hidden="true"></div><script src="js/appsplash.js"></script>
 <div class="wrap" id="top">
   <header class="top">
     <a class="brand" href="#top" aria-label="Tabi Neko home" data-i18n-attr="aria-label:brand"><img src="assets/logo.png" alt="Tabi Neko" data-i18n-attr="alt:logo"></a>

@@ -1601,3 +1601,57 @@ html.tn-app .sv-none{text-align:center;padding:40px 20px;color:var(--muted);disp
 html.tn-app .sv-none img{width:70px;opacity:.85}
 html.tn-app .sv-none b{color:var(--ink);font-size:17px}
 html.tn-app .mp-search input[readonly]{cursor:pointer}
+
+/* ---- app opening: the boarding pass (js/appsplash.js) ---- */
+#tnsplash{display:none}
+html.tn-app.tn-splash #tnsplash{display:block;position:fixed;inset:0;z-index:200;overflow:hidden;background:#F14E24;direction:ltr;-webkit-user-select:none;user-select:none}
+html.tn-app.tn-splash body{overflow:hidden}
+#tnsplash.open{background:transparent}
+#tnsplash .sp-half{position:absolute;inset:0;background:#F14E24;will-change:transform}
+#tnsplash.open .sp-half{box-shadow:0 0 40px rgba(0,0,0,.3)}
+#tnsplash .sp-pet{position:absolute;inset:0;width:100%;height:100%}
+#tnsplash .sp-wrap{position:absolute;left:50%;width:346px;margin-left:-173px;top:calc(50% - 222px);transform:translateY(120vh);filter:drop-shadow(0 18px 30px rgba(0,0,0,.25))}
+#tnsplash .sp-pass{background:#FFFDF7;border-radius:22px;position:relative;color:#3F2116}
+#tnsplash .sp-main{padding:20px 20px 16px}
+#tnsplash .sp-h{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px dashed #EADCC6;padding-bottom:10px}
+#tnsplash .sp-h b{font:400 18px "Bagel Fat One",var(--body);color:#F14E24}
+#tnsplash .sp-h span{font:800 11px "Baloo Bhaijaan 2",var(--body);color:#8C6F60}
+#tnsplash .sp-r{display:flex;justify-content:space-between;align-items:center;margin:14px 0 6px}
+#tnsplash .sp-r>div{text-align:center}
+#tnsplash .sp-r small{display:block;font:800 10px Nunito,sans-serif;color:#8C6F60;letter-spacing:1.5px}
+#tnsplash .sp-r big{display:block;font:400 44px "Bagel Fat One",var(--body);line-height:1.05}
+#tnsplash .sp-r i{font:700 14px "Baloo Bhaijaan 2",var(--body);font-style:normal;color:#8C6F60}
+#tnsplash .sp-arc{width:130px;height:56px}
+#tnsplash .sp-g{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:6px;margin-top:10px}
+#tnsplash .sp-g small{display:block;font:800 9.5px Nunito,sans-serif;color:#8C6F60;letter-spacing:1px}
+#tnsplash .sp-g b{font:900 17px Nunito,sans-serif;white-space:nowrap}
+#tnsplash .sp-perf{height:0;border-top:3px dotted #D9C6A8;margin:0 14px;position:relative}
+#tnsplash .sp-perf:before,#tnsplash .sp-perf:after{content:"";position:absolute;top:-15px;width:28px;height:28px;border-radius:50%;background:#F14E24}
+#tnsplash .sp-perf:before{left:-30px}
+#tnsplash .sp-perf:after{right:-30px}
+#tnsplash .sp-stub{display:flex;align-items:center;gap:16px;padding:16px 20px 20px}
+#tnsplash .sp-stub img{width:82px;height:82px;object-fit:contain;background:#FAF4E8;border-radius:16px;padding:4px}
+#tnsplash .sp-bar{flex:1;height:58px;display:flex;gap:2px}
+#tnsplash .sp-bar i{background:#3F2116;display:block}
+#tnsplash .sp-stamp{position:absolute;right:26px;top:205px;width:120px;height:120px;border-radius:50%;border:4px solid #E0402A;color:#E0402A;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:inset 0 0 0 4px #FFFDF7,inset 0 0 0 6px #E0402A;background:rgba(255,253,247,.55);opacity:0}
+#tnsplash .sp-stamp b{font:900 24px "Hiragino Mincho ProN","Noto Serif JP","Noto Sans JP",serif}
+#tnsplash .sp-stamp small{font:900 8.5px Nunito,sans-serif;letter-spacing:1px}
+@media (max-width:360px){#tnsplash .sp-wrap{transform-origin:50% 50%;zoom:.9}}
+
+/* ---- More, edge to edge like a phone's settings (wider rows, icon tiles) ---- */
+html.tn-app #menu{width:100vw;margin-inline:calc(50% - 50vw);padding:4px 14px 28px;box-sizing:border-box}
+html.tn-app #menu .ax-h{padding-inline:6px}
+html.tn-app #menu .am-prof{padding:16px;border-radius:22px;box-shadow:0 2px 10px rgba(63,33,22,.06)}
+html.tn-app #menu .am-prof img{width:62px;height:62px}
+html.tn-app #menu .am-h{margin:22px 8px 8px;font-size:14.5px}
+html.tn-app #menu .am-list{border-radius:22px;box-shadow:0 2px 10px rgba(63,33,22,.06)}
+html.tn-app #menu .am-li{padding:15px 16px;font-size:17px;min-height:60px}
+html.tn-app #menu .am-li>span{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:20px;flex:none;background:var(--c,#F4EDE1)}
+html.tn-app #menu .am-li[data-k=hoods]{--c:#FDE8DF}
+html.tn-app #menu .am-li[data-k=trips]{--c:#DDF0EE}
+html.tn-app #menu .am-li[data-k=apps]{--c:#E4E9F6}
+html.tn-app #menu .am-li[data-k=memories]{--c:#FFF1CC}
+html.tn-app #menu .am-li[data-k=lang]{--c:#E1EEF8}
+html.tn-app #menu .am-li[data-k=privacy]{--c:#F1E8DA}
+html.tn-app #menu .am-li[data-k=crew]{--c:#EEE6F6}
