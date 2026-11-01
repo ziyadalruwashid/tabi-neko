@@ -1354,3 +1354,66 @@ html.tn-app .mp-add.on{background:#2E8B3E;color:#fff}
 html.tn-app .mp-none{color:var(--muted);text-align:center;padding:20px}
 html.tn-app .maplibregl-ctrl-bottom-left,html.tn-app .maplibregl-ctrl-bottom-right{bottom:150px}
 html.tn-app #amap.listing .maplibregl-ctrl-bottom-left,html.tn-app #amap.listing .maplibregl-ctrl-bottom-right{display:none}
+
+/* ---- app home: the sky header, stories, pick of the day, moods, season ---- */
+html.tn-app #explore{padding-top:0}
+html.tn-app .xs{position:relative;height:calc(290px + env(safe-area-inset-top));margin:calc(-10px - env(safe-area-inset-top)) -20px 0;overflow:hidden}
+html.tn-app .xs-sky{position:absolute;inset:0;width:100%;height:100%}
+html.tn-app .xs-hi>div{min-width:0}
+html.tn-app .xs-hi{position:absolute;top:calc(22px + env(safe-area-inset-top));left:20px;right:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+html.tn-app .xs-hi b{display:block;font:400 28px/1.15 var(--display);color:#2A1A12}
+html.tn-app .xs-hi small{display:inline-block;margin-top:8px;white-space:nowrap;font:700 13.5px var(--body);color:#2A1A12;background:rgba(255,255,255,.55);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);padding:4px 11px;border-radius:999px}
+html.tn-app .xs-night .xs-hi b,html.tn-app .xs-night .xs-hi small{color:#fff}
+html.tn-app .xs-night .xs-hi small{background:rgba(255,255,255,.14)}
+html.tn-app .xs-cat{flex:none;border:0;background:none;padding:0;margin-top:-4px}
+html.tn-app .xs-cat img{width:76px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.18))}
+html.tn-app .xs-star{animation:xs-tw 3.2s ease-in-out infinite}
+@keyframes xs-tw{50%{opacity:.25}}
+html.tn-app .xs-cloud{animation:xs-drift 26s ease-in-out infinite alternate}
+@keyframes xs-drift{to{transform:translateX(-28px)}}
+html.tn-app .xs-search{position:relative;z-index:2;margin-top:-34px;box-shadow:0 10px 26px rgba(63,33,22,.16);padding:16px}
+html.tn-app .xs-stories{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:18px -20px 0;padding:0 20px 4px}
+html.tn-app .xs-stories::-webkit-scrollbar{display:none}
+html.tn-app .xs-st{flex:none;width:70px;border:0;background:none;padding:0;text-align:center;color:var(--ink)}
+html.tn-app .xs-st b{display:block;font:700 13.5px var(--body);margin-top:5px;white-space:nowrap}
+html.tn-app .xs-ring{display:block;width:68px;height:68px;border-radius:50%;padding:3px;box-sizing:border-box;background:conic-gradient(var(--c),#FFD13B,var(--c))}
+html.tn-app .xs-ring span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:var(--sheet);border:3px solid var(--paper);box-sizing:border-box}
+html.tn-app .xs-ring img{width:38px;height:38px;object-fit:contain}
+html.tn-app .xs-pick{position:relative;display:flex;width:100%;gap:14px;align-items:center;margin-top:22px;background:#FFF6D8;border:0;border-radius:24px;padding:16px;text-align:start;color:var(--ink)}
+html.tn-app .xs-tape{position:absolute;top:-10px;left:50%;width:90px;height:22px;margin-left:-45px;background:rgba(255,143,163,.6);transform:rotate(-3deg)}
+html.tn-app .xs-pola{position:relative;flex:none;background:#fff;padding:6px 6px 28px;width:118px;transform:rotate(-5deg);box-shadow:0 6px 14px rgba(63,33,22,.2)}
+html.tn-app .xs-pola img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
+html.tn-app .xs-pola small{position:absolute;bottom:5px;left:4px;right:4px;text-align:center;font:400 13px/1.2 var(--hand);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.tn-app .xs-pt{min-width:0}
+html.tn-app .xs-pt small{display:block;color:var(--lantern);font:800 14px var(--body)}
+html.tn-app .xs-pt b{display:block;font:900 19px/1.2 var(--body);margin:3px 0}
+html.tn-app .xs-pt i{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font:400 15px/1.5 var(--hand);font-style:normal;color:#5a3a2a}
+html.tn-app .xs-pt em{display:block;margin-top:6px;font:800 15px var(--body);font-style:normal;color:var(--lantern)}
+[dir=ltr].tn-app .xs-pt em{direction:rtl;text-align:left}
+html.tn-app .xs-h{font:400 23px var(--display);margin:26px 0 10px}
+html.tn-app .xs-moods{display:flex;flex-wrap:wrap;gap:8px}
+html.tn-app .xs-md{display:flex;align-items:center;gap:6px;background:var(--sheet);border:1.5px solid var(--rule);border-radius:999px;padding:9px 14px;font:800 16px var(--body);color:var(--ink)}
+html.tn-app .xs-md i{font-style:normal;font-size:19px}
+html.tn-app .xs-season{display:block;width:100%;margin-top:24px;background:linear-gradient(135deg,#E9663A,#C2410C);border:0;border-radius:26px;padding:18px;color:#fff;text-align:start}
+html.tn-app .xs-season small{font:700 14px var(--body);opacity:.9}
+html.tn-app .xs-season b{display:block;font:400 25px/1.2 var(--display)}
+html.tn-app .xs-season p{margin:3px 0 12px;font:600 15px/1.5 var(--body);opacity:.95}
+html.tn-app .xs-sp{display:flex;gap:10px}
+html.tn-app .xs-sp span{flex:1;min-width:0;background:rgba(255,255,255,.15);border-radius:16px;padding:6px}
+html.tn-app .xs-sp img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px}
+html.tn-app .xs-sp b{display:block;font:800 12px var(--body);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+[dir=rtl].tn-app .xs-sp b,[dir=rtl].tn-app .xs-pt b{direction:ltr;text-align:right}
+html.tn-app .ax-grid{display:none}
+/* a list page (story, mood, season) */
+#lview{display:none}
+html.tn-app #lview:not([hidden]){display:block;position:fixed;inset:0;z-index:57;background:var(--paper);overflow-y:auto;padding-bottom:calc(30px + env(safe-area-inset-bottom))}
+html.tn-app .lv-bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 18px 12px;background:color-mix(in srgb,var(--paper) 94%,transparent);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html.tn-app .lv-bar b{display:block;font:400 24px/1.15 var(--display)}
+html.tn-app .lv-bar small{color:var(--muted);font-size:14px}
+html.tn-app .lv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px;padding:6px 18px}
+html.tn-app .lv-grid .pc{width:auto}
+html.tn-app .lv-grid .pimg{aspect-ratio:1}
+html.tn-app .lv-none{grid-column:1/-1;text-align:center;color:var(--muted);padding:30px}
+@media (prefers-reduced-motion:reduce){html.tn-app .xs-star,html.tn-app .xs-cloud{animation:none}}
