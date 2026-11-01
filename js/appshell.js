@@ -323,8 +323,7 @@ function renderExplore(){
   el.querySelectorAll(".hx-open").forEach(b=>b.onclick=()=>{go("trip");if(window.tnOpenDay)tnOpenDay(+b.dataset.s,+b.dataset.d)});
   el.querySelectorAll(".hx-next[data-id]").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
   wireMood(el);
-  el.querySelectorAll(".xs-area").forEach(b=>b.onclick=()=>{const h=HOODS.find(x=>x.city===exploreCity&&x.n===b.dataset.h);
-    openList(D(h,"n"),D(h,"vibe"),photoFirst(P.filter(p=>p.city===h.city&&p.area===h.area)))});
+  el.querySelectorAll(".xs-area").forEach(b=>b.onclick=()=>openArea(HOODS.find(x=>x.city===exploreCity&&x.n===b.dataset.h)));
   weather();
   el.querySelectorAll(".ax-city").forEach(b=>b.onclick=()=>{exploreCity=b.dataset.c;city=exploreCity;store.set("tabineko-city",city);renderExplore()});
   el.querySelector(".xs-search").onclick=()=>{city=exploreCity;store.set("tabineko-city",city);if(window.openSearch)openSearch("")};
@@ -441,7 +440,7 @@ function lvDraw(){
   const ps=lvAll.filter(p=>!lvF||(lvF==="cert"?p.hl==="certified":lvF==="halal"?p.halal:lvF.startsWith("c:")?p.cat===lvF.slice(2):p.area===lvF.slice(2)));
   const box=lv.querySelector(".lv-rows");
   box.innerHTML=ps.map(lvRow).join("")||`<p class="lv-none">${esc(T("Nothing here yet in this city. Try another city."))}</p>`;
-  lv.querySelector(".lv-bar small").textContent=`${lv.dataset.sub?lv.dataset.sub+" · ":""}${T(ps.length===1?"1 place":"{n} places",{n:ps.length})}${lvHere()?" · "+T("nearest to you first"):""}`;
+  const sm=lv.querySelector(".lv-bar small");if(sm)sm.textContent=`${lv.dataset.sub?lv.dataset.sub+" · ":""}${T(ps.length===1?"1 place":"{n} places",{n:ps.length})}${lvHere()?" · "+T("nearest to you first"):""}`;
   box.querySelectorAll(".lr-go").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
   box.querySelectorAll(".lr-add").forEach(b=>b.onclick=()=>{const k=b.dataset.k;
     if(inTrip(k))removeKey(k);else{trip.ideas.push(k);toast(T("Added to your trip ✓"))}
@@ -457,13 +456,53 @@ function openList(title,sub,ps,fromHistory){
     ${fs.length>1?`<div class="lv-f">${fs.map(([k,l])=>`<button type="button" data-f="${esc(k)}">${esc(l)}</button>`).join("")}</div>`:""}
     <div class="lv-rows"></div>
     ${typeof mapOnly==="function"?`<button type="button" class="lv-map">${SVG(I.map)} ${T("Show them on the map")}</button>`:""}`;
+  lv.classList.remove("lv-area");
   lv.querySelector(".lv-back").onclick=()=>history.back();
   lv.querySelectorAll(".lv-f button").forEach(b=>b.onclick=()=>{lvF=b.dataset.f;lvDraw();lv.scrollTop=0});
   const m=lv.querySelector(".lv-map");if(m)m.onclick=()=>{const ps2=lv.lvShown||lvAll;if(!ps2.length)return;mapOnly(ps2,lvTitle);go("map")};
   lvDraw();lv.hidden=false;lv.scrollTop=0;document.documentElement.classList.add("pv-open");
   if(!fromHistory)history.pushState({tnList:1},"");
 }
+// ---- an area's own page: its photo, Apollo's story, the area at a glance,
+// the best time and his tip, what not to miss, and every place in it ----
+function openArea(h,fromHistory){
+  if(!h)return;
+  const ps=P.filter(p=>p.city===h.city&&p.area===h.area),hl=ps.filter(p=>p.halal).length;
+  const miss=(h.miss||[]).map(n=>P.find(p=>p.city===h.city&&p.n===n)).filter(Boolean);
+  const hh=lvHere();lvAll=hh?[...ps].sort((a,b)=>KM(hh,a)-KM(hh,b)):photoFirst(ps);lvF="";lvTitle=D(h,"n");lv.dataset.sub="";
+  const fs=lvFilters(lvAll),N=n=>isAR()?iso(String(n)):String(n);
+  const ST=[["food","🍜","Food"],["shop","🛍️","Shopping"],["culture","⛩️","Culture"],["night","🌙","Nightlife"],["calm","🌿","Calm"]];
+  const addB=p=>{const k=PKEY(p),on=inTrip(k);return `<button type="button" class="lr-add ar-add${on?" on":""}" data-k="${esc(k)}" aria-pressed="${on}" aria-label="${esc(T("＋ Add to my trip"))}">${on?"✓":"＋"}</button>`};
+  lv.innerHTML=`<div class="ar-hero"><img src="${esc(h.photo)}" alt=""${h.pos?` style="object-position:${esc(h.pos)}"`:""}><button type="button" class="pv-cb lv-back ar-back" aria-label="${esc(T("Back"))}">${SVG(I.back)}</button>
+      <div class="ar-ht">${h.jp?`<span class="ar-jp" lang="ja">${esc(h.jp)}</span>`:""}<h1>${esc(D(h,"n"))}</h1><p>${esc(D(h,"vibe"))}</p>
+        <div class="ar-chips"><span>${esc(cityOf(h.city))}</span><span>📍 ${esc(T(ps.length===1?"1 place":"{n} places",{n:ps.length}))}</span>${hl?`<span>🍜 ${esc(T("{n} halal",{n:hl}))}</span>`:""}</div></div></div>
+    <div class="ar-body">
+      ${D(h,"story")?`<div class="ar-story"><img src="assets/cat.png" alt=""><p>${esc(D(h,"story"))}</p></div>`:""}
+      ${h.stats?`<h2 class="ar-h">${T("The area at a glance")}</h2><div class="ar-stats">${ST.map(([k,e,l])=>`<div><span>${e} ${esc(T(l))}</span><i role="img" aria-label="${esc(T("{n} out of 5",{n:h.stats[k]||0}))}">${[1,2,3,4,5].map(i=>`<b class="${i<=(h.stats[k]||0)?"on":""}"></b>`).join("")}</i></div>`).join("")}</div>`:""}
+      <div class="ar-two">${D(h,"best")?`<div class="ar-best"><small>⏰ ${T("Best time")}</small><b>${esc(D(h,"best"))}</b></div>`:""}${D(h,"tip")?`<div class="ar-tip"><small>🐾 ${T("Apollo's tip")}</small><b>${esc(D(h,"tip"))}</b></div>`:""}</div>
+      ${miss.length?`<h2 class="ar-h">${T("Don't miss 🔥")}</h2><div class="ar-miss">${miss.map(p=>`<div class="ar-mc" style="--c:var(--${p.cat})"><button type="button" class="ar-go" data-id="${p.id}"><span class="ar-mi${p.photo?"":" art"}"><img src="${p.photo||CATS[p.cat].img}" alt="" loading="lazy"></span>
+        <b><bdi>${esc(p.n)}</bdi></b><small>${esc(D(CATS[p.cat],"n"))}${p.halal?" · "+esc(T("halal ✓")):""}</small></button>${addB(p)}</div>`).join("")}</div>`:""}
+      <h2 class="ar-h">${esc(T("Everything in {a}",{a:D(h,"n")}))} <span class="ar-n">${N(ps.length)}</span></h2></div>
+    ${fs.length>1?`<div class="lv-f ar-f">${fs.map(([k,l])=>`<button type="button" data-f="${esc(k)}">${esc(l)}</button>`).join("")}</div>`:""}
+    <div class="lv-rows"></div>
+    ${typeof mapOnly==="function"&&ps.length?`<button type="button" class="lv-map">${SVG(I.map)} ${T("Show the area on the map")}</button>`:""}`;
+  lv.classList.add("lv-area");
+  lv.querySelector(".lv-back").onclick=()=>history.back();
+  lv.querySelectorAll(".lv-f button").forEach(b=>b.onclick=()=>{lvF=b.dataset.f;lvDraw()});
+  lv.querySelectorAll(".ar-go").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
+  lv.querySelectorAll(".ar-add").forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(inTrip(k))removeKey(k);else{trip.ideas.push(k);toast(T("Added to your trip ✓"))}
+    saveTrip();const on=inTrip(k);b.classList.toggle("on",on);b.textContent=on?"✓":"＋";b.setAttribute("aria-pressed",String(on))});
+  const m=lv.querySelector(".lv-map");if(m)m.onclick=()=>{mapOnly(lv.lvShown||lvAll,lvTitle);go("map")};
+  lvDraw();lv.hidden=false;lv.scrollTop=0;document.documentElement.classList.add("pv-open");
+  if(!fromHistory)history.pushState({tnList:1},"");
+}
+window.openArea=openArea;
 function closeList(){lv.hidden=true;if(pv.hidden)document.documentElement.classList.remove("pv-open")}
+
+// On the Areas page, a card opens the area's own page instead of flipping.
+if(typeof renderHoods==="function"){const _rh=renderHoods;renderHoods=function(){_rh();
+  const list=HOODS.filter(x=>x.city===hoodCity);
+  document.querySelectorAll("#hgrid .hcard").forEach((c,i)=>c.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openArea(list[i])},true))};renderHoods()}
 
 // ---- More ----
 const MORE=[["Discover",[["🚆","Day trips","trips"],["📱","Apps to download","apps"],["📸","Memories","memories"]]],
