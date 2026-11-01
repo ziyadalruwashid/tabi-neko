@@ -113,6 +113,8 @@ AR.ui={
 "This replaces the days in your current trip. Your ideas and where you're staying are kept.":"هذا بيستبدل أيام رحلتك الحالية، بس أفكارك ومكان سكنك باقية.",
 "Use this plan":"اعتمد هالخطة",
 "Explore":"استكشف",
+"Nature":"طبيعة",
+"All {n} {x}":"كل الـ{n} · {x}",
 "day left":"يوم",
 "days left":"يوم",
 "Right now in {c}":"الحين في {c}",
