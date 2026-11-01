@@ -29,18 +29,22 @@ function cleanHome(h){
   return {n:String(h.n||"").slice(0,60),lat:+lat.toFixed(5),lng:+lng.toFixed(5)};
 }
 // Bookings the app adds to a day (flights, hotels, trains, tickets, notes).
-const BK_TYPES=["flight","hotel","train","ticket","note"];
+const BK_TYPES=["flight","hotel","train","ticket","note","move"];
+const BK_MODES=["taxi","bus","walk","ferry","airport","car"];
 const goodTime=v=>typeof v==="string"&&/^([01]\d|2[0-3]):[0-5]\d$/.test(v)?v:"";
 const goodDate=v=>typeof v==="string"&&/^20\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(v)?v:"";
 function cleanBk(a){
   return (Array.isArray(a)?a:[]).filter(b=>b&&BK_TYPES.includes(b.ty)).slice(0,12).map(b=>{const o={ty:b.ty};
-    [["a",60],["b",60],["n",60],["x",40],["note",200]].forEach(([k,n])=>{const v=String(b[k]==null?"":b[k]).trim().slice(0,n);if(v)o[k]=v});
-    const tm=goodTime(b.tm);if(tm)o.tm=tm;return o});
+    [["a",60],["b",60],["n",60],["x",40],["c",40],["note",200]].forEach(([k,n])=>{const v=String(b[k]==null?"":b[k]).trim().slice(0,n);if(v)o[k]=v});
+    const tm=goodTime(b.tm);if(tm)o.tm=tm;const tm2=goodTime(b.tm2);if(tm2)o.tm2=tm2;if(BK_MODES.includes(b.m))o.m=b.m;return o});
 }
 function cleanTrip(t){
   const seen=new Set(),keep=a=>(Array.isArray(a)?a:[]).filter(k=>typeof k==="string"&&BYKEY.has(k)&&!seen.has(k)&&seen.add(k)).slice(0,60);
   const out={name:String(t&&t.name||"").slice(0,60),ideas:[],stays:[]};
   const start=goodDate(t&&t.start);if(start)out.start=start; // the first day's date, if you set one
+  // The app's trip list: an id, and a cover photo from the notebook.
+  if(t&&typeof t.id==="string"&&/^[a-z0-9]{4,20}$/.test(t.id))out.id=t.id;
+  if(t&&typeof t.cover==="string"&&/^assets\/(hoods|photos)\/[a-z0-9-]+\.jpg$/.test(t.cover))out.cover=t.cover;
   let stays=Array.isArray(t&&t.stays)?t.stays:null;
   // Trips saved before stays existed were a plain list of days. They become
   // one stay, in the city most of their places are in.
@@ -53,8 +57,14 @@ function cleanTrip(t){
   (stays||[]).slice(0,10).forEach(s=>{
     if(!s||!TRIP_CITIES.includes(s.city))return;
     const o={city:s.city,home:cleanHome(s.home),days:[]};
+    // The hotel's booking: its name, check-in and check-out times, confirmation.
+    if(s.hotel&&typeof s.hotel==="object"){const h={},n=String(s.hotel.n||"").trim().slice(0,60),c=String(s.hotel.c||"").trim().slice(0,40),i=goodTime(s.hotel.in),u=goodTime(s.hotel.out);
+      if(n)h.n=n;if(c)h.c=c;if(i)h.in=i;if(u)h.out=u;if(Object.keys(h).length)o.hotel=h}
     (Array.isArray(s.days)?s.days:[]).forEach(d=>{if(nd<30){nd++;const o2={t:String(d&&d.t||"").slice(0,50),ids:keep(d&&d.ids)};
-      const st=goodTime(d&&d.st),bk=cleanBk(d&&d.bk);if(st)o2.st=st;if(bk.length)o2.bk=bk;o.days.push(o2)}});
+      const st=goodTime(d&&d.st),bk=cleanBk(d&&d.bk);if(st)o2.st=st;if(bk.length)o2.bk=bk;
+      // Times you set yourself for a place, by its key.
+      if(d&&d.at&&typeof d.at==="object"){const at={};o2.ids.forEach(k=>{const v=goodTime(d.at[k]);if(v)at[k]=v});if(Object.keys(at).length)o2.at=at}
+      o.days.push(o2)}});
     if(!o.days.length){if(nd>=30)return;nd++;o.days.push({t:"",ids:[]})}
     out.stays.push(o);
   });
@@ -512,7 +522,8 @@ function renderPicker(keepScroll){
 const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 const b64d=s=>decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/"))));
 async function shareTrip(withHome){
-  const data={name:trip.name,...(trip.start?{start:trip.start}:{}),ideas:trip.ideas,stays:trip.stays.map(s=>({city:s.city,days:s.days,...(withHome&&s.home?{home:s.home}:{})}))};
+  const data={name:trip.name,...(trip.start?{start:trip.start}:{}),...(trip.cover?{cover:trip.cover}:{}),ideas:trip.ideas,stays:trip.stays.map(s=>({city:s.city,days:s.days.map(d=>d.bk?{...d,bk:d.bk.map(({c,...b})=>b)}:d), // booking numbers stay private
+    ...(withHome&&s.home?{home:s.home}:{})}))};
   const url=location.origin+location.pathname+"#trip="+b64e(JSON.stringify(data));
   const title=trip.name||T("My Japan trip");
   try{if(navigator.share){await navigator.share({title,text:T("My trip plan on Tabi Neko 🐾"),url});return}}catch(e){if(e&&e.name==="AbortError")return}
