@@ -1918,3 +1918,4 @@ html.tn-app .hx-madd.on{background:#2E8B3E;border-color:#2E8B3E;color:#fff}
 html.tn-app .hx-mall{display:block;width:100%;border:0;background:none;padding:6px;font:800 14.5px var(--body);color:var(--c)}
 html.tn-app .hx-mnone{margin:0;padding:12px;text-align:center;color:var(--muted)}
 html.tn-app[dir=rtl] .hx-mt b{text-align:right}
+html.tn-app .pc .gb{background:rgba(255,253,247,.95);color:#8A6A00;font:800 11.5px var(--body);padding:2px 8px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
