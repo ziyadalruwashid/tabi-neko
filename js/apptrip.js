@@ -271,9 +271,9 @@ const shHead=(title,btn,cls)=>`<i class="at-grab"></i><header class="tv-shh"><bu
 // A new trip: the name and a cover, the dates, the cities and their nights.
 const ymd=d=>d.toISOString().slice(0,10),addD=(s,n)=>{const d=new Date(s+"T00:00:00Z");d.setUTCDate(d.getUTCDate()+n);return ymd(d)};
 const nightsBetween=(a,b)=>a&&b?Math.round((new Date(b)-new Date(a))/864e5):0;
-function openNew(){
+function openNew(first){
   if(sharedLock())return lockMsg();
-  const t=todayJ();nt={name:"",start:"",end:"",cities:[],cover:"",fill:false,step:"main",m:ymd(t).slice(0,7)};drawNew();showSheet();
+  const t=todayJ();nt={name:"",start:"",end:"",cities:first&&TRIP_CITIES.includes(first)?[{c:first,n:3}]:[],cover:"",fill:false,step:"main",m:ymd(t).slice(0,7)};drawNew();showSheet();
   setTimeout(()=>{const i=sh.querySelector(".nt-name");if(i)i.focus()},250);
 }
 function ntCover(){return nt.cover||(nt.cities[0]&&coverPhoto(nt.cities[0].c))||"assets/hoods/tokyo-tower.jpg"}
