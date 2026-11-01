@@ -19,6 +19,10 @@
 <script>
 // Someone who picked Arabic last time gets it before the first paint: the
 // page flips to RTL here and the Arabic text loads ahead of js/app.js.
+// Inside the store apps (Capacitor), the page takes the app layout: tab bar,
+// Explore, a full place page. ?app=1 previews it in a browser tab.
+try{if(/[?&]app=1/.test(location.search))sessionStorage.setItem("tabineko-app","1");
+  if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()||sessionStorage.getItem("tabineko-app")==="1")document.documentElement.classList.add("tn-app")}catch(e){}
 try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.lang="ar";document.documentElement.dir="rtl";
   document.write('<script src="data/ar/ui.js"><\/script><script src="data/ar/content.js"><\/script>')}}catch(e){}
 </script>
@@ -188,6 +192,10 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
     <p class="appnote" data-i18n="crew.note">Want to add a place, fix a wrong time or send a better photo? Nudge whoever sent you here.</p>
   </section>
 
+  <!-- App-only screens, filled by js/appshell.js. The website never shows them. -->
+  <section id="explore" hidden></section>
+  <section id="menu" hidden></section>
+
   <footer>
     <p class="bye">またね!<small data-i18n="footer.bye">mata ne, see you in Japan</small></p>
     <div class="links">
@@ -227,6 +235,7 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
 <!-- Ready plans (data/plans.js + js/ready.js) are switched off while they're reworked; add both scripts back here to show them. -->
 <script src="js/account.js"></script>
 <script src="js/admin.js"></script>
+<script src="js/appshell.js"></script>
 <script>
 // Offline copy (sw.js) for the website. The store apps carry every file
 // themselves, so they skip it.
