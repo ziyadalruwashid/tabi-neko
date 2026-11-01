@@ -110,6 +110,7 @@ function drawEmpty(){
 function wire(){
   body.querySelectorAll(".sv-r").forEach(b=>b.onclick=()=>{const p=P.find(x=>x.id===b.dataset.id);remember("place",p.n,p.id);openPlace(p.id)});
   body.querySelectorAll(".sv-area").forEach(b=>b.onclick=()=>{const o=found[+b.dataset.a],name=o.h?D(o.h,"n"):D(CITIES[o.c],"n");remember("area",name);
+    if(o.h&&window.openArea){openArea(o.h);return}
     openListPage(name,o.h?D(o.h,"vibe"):"",o.ps.sort((x,y)=>(y.photo?1:0)-(x.photo?1:0)))});
   const all=body.querySelector(".sv-all");if(all)all.onclick=()=>{const s=box.value.trim();remember("word",s);openListPage(`“${s}”`,T("Search"),[...hits].sort((a,b)=>(b.halal?1:0)-(a.halal?1:0)))};
   const m=body.querySelector(".sv-map");if(m)m.onclick=()=>{const s=box.value.trim();remember("word",s);toMap(hits,s)};
