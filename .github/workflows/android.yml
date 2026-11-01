@@ -1,17 +1,21 @@
 # Builds the Android app (a debug APK to install and try) from app/.
 # Run it from the Actions tab ("Run workflow"), or it runs by itself when
-# the app or the site changes on main. The APK is attached to the run.
+# the app or the site changes on main. The newest APK is always at one
+# link that opens on a phone (GitHub's mobile site hides run artifacts):
+# https://github.com/ziyadalruwashid/tabi-neko/releases/download/android-latest/tabi-neko.apk
 name: Android app
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [app/**, index.html, css/**, js/**, data/**, assets/**]
+    paths: [app/**, index.html, css/**, js/**, data/**, assets/**, .github/workflows/android.yml]
 
 jobs:
   apk:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -35,3 +39,10 @@ jobs:
           name: tabi-neko-debug-apk
           path: app/android/app/build/outputs/apk/debug/*.apk
           retention-days: 14
+      - name: Publish it at the fixed download link
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/android/app/build/outputs/apk/debug/app-debug.apk tabi-neko.apk
+          gh release view android-latest >/dev/null 2>&1 || gh release create android-latest --prerelease --title "Android test build" --notes "The newest test build of the Tabi Neko Android app. Not the store version."
+          gh release upload android-latest tabi-neko.apk --clobber
