@@ -55,7 +55,9 @@ function go(t,keep){
   if(t==="explore"&&typeof renderExplore==="function")renderExplore();
   if(!keep)window.scrollTo(0,0);
 }
-const SUB=["hoods","apps","trips","memories","crew","privacy","admin"];
+const SUB=["hoods","apps","trips","crew","privacy","admin"];
+// Memories is the website's; the app doesn't show it.
+if(location.hash==="#memories")try{history.replaceState(null,"","#explore")}catch(e){}
 function current(){const h=location.hash.slice(1);
   if(h==="explore"||h==="trip"||h==="menu")return h;if(h==="hoods")return "explore";if(SUB.includes(h))return "menu";
   return $("home").hidden?"explore":"map"}
@@ -509,7 +511,7 @@ if(typeof renderHoods==="function"){const _rh=renderHoods;renderHoods=function()
   document.querySelectorAll("#hgrid .hcard").forEach((c,i)=>c.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openArea(list[i])},true))};renderHoods()}
 
 // ---- More ----
-const MORE=[["Discover",[["🚆","Day trips","trips"],["📱","Apps to download","apps"],["📸","Memories","memories"]]],
+const MORE=[["Discover",[["🚆","Day trips","trips"],["📱","Apps to download","apps"]]],
   ["Settings",[["🌐","Language","lang"],["🔒","Privacy","privacy"],["🐾","Contributors","crew"]]]];
 function renderMore(){
   const el=$("menu");if(!el)return;

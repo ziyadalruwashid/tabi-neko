@@ -593,6 +593,8 @@ const IS_APP=document.documentElement.classList.contains("tn-app");
 const APP_ONLY=["explore","menu"];
 const PAGES=["trip","hoods","apps","trips","memories","crew","privacy","admin",...APP_ONLY];
 function show(target,quiet){
+  // Memories is only on the website.
+  if(IS_APP&&target==="memories")target="explore";
   const pg=PAGES.includes(target)&&(IS_APP||!APP_ONLY.includes(target))?target:null;
   $("home").hidden=!!pg;PAGES.forEach(k=>$(k).hidden=pg!==k);
   if(typeof syncApollo==="function")syncApollo();
