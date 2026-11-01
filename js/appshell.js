@@ -415,7 +415,7 @@ function onBack(){
   if(H.classList.contains("chat-open")&&typeof closeApollo==="function"){closeApollo();return}
   const mc=document.querySelector(".mp-cities:not([hidden])");if(mc){mc.hidden=true;return}
   const st=history.state||{};
-  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay||st.tnTrip||st.tnBook||st.tnProf||st.tnLens){history.back();return}
+  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay||st.tnTrip||st.tnBook||st.tnProf||st.tnLens||st.tnRemind){history.back();return}
   const c=current(),h=location.hash.slice(1);
   if(h==="hoods"){go("explore");return}
   if(SUB.includes(h)){go("menu");return}
@@ -523,7 +523,7 @@ if(typeof renderHoods==="function"){const _rh=renderHoods;renderHoods=function()
 
 // ---- More ----
 const MORE=[["Discover",[["🚆","Day trips","trips"],["📱","Apps to download","apps"]]],
-  ["Settings",[["🌐","Language","lang"],["🔒","Privacy","privacy"],["🐾","Contributors","crew"]]]];
+  ["Settings",[["🔔","Reminders","remind"],["🌐","Language","lang"],["🔒","Privacy","privacy"],["🐾","Contributors","crew"]]]];
 window.tnRenderMore=()=>renderMore();
 function renderMore(){
   const el=$("menu");if(!el)return;
@@ -542,6 +542,7 @@ function renderMore(){
   el.querySelector(".am-prof").onclick=()=>{if(me&&typeof tnOpenProfile==="function")return tnOpenProfile();if(typeof openAcct==="function")openAcct(me?"me":"login")};
   el.querySelectorAll(".am-li").forEach(b=>b.onclick=()=>{const k=b.dataset.k;
     if(k==="lang"){setLang(isAR()?"en":"ar");return}
+    if(k==="remind"){if(typeof tnOpenReminders==="function")tnOpenReminders();return}
     location.hash="#"+k;window.scrollTo(0,0)});
 }
 

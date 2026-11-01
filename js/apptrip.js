@@ -145,11 +145,15 @@ function stopCard(p,ref,own){
     ${compact?"":`<img src="${esc(p.photo||CATS[p.cat].img)}" alt="" loading="lazy"${p.photo?"":` class="art"`}>`}
     <span class="at-si"><button type="button" class="tname" data-id="${p.id}"><bdi>${esc(p.n)}</bdi></button>
       <small>${esc(D(CATS[p.cat],"n"))} · ${esc(AREA(p.area))}${p.halal?` · <em>${p.hl==="friendly"?T("Muslim-friendly"):T("✓ halal")}</em>`:""}</small>
-      ${compact||!tip?"":`<i class="at-tip">🐾 ${esc(tip)}</i>`}</span>
+      ${compact||!tip?"":`<i class="at-tip">🐾 ${esc(tip)}</i>`}${stampTag(k)}</span>
     <button type="button" class="at-more" aria-label="${esc(T("Options"))}" aria-expanded="false">${SVG(I.dots)}</button>
     <div class="at-ctl" hidden><label class="at-attl">🕘 <input type="time" class="at-attime" data-s="${a}" data-d="${b}" data-k="${esc(k)}" value="${esc(own||"")}" aria-label="${esc(T("Set a time"))}"></label>
       <button type="button" class="tup" data-k="${esc(k)}">↑ ${T("Up")}</button><button type="button" class="tdown" data-k="${esc(k)}">↓ ${T("Down")}</button>
       ${moveMenu(k,ref)}<button type="button" class="tdel" data-k="${esc(k)}">× ${T("Remove")}</button></div></div>`}
+
+// A stop with a stamp in Apollo's stamp book says so (js/stamps.js).
+function stampTag(k){const s=window.tnStampInfo&&tnStampInfo(k);if(!s)return "";
+  return s.got?`<span class="at-stag got">✓ ${T("Stamped {d}",{d:s.date})}</span>`:`<span class="at-stag">🐾 ${T("Stamp waiting")}</span>`}
 
 // ---- the list of trips ----
 const CITY_COL=["#F14E24","#2E8C88","#7B5EA7","#1D52A0","#E8A800","#5E9A3E"];
@@ -500,6 +504,13 @@ window.tnToday=function(){
 window.tnOpenDay=(a,b)=>{view="trip";tab="plan";appTrip();const x=allDays().find(z=>z.a===+a&&z.b===+b);
   setTimeout(()=>{const el=x&&document.getElementById("tvd-"+x.n);if(el)el.scrollIntoView({block:"start"})},30)};
 window.tnNewTrip=openNew;
+// The trip's days with their dates, stops and bookings, for the reminders
+// (js/appremind.js). Times are minutes after midnight in Japan.
+window.tnTripPlan=()=>!trip.start?[]:allDays().map(x=>{const tl=timeline(x.s,x.d);
+  return {n:x.n,a:x.a,b:x.b,date:iso8(dayAt(x.n)),city:x.s.city,
+    stops:tl.items.filter(i=>i.k==="stop").map(i=>({key:PKEY(i.p),n:i.p.n,t:i.t})),
+    bk:tl.items.filter(i=>i.k==="bk").map(i=>({ty:i.b.ty,t:i.t,a:i.b.a||"",b:i.b.b||"",n:i.b.n||""})),
+    hotel:x.b===0&&x.s.hotel&&x.s.hotel.n?{n:x.s.hotel.n,t:x.s.hotel.in?toMin(x.s.hotel.in):900}:null}});
 // Draw the app's My trip whenever the site would draw its own.
 const _render=renderTrip;
 renderTrip=function(){if(shared)return _render();appTrip()};

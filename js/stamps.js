@@ -236,6 +236,13 @@ function closeBook(){if(history.state&&history.state.tnBook)history.back();else 
 addEventListener("popstate",e=>{const st=e.state||{};if(st.tnBook)openBook(null,flash,true);else if(!bk.hidden)closeBookNow()});
 window.tnOpenStampBook=()=>openBook();
 window.tnStampCount=()=>logged()?count():0;
+// For My trip and the reminders: does this place have a stamp, and is it yours?
+window.tnStampInfo=k=>{const s=LIST.find(x=>KEY(x)===k);if(!s)return null;const got=logged()&&have(s);
+  return {got,date:got?longDate(mine[k]):"",r:s.r,lat:s.p.lat,lng:s.p.lng,n:s.p.n,id:s.p.id}};
+// The reminders' "you're nearby" banner stamps it right away (it already
+// checked you're inside the place's circle).
+window.tnStampNear=()=>LIST.filter(s=>!have(s));
+window.tnStampGive=k=>{const s=LIST.find(x=>KEY(x)===k);if(s&&logged())give(s)};
 // The phone's back button: the stamp moment first.
 window.tnStampBack=()=>{if(moment){closeMoment();return true}return false};
 
