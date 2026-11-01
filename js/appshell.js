@@ -530,6 +530,7 @@ function renderMore(){
     <button type="button" class="am-prof"><img src="assets/cat.png" alt=""><div><b>${esc(me?me.email.split("@")[0]:T("Your account"))}</b>
       <small>${esc(me?me.email:T("Log in or create a free account"))}</small></div><i aria-hidden="true">‹</i></button>
     ${typeof tnStampCard==="function"?tnStampCard():""}
+    ${typeof isAdmin==="function"&&isAdmin()?`<div class="am-list am-dash"><button type="button" class="am-li" data-k="admin"><span aria-hidden="true">📊</span><b>${T("Dashboard")}</b>${window.tnScoutWaiting&&tnScoutWaiting()?`<small class="ad-badge">${tnScoutWaiting()}</small>`:""}<i aria-hidden="true">‹</i></button></div>`:""}
     ${MORE.map(([h,items])=>`<h2 class="am-h">${T(h)}</h2><div class="am-list">${items.map(([ic,l,k])=>`<button type="button" class="am-li" data-k="${k}"><span aria-hidden="true">${ic}</span><b>${T(l)}</b>
       ${k==="lang"?`<small>${isAR()?"العربية":"English"}</small>`:""}<i aria-hidden="true">‹</i></button>`).join("")}</div>`).join("")}
     <p class="am-foot">Tabi Neko · ${T("made in Riyadh")} 🐾</p>`;
@@ -541,7 +542,7 @@ function renderMore(){
 }
 
 // ---- a back bar on the pages opened from More ----
-const TITLES={hoods:"Areas",trips:"Day trips",apps:"Apps to download",memories:"Memories",crew:"Contributors",privacy:"Privacy",admin:"Admin"};
+const TITLES={hoods:"Areas",trips:"Day trips",apps:"Apps to download",memories:"Memories",crew:"Contributors",privacy:"Privacy",admin:"Dashboard"};
 function renderBars(){
   Object.keys(TITLES).forEach(k=>{const sec=$(k);if(!sec)return;
     let b=sec.querySelector(":scope > .apbar");
