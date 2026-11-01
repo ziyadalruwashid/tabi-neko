@@ -61,7 +61,7 @@ function wxFor(c,date){
   const w=WX[c];if(w&&w[date])return w[date];
   if(!w&&!wxBusy[c]&&BOX[c]){wxBusy[c]=1;const b=BOX[c];
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${((b.n+b.s)/2).toFixed(3)}&longitude=${((b.w+b.e)/2).toFixed(3)}&daily=weather_code,temperature_2m_max&timezone=Asia%2FTokyo&forecast_days=16`)
-      .then(r=>r.ok?r.json():null).then(j=>{const o={};if(j&&j.daily)j.daily.time.forEach((d,i)=>o[d]={code:j.daily.weather_code[i],t:Math.round(j.daily.temperature_2m_max[i])});WX[c]=o;appTrip()}).catch(()=>{WX[c]={}})}
+      .then(r=>r.ok?r.json():null).then(j=>{const o={};if(j&&j.daily)j.daily.time.forEach((d,i)=>o[d]={code:j.daily.weather_code[i],t:Math.round(j.daily.temperature_2m_max[i])});WX[c]=o;appTrip();if(window.tnRenderExplore&&document.querySelector('.hx-today'))tnRenderExplore()}).catch(()=>{WX[c]={}})}
   return null}
 
 // Every day of the trip in order, with where it sits.
@@ -284,10 +284,20 @@ function wire(box){
     if(!ps.length||typeof mapOnly!=="function")return;mapOnly(ps,`${T("Day {n}",{n:allDays().find(x=>x.a===si&&x.b===di).n+1})}${d.t?" · "+d.t:""}`,true);goTab("map")});
 }
 
+// For the home page (js/appshell.js): the trip's countdown, and today's
+// plan while you're on the trip.
+window.tnTripDays=()=>({days:allDays().length,dl:trip.start?Math.round((dayAt(0)-todayJ())/864e5):null,date:i=>dayAt(i)});
+window.tnToday=function(){
+  if(!trip.start)return null;const dl=Math.round((dayAt(0)-todayJ())/864e5),days=allDays();
+  if(dl>0||-dl>=days.length)return null;const x=days[-dl];
+  return {n:x.n,a:x.a,b:x.b,s:x.s,d:x.d,items:timeline(x.s,x.d).items,clock,w:wxFor(x.s.city,iso8(dayAt(x.n)))};
+};
+window.tnOpenDay=(a,b)=>openDay(a,b);
 // Draw the app's My trip whenever the site would draw its own.
 const _render=renderTrip;
 renderTrip=function(){if(shared)return _render();appTrip()};
 // Tapping the My trip tab again returns to the cover.
 addEventListener("click",e=>{const tb=e.target.closest&&e.target.closest('#tabbar [data-t="trip"]');if(tb&&view==="day"&&location.hash==="#trip"){view="trip";appTrip()}},true);
 appTrip();
+if(window.tnRenderExplore)tnRenderExplore();
 })();

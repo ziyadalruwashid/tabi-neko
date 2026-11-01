@@ -170,15 +170,6 @@ const inCity=()=>P.filter(p=>p.city===exploreCity);
 const photoFirst=a=>[...a].sort((x,y)=>(y.photo?1:0)-(x.photo?1:0));
 const halalHere=()=>{const a=inCity().filter(p=>p.cat==="food"&&p.halal);
   return near?a.sort((x,y)=>KM(near,x)-KM(near,y)):a.sort((x,y)=>(y.hl==="certified")-(x.hl==="certified")||(y.photo?1:0)-(x.photo?1:0))};
-const STORIES=[["halal","Halal","ramen",()=>halalHere()],["gems","Hidden","c-gem",()=>photoFirst(inCity().filter(p=>p.gem))],
-  ["shrine","Temples","torii",()=>photoFirst(inCity().filter(p=>p.cat==="shrine"))],["views","Views","fuji",()=>photoFirst(inCity().filter(p=>p.cat==="views"))],
-  ["coffee","Coffee","coffee",()=>photoFirst(inCity().filter(p=>p.cat==="coffee"))],["photos","Photo spots","camera",()=>inCity().filter(p=>p.photo&&["views","streets","shrine","nature"].includes(p.cat)&&p.tier!=="time")],
-  ["trips","Day trips","train",null]];
-const STORY_COL={halal:"#2E8B3E",gems:"#E8A800",shrine:"#F14E24",views:"#1D52A0",coffee:"#9A6233",photos:"#7B5EA7",trips:"#2E8C88"};
-const MOODS=[["hungry","😋","Hungry",()=>halalHere()],["photos","📸","Photos",()=>photoFirst(inCity().filter(p=>["views","streets"].includes(p.cat)))],
-  ["shop","🛍️","Shopping",()=>photoFirst(inCity().filter(p=>p.cat==="shop"))],["calm","🌿","Something calm",()=>photoFirst(inCity().filter(p=>p.cat==="nature"||p.cat==="coffee"))],
-  ["night","🌙","Night out",()=>photoFirst(inCity().filter(p=>p.cat==="views"||(p.cat==="streets"&&/night|evening|neon|lantern|dark/i.test(p.t+" "+p.tip))))],
-  ["kids","🧒","With kids",()=>photoFirst(inCity().filter(p=>p.cat==="experience"))]];
 // What's good this month, by Japan's calendar.
 function season(){const mo=jst().mo;
   const S=mo<=1||mo===11?["Winter lights ✨","Illuminations and night views, the best season for city lights.",["views","streets"]]
@@ -193,13 +184,6 @@ function dailyPick(){const a=inCity().filter(p=>p.photo&&(p.gem||p.tier==="must"
 const MONTHS_AR=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
 const MONTHS_EN=["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-// Your trip at a glance, or an invitation to start one.
-function tripCard(){
-  const n=tripCount(trip),days=trip.stays.reduce((a,s)=>a+s.days.length,0),cs=trip.stays.length;
-  if(!n&&!cs)return `<button type="button" class="xs-trip empty"><span class="xs-tr-ic">🧳</span><span><b>${T("Plan your trip with Apollo ✨")}</b><small>${T("Add places as you browse, then sort them into days.")}</small></span><i aria-hidden="true">←</i></button>`;
-  return `<button type="button" class="xs-trip"><span class="xs-tr-ic">🧳</span><span><b>${esc(trip.name||T("My Japan trip"))}</b>
-    <small>${esc([T(cs===1?"1 city":"{n} cities",{n:cs}),T(n===1?"1 place":"{n} places",{n}),days?T(days===1?"1 day":"{n} days",{n:days}):""].filter(Boolean).join(" · "))}</small></span><i aria-hidden="true">←</i></button>`;
-}
 // A practical tip a day: the things first-timers wish they had known.
 const TIPS=["Put a Suica or PASMO card in your phone's wallet: tap it on trains, buses and at convenience stores.",
   "Bins are rare on the street. Keep a small bag for your rubbish until you find one at a konbini.",
@@ -225,12 +209,69 @@ function areasRow(){const hs=HOODS.filter(h=>h.city===exploreCity&&h.photo);if(!
 const WX={};
 const wxIcon=c=>c===0?"☀️":c<=2?"🌤️":c===3?"☁️":c<=48?"🌫️":c<=67||c>=80&&c<=82?"🌧️":c<=77||c===85||c===86?"🌨️":c>=95?"⛈️":"🌦️";
 function weather(){
-  const c=exploreCity,b=BOX[c],show=w=>{const el=$("explore").querySelector(".xs-wx");if(el&&c===exploreCity)el.textContent=w?` · ${wxIcon(w.code)} ${Math.round(w.t)}°`:""};
+  const c=exploreCity,b=BOX[c],show=w=>{if(c===exploreCity)$("explore").querySelectorAll(".xs-wx").forEach(el=>el.textContent=w?` · ${wxIcon(w.code)} ${Math.round(w.t)}°`:"")};
   if(!b)return;const hit=WX[c];if(hit&&Date.now()-hit.at<30*60e3)return show(hit);
   fetch(`https://api.open-meteo.com/v1/forecast?latitude=${((b.n+b.s)/2).toFixed(3)}&longitude=${((b.w+b.e)/2).toFixed(3)}&current=temperature_2m,weather_code&timezone=Asia%2FTokyo`)
     .then(r=>r.ok?r.json():null).then(j=>{if(!j||!j.current)return;WX[c]={t:j.current.temperature_2m,code:j.current.weather_code,at:Date.now()};show(WX[c])}).catch(()=>{});
 }
+// ---- the top of Explore follows your trip ----
+// No trip: what's good right now, and a nudge to start one. A trip coming
+// up: its countdown first. On the trip: today's plan, with the next stop.
+const shortKm=km=>{const t=km<1?T("{n} m",{n:Math.max(10,Math.round(km*100)*10)}):T("{n} km",{n:km<10?km.toFixed(1):Math.round(km)});return isAR()?iso(t):t};
+const pickNear=a=>{const h=window.tnMe||(near&&nearKind==="me"?near:null);
+  return h?[...a].sort((x,y)=>KM(h,x)-KM(h,y)):[...a].sort((x,y)=>((y.tier==="must")*2+!!y.gem+(y.photo?1:0))-((x.tier==="must")*2+!!x.gem+(x.photo?1:0)))};
+const NOW={morning:["Fresh air and no crowds yet. Before 10 is {w} 🐾","temple time",()=>inCity().filter(p=>p.photo&&(p.cat==="shrine"||p.cat==="nature"))],
+  afternoon:["Lunchtime! {w} close by, then a walk 🐾","Halal food",()=>halalHere().filter(p=>p.photo)],
+  sunset:["The sun's going down soon: catch it from {w} 🌇","a view",()=>inCity().filter(p=>p.photo&&p.cat==="views")],
+  night:["The city lights up: {w} and lively streets 🌃","night views",()=>inCity().filter(p=>p.photo&&(p.cat==="views"||(p.cat==="streets"&&/night|evening|neon|lantern|dark/i.test(p.t+" "+p.tip))))]};
+function nowCard(k){
+  const [msg,w,get]=NOW[k],ps=pickNear(get()).slice(0,3),h=window.tnMe||(near&&nearKind==="me"?near:null);
+  if(!ps.length)return "";
+  return `<section class="hx-now"><header><i class="hx-pulse"></i><b>${esc(T("Right now in {c}",{c:cityOf(exploreCity)}))}</b><small><span class="xs-time">${esc(jstText())}</span><span class="xs-wx"></span></small></header>
+    <p>${T(msg,{w:`<b>${esc(T(w))}</b>`})}</p>
+    <div class="hx-nowc">${ps.map(p=>`<button type="button" class="pc hx-np" data-id="${p.id}"><img src="${p.photo}" alt="" loading="lazy"><b><bdi>${esc(p.n)}</bdi></b>
+      <small>${esc(h?shortKm(KM(h,p)):p.gem?T("⭐ hidden gem"):p.tier==="must"?"🔥 "+T("don't skip this"):D(CATS[p.cat],"n"))}</small></button>`).join("")}</div></section>`}
+function tripTop(){
+  const info=window.tnTripDays&&tnTripDays();if(!info||!(trip.stays.length||trip.ideas.length))return "";
+  const dl=info.dl,nd=info.days,route=trip.stays.map(s=>cityOf(s.city)).join(isAR()?" ← ":" → ");
+  // How ready the plan is: a place to stay in each city, and something in each day.
+  const miss=[];let total=0,done=0;
+  trip.stays.forEach(s=>{total++;if(s.home)done++;else miss.push(T("Hotel in {c}",{c:cityOf(s.city)}))});
+  let n=0;trip.stays.forEach(s=>s.days.forEach(d=>{n++;total++;if(d.ids.length||(d.bk||[]).length)done++;else miss.push(T("Day {n} is empty",{n}))}));
+  if(!trip.start){total++;miss.unshift(T("Your travel date"))}else done++;
+  const pct=total?Math.round(done/total*100):0,d0=info.date(0),dz=info.date(Math.max(0,nd-1));
+  const M=isAR()?MONTHS_AR:MONTHS_EN,md=d=>`${d.getUTCDate()} ${M[d.getUTCMonth()]}`;
+  const head=dl==null?esc(trip.name||T("My Japan trip")):dl>1?esc(T("{n} days to go",{n:dl})):dl===1?esc(T("Tomorrow!")):"";
+  if(dl!=null&&dl<=0)return "";
+  return `<button type="button" class="hx-trip"><span class="hx-tl"><small>${esc(T("Your trip"))} ✈️${d0?` · ${esc(md(d0))} – ${esc(md(dz))}`:""}</small><b>${head}</b>
+      <span class="hx-route">${esc(route||T("Your ideas 💡"))} · ${esc(T(tripCount(trip)===1?"1 place":"{n} places",{n:tripCount(trip)}))}</span>
+      <span class="hx-bar"><i style="width:${pct}%"></i></span><em>${miss.length?esc(T("Still to do: {x}",{x:miss.slice(0,2).join(" · ")})):esc(T("All set! 🎉"))}</em></span>
+    <span class="hx-ring" style="--p:${pct}"><b>${dl!=null?esc(isAR()?iso(String(dl)):String(dl)):"🧳"}</b><small>${dl!=null?esc(T(dl===1?"day left":"days left")):""}</small></span></button>`}
+function todayCard(){
+  const t=window.tnToday&&tnToday();if(!t)return "";
+  const {h,m}=jst(),now=h*60+m,its=t.items.filter(x=>x.k!=="hop"&&x.k!=="home"&&x.t!=null&&x.t>=0);
+  const ni=its.findIndex(x=>x.t+(x.m||45)>now),nx=ni>-1?its[ni]:null,rest=ni>-1?its.slice(ni+1,ni+4):[];
+  const nm=x=>x.k==="stop"?x.p.n:x.k==="lunch"?x.x.p.n:(x.b.n||[x.b.a,x.b.b].filter(Boolean).join(" → ")||T("Booking"));
+  const pic=x=>x.k==="stop"?x.p:x.k==="lunch"?x.x.p:null;
+  let hopTxt="";if(nx){const i=t.items.indexOf(nx);const hp=t.items[i-1];if(hp&&hp.k==="hop")hopTxt=hp.h.t}
+  const w=t.w;
+  return `<section class="hx-today"><header><b>🧳 ${esc(T("Day {n} of your trip",{n:t.n+1}))}</b><small>${esc(cityOf(t.s.city))}${w?` · ${wxIcon(w.code)} ${w.t}°`:""}</small></header>
+    ${nx?`<button type="button" class="hx-next"${pic(nx)?` data-id="${pic(nx).id}"`:""}>${pic(nx)&&pic(nx).photo?`<img src="${pic(nx).photo}" alt="">`:`<span class="hx-bi">${nx.k==="bk"?"🎫":"📍"}</span>`}
+      <span><small>${esc([T("Next"),t.clock(nx.t),hopTxt].filter(Boolean).join(" · "))}</small><b><bdi>${esc(nm(nx))}</bdi></b>
+      ${nx.k==="lunch"?`<em class="hx-hal">🍜 ${esc(T("Halal lunch · Apollo's pick"))}</em>`:nx.k==="stop"&&D(nx.p,"tip")?`<i>🐾 ${esc(D(nx.p,"tip").split(/(?<=[.!؟?])\s/)[0])}</i>`:""}</span></button>`
+      :`<p class="hx-done">${esc(T(t.d.ids.length?"That's today done! 🎉 Rest well.":"Nothing planned today yet. Add some places?"))}</p>`}
+    ${rest.length?`<div class="hx-rest">${rest.map(x=>`<div class="${x.k==="lunch"?"h":""}"><em>${esc(t.clock(x.t))}</em><b><bdi>${esc(nm(x))}</bdi></b>${x.k==="lunch"?`<span>${esc(T("Apollo's pick"))}</span>`:""}</div>`).join("")}</div>`:""}
+    <button type="button" class="hx-open" data-s="${t.a}" data-d="${t.b}">${esc(T("Open your day"))} ${isAR()?"←":"→"}</button></section>`}
+const BENTO=[["halal","🍜","Halal",()=>halalHere(),"big"],["views","🌃","Views",()=>photoFirst(inCity().filter(p=>p.cat==="views"))],["coffee","☕","Coffee",()=>photoFirst(inCity().filter(p=>p.cat==="coffee"))],
+  ["shrine","⛩️","Temples",()=>photoFirst(inCity().filter(p=>p.cat==="shrine"))],["gems","⭐","Hidden",()=>photoFirst(inCity().filter(p=>p.gem))],["shop","🛍️","Shopping",()=>photoFirst(inCity().filter(p=>p.cat==="shop")),"wide"]];
+function bento(){
+  const tiles=BENTO.map(b=>({b,ps:b[3]()})).filter(x=>x.ps.length);
+  return `<h2 class="hx-h">${T("What's your mood?")}</h2><div class="hx-bento">${tiles.map(({b,ps},i)=>{const img=(ps.find(p=>p.photo)||{}).photo;
+    return `<button type="button" class="hx-b ${b[4]||""}" data-b="${b[0]}"${img?` style="background-image:url('${img}')"`:""}><span>${b[1]} ${esc(T(b[2]))}</span>${b[4]?`<small>${esc(T(ps.length===1?"1 place":"{n} places",{n:ps.length}))}</small>`:""}</button>`}).join("")}</div>`}
+let autoCity=false,lastToday="";
 function renderExplore(){
+  // On the trip, Explore starts in the city you're in today (once; your own pick wins after that).
+  if(!autoCity&&window.tnToday){autoCity=true;const t=tnToday();if(t&&t.s.city!==exploreCity&&TRIP_CITIES.includes(t.s.city)){exploreCity=t.s.city;city=exploreCity}}
   const el=$("explore");if(!el)return;
   const who=typeof auth!=="undefined"&&auth&&auth.email?auth.email.split("@")[0]:"";
   const cities=["tokyo","kyoto","osaka","nara","kobe","kamakura"].filter(c=>TRIP_CITIES.includes(c)),k=period(jst().h),P0=PERIODS[k];
@@ -245,15 +286,13 @@ function renderExplore(){
         <button type="button" class="xs-cat" aria-label="${esc(T("More"))}"><img src="assets/cat.png" alt=""></button></div></div>
     <button type="button" class="ax-search xs-search">${SVG(I.search)}<span>${T("Search places, areas, food…")}</span></button>
     <div class="ax-cities" role="tablist">${cities.map(c=>`<button type="button" role="tab" class="ax-city${c===exploreCity?" on":""}" data-c="${c}" aria-selected="${c===exploreCity}">${esc(cityOf(c))}</button>`).join("")}</div>
-    <div class="xs-stories">${STORIES.map(([key,l,img])=>`<button type="button" class="xs-st" data-story="${key}"><span class="xs-ring" style="--c:${STORY_COL[key]}"><span><img src="assets/${img}.png" alt=""></span></span><b>${T(l)}</b></button>`).join("")}</div>
-    ${tripCard()}
+    ${(()=>{const td=todayCard();lastToday=td;if(td)return td;const tt=tripTop();return tt?tt+nowCard(k):nowCard(k)+(trip.stays.length||trip.ideas.length?"":`<button type="button" class="hx-cta"><span>✈️</span><span><b>${T("Start your trip with Apollo")}</b><small>${T("Pick your cities and he sorts your days.")}</small></span><i>${isAR()?"←":"→"}</i></button>`)})()}
+    ${bento()}
     ${pick?`<button type="button" class="xs-pick" data-id="${pick.id}"><span class="xs-tape"></span><span class="xs-pola"><img src="${pick.photo}" alt=""><small>${esc(D(pick,"cap"))}</small></span>
       <span class="xs-pt"><small>${T("Apollo's pick for today 🐾")}</small><b><bdi>${esc(pick.n)}</bdi></b><i>${esc((D(pick,"tip")||"").split(/(?<=[.!؟?])\s/)[0])}</i><em>${T("See the place")} ${isAR()?"←":"→"}</em></span></button>`:""}
     ${tipCard()}
     ${must.length?`<section class="ax-row ax-must"><header><h2>${T("Don't miss 🔥")}</h2></header><p class="ax-sub">${esc(T("Apollo's first picks in {c}",{c:cityOf(exploreCity)}))}</p><div class="ax-hs">${must.slice(0,10).map(big).join("")}</div></section>`:""}
     ${areasRow()}
-    <h2 class="xs-h">${T("What's your mood today?")}</h2>
-    <div class="xs-moods">${MOODS.map(([key,e,l])=>`<button type="button" class="xs-md" data-mood="${key}"><i>${e}</i>${T(l)}</button>`).join("")}</div>
     ${sea.ps.length?`<button type="button" class="xs-season"><small>${esc(T("{m} in Japan",{m:(isAR()?MONTHS_AR:MONTHS_EN)[jst().mo]}))}</small><b>${T(sea.t)}</b><p>${T(sea.s)}</p>
       <span class="xs-sp">${sea.ps.slice(0,3).map(p=>`<span><img src="${p.photo}" alt=""><b><bdi>${esc(p.n)}</bdi></b></span>`).join("")}</span></button>`:""}
     ${row(near?"Halal near you 🍜":"Halal food 🍜","",halalHere(),"halal")}
@@ -262,24 +301,25 @@ function renderExplore(){
     ${row("Coffee & sweets ☕","",photoFirst(inCity().filter(p=>p.cat==="coffee")),"coffee")}`;
   wireCards(el);
   el.querySelector(".xs-cat").onclick=()=>go("menu");
-  if(el.querySelector(".xs-trip"))el.querySelector(".xs-trip").onclick=()=>go("trip");
+  el.querySelectorAll(".hx-trip,.hx-cta").forEach(b=>b.onclick=()=>go("trip"));
+  el.querySelectorAll(".hx-open").forEach(b=>b.onclick=()=>{go("trip");if(window.tnOpenDay)tnOpenDay(+b.dataset.s,+b.dataset.d)});
+  el.querySelectorAll(".hx-next[data-id]").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
+  el.querySelectorAll(".hx-b").forEach(b=>b.onclick=()=>{const x=BENTO.find(y=>y[0]===b.dataset.b);openList(`${x[1]} ${T(x[2])}`,cityOf(exploreCity),x[3]())});
   el.querySelectorAll(".xs-area").forEach(b=>b.onclick=()=>{const h=HOODS.find(x=>x.city===exploreCity&&x.n===b.dataset.h);
     openList(D(h,"n"),D(h,"vibe"),photoFirst(P.filter(p=>p.city===h.city&&p.area===h.area)))});
   weather();
   el.querySelectorAll(".ax-city").forEach(b=>b.onclick=()=>{exploreCity=b.dataset.c;city=exploreCity;store.set("tabineko-city",city);renderExplore()});
   el.querySelector(".xs-search").onclick=()=>{city=exploreCity;store.set("tabineko-city",city);if(window.openSearch)openSearch("")};
   if(el.querySelector(".xs-pick"))el.querySelector(".xs-pick").onclick=()=>openPlace(pick.id);
-  el.querySelectorAll(".xs-st").forEach(b=>b.onclick=()=>{const s=STORIES.find(x=>x[0]===b.dataset.story);
-    if(!s[3]){location.hash="#trips";return}openList(T(s[1]),cityOf(exploreCity),s[3]())});
-  el.querySelectorAll(".xs-md").forEach(b=>b.onclick=()=>{const m=MOODS.find(x=>x[0]===b.dataset.mood);openList(`${m[1]} ${T(m[2])}`,cityOf(exploreCity),m[3]())});
   if(el.querySelector(".xs-season"))el.querySelector(".xs-season").onclick=()=>openList(T(sea.t),T(sea.s),sea.ps);
   el.querySelectorAll(".ax-all").forEach(b=>b.onclick=()=>{const k2=b.dataset.list,L={halal:["Halal food 🍜",halalHere()],gems:["Hidden gems ⭐",photoFirst(inCity().filter(p=>p.gem))],coffee:["Coffee & sweets ☕",photoFirst(inCity().filter(p=>p.cat==="coffee"))]}[k2];
     openList(T(L[0]),cityOf(exploreCity),L[1])});
 }
+window.tnRenderExplore=renderExplore;
 // The clock in the header ticks with Japan's time, and the sky changes with it.
 let lastPeriod=period(jst().h);
 setInterval(()=>{if($("explore").hidden)return;const k=period(jst().h);
-  if(k!==lastPeriod){lastPeriod=k;renderExplore()}else{const t=$("explore").querySelector(".xs-time");if(t)t.textContent=jstText()}},30000);
+  if(k!==lastPeriod){lastPeriod=k;renderExplore()}else{$("explore").querySelectorAll(".xs-time").forEach(t=>t.textContent=jstText());if($("explore").querySelector(".hx-today")&&todayCard()!==lastToday)renderExplore()}},30000);
 
 
 // ---- the place page ----
