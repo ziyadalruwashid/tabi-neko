@@ -348,7 +348,7 @@ function renderAcct(){
     h=`<h2 id="acct-h">${esc(T("Welcome, {n}! 🎉",{n:myName()}))}</h2><p>${T("Pick your travel buddy. It's your picture in the app.")}</p>
     <div class="acct-buddies" role="radiogroup" aria-label="${esc(T("Travel buddy"))}">${(typeof BUDDIES==="undefined"?[]:BUDDIES).map(b=>`<button type="button" role="radio" class="acct-bud${b.k===cur?" on":""}" data-b="${b.k}" aria-checked="${b.k===cur}"><img src="${esc(b.img)}" alt=""><small>${esc(b.n)}</small></button>`).join("")}</div>
     <p class="acct-note">📩 <span>${T("We sent a link to {e}. Tap it to confirm your email.",{e:`<b dir="ltr">${esc(auth&&auth.email||"")}</b>`})}</span></p>
-    <form class="acct-f"><button type="submit" class="store"${a.busy?" disabled":""}>${a.busy?T("One moment…"):T("Let's go")}</button></form>${err}`}
+    <form class="acct-f"><button type="submit" class="store"${a.busy?" disabled":""}>${a.busy?T("One moment…"):T(typeof IS_APP!=="undefined"&&IS_APP?"Next":"Let's go")}</button></form>${err}`}
   else if(a.step==="choose")h=`<h2 id="acct-h">${T("You have two trips")}</h2>
     <p>${T("There's a trip on this phone and a different one in your account. Which one do you want to keep?")}</p>
     <div class="acct-two"><button type="button" class="store" data-keep="server">☁️ ${T("The one in my account")}<small>${esc(a.rec.data&&a.rec.data.name||T("My Japan trip"))}</small></button>
@@ -393,7 +393,9 @@ function renderAcct(){
     el.querySelectorAll(".acct-bud").forEach(b=>b.onclick=()=>{acct.buddy=b.dataset.b;renderAcct()});
     q(".acct-f").onsubmit=async e=>{e.preventDefault();const b=BUDDIES.find(x=>x.k===acct.buddy);
       if(b&&b!==buddyOf(auth)){acct.busy=true;renderAcct();try{await updateProfile({photoUrl:BUDDY_BASE+b.img})}catch(err){}}
-      closeAcct()}}
+      closeAcct();
+      // In the app, the next step is the shrine bell: turn on reminders.
+      if(window.tnBellAsk)tnBellAsk("signup")}}
   if(a.step==="choose")el.querySelectorAll("[data-keep]").forEach(b=>b.onclick=()=>{
     if(b.dataset.keep==="server")applyServer(a.rec);else{sync={...SYNC0,at:a.rec.at,dirty:true,base:tripJSON(cleanTrip(a.rec.data))};saveSync();push()}
     closeAcct();joinIfAsked()});

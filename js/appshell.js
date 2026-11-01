@@ -406,6 +406,7 @@ window.openPlace=openPlace; // the real map (js/appmap.js) opens places too
 let backAt=0;
 function onBack(){
   if(window.tnOnbBack&&tnOnbBack())return;
+  if(window.tnBellBack&&tnBellBack())return;
   if(window.tnStampBack&&tnStampBack())return;
   if(window.tnProfBack&&tnProfBack())return;
   if(window.tnLensBack&&tnLensBack())return;
