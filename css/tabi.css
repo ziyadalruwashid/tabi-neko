@@ -2176,7 +2176,7 @@ html.onb-open #tabbar{display:none}
 @keyframes obstamp{from{opacity:0;transform:rotate(-14deg) scale(2.2)}to{opacity:1;transform:rotate(-14deg) scale(1)}}
 .ob-paw b{font-size:20px;line-height:1}
 .ob-paw small{font:900 7.5px/1.2 var(--body);letter-spacing:1px;text-align:center}
-.ob-oms{display:flex;gap:8px;margin-top:20px;justify-content:space-between}
+.ob-oms{display:flex;gap:14px;margin-top:20px;justify-content:center}.ob-om{max-width:92px}
 .ob-om{position:relative;flex:1;height:112px;border-radius:12px 12px 22px 22px;background:linear-gradient(#2A2320,#1A1512);border:1.5px solid rgba(232,199,122,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0;color:#fff}
 .ob-om i{position:absolute;top:-14px;width:2px;height:16px;background:#E8C77A}
 .ob-om span{font:700 17px/1.15 "Noto Serif JP","Hiragino Mincho ProN",serif;width:18px;text-align:center;color:#E8C77A}
