@@ -20,7 +20,7 @@ const el=document.createElement("div");el.id="onb";el.setAttribute("role","dialo
 document.body.appendChild(el);document.documentElement.classList.add("onb-open");
 
 // The three most visited cities, each with its own night photo behind the gate.
-const CITY=[["tokyo","東京",HD+"asakusa.jpg","50% 30%"],["kyoto","京都",PH+"kyoto-sannenzaka-ninenzaka.jpg","50% 40%"],["osaka","大阪",HD+"dotonbori.jpg","50% 40%"]].filter(([c])=>TRIP_CITIES.includes(c));
+const CITY=[["tokyo","東京","assets/onboard/tokyo.jpg","22% 50%"],["kyoto","京都","assets/onboard/kyoto.jpg","88% 40%"],["osaka","大阪","assets/onboard/osaka.jpg","48% 40%"]].filter(([c])=>TRIP_CITIES.includes(c));
 const cityPic=c=>(CITY.find(x=>x[0]===c)||CITY[0]);
 const stk=st=>`<img class="ob-stk" src="assets/cat.png" alt="" style="${st}">`;
 const tape=(c,st)=>`<span class="ob-tape" style="${st};--t:${c}"></span>`;
