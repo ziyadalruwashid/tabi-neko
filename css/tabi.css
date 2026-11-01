@@ -2104,3 +2104,82 @@ html.tn-app[dir=rtl] .nt-tg.on i{left:3px}
 html.tn-app[dir=rtl] .nt-tg i{left:21px}
 html.tn-app .tv-slot{line-height:1.45}
 html.tn-app .tv-day{scroll-margin-top:calc(64px + env(safe-area-inset-top))}
+
+/* ---- first run: four stops of a trip with Apollo (js/apponboard.js) ---- */
+#onb{position:fixed;inset:0;z-index:150;overflow:hidden;background:#FAF4E8;color:var(--ink);transition:opacity .4s,transform .4s;touch-action:pan-y}
+#onb.out{opacity:0;transform:scale(1.03);pointer-events:none}
+html.onb-open #tabbar{display:none}
+.ob-track{position:absolute;inset:0;display:flex;will-change:transform}
+.ob-s{position:relative;flex:0 0 100%;height:100%;overflow:hidden;background:#FAF4E8}
+.ob-s.night{background:#141022;color:#fff}
+.ob-bg{position:absolute;top:0;left:0;width:100%;height:66%;object-fit:cover;transform:scale(1.08)}
+.ob-s.night .ob-bg{height:100%}
+.ob-vig{position:absolute;inset:0;background:linear-gradient(rgba(20,12,8,.5),rgba(20,12,8,0) 20%,rgba(250,244,232,0) 42%,rgba(250,244,232,.85) 58%,#FAF4E8 67%)}
+.ob-s.night .ob-vig{background:linear-gradient(rgba(10,6,20,.5),rgba(10,6,20,0) 22%,rgba(20,16,34,.2) 40%,rgba(20,16,34,.92) 62%,#141022 78%)}
+.ob-top{position:absolute;top:0;left:0;right:0;z-index:5;padding:calc(10px + env(safe-area-inset-top)) 18px 0;color:#fff;pointer-events:none}
+.ob-bars{display:flex;gap:5px;direction:ltr}
+.ob-bars i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.35);overflow:hidden;position:relative}
+.ob-bars i.d{background:rgba(255,255,255,.95)}
+.ob-bars i.on::after{content:"";position:absolute;inset:0;background:#fff;transform-origin:left;animation:obfill .6s ease-out forwards}
+@keyframes obfill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.ob-hd{display:flex;justify-content:space-between;align-items:center;margin-top:10px;direction:ltr}
+.ob-st{font:800 11px var(--body);letter-spacing:2.5px;opacity:.9;text-shadow:0 1px 4px rgba(0,0,0,.4)}
+.ob-skip{pointer-events:auto;border:0;background:rgba(0,0,0,.22);color:#fff;border-radius:999px;padding:5px 13px;font:700 14px var(--body)}
+.ob-body{position:absolute;left:24px;right:24px;bottom:calc(28px + env(safe-area-inset-bottom));z-index:4}
+.ob-kick{display:block;font:800 11.5px var(--body);letter-spacing:2.5px;color:var(--lantern);direction:ltr;text-align:end}
+[dir=rtl] .ob-kick{text-align:right}
+.ob-body h1{margin:6px 0 6px;font:400 31px/1.3 "Bagel Fat One","Marhey",var(--body)}
+.ob-body p{margin:0;font:600 15.5px/1.7 var(--body);color:#6B5040}
+.night .ob-body h1{color:#FFF6E6}.night .ob-body p{color:rgba(255,255,255,.75)}
+.ob-cta{display:block;width:100%;margin-top:22px;border:0;background:var(--lantern);color:#fff;border-radius:16px;padding:16px;font:800 17px var(--body);box-shadow:0 10px 24px rgba(241,78,36,.3)}
+.ob-later{display:block;margin:8px auto 0;border:0;background:none;font:600 14px var(--body);color:rgba(255,255,255,.65);padding:6px}
+/* the paper things drop in when their stop opens */
+.ob-obj,.ob-note,.ob-tags,.ob-oms{transition:transform .6s cubic-bezier(.2,.9,.25,1.15),opacity .4s}
+.ob-s:not(.in) .ob-obj{opacity:0;transform:translateY(-40px) rotate(-6deg)}
+.ob-s:not(.in) .ob-note{opacity:0;transform:translateY(10px) rotate(0)}
+.ob-s.in .ob-note{transition-delay:.35s}
+.ob-s:not(.in) .ob-tags,.ob-s:not(.in) .ob-oms{opacity:0;transform:translateY(20px)}
+.ob-stk{position:absolute;z-index:6;filter:drop-shadow(0 6px 10px rgba(0,0,0,.2));pointer-events:none}
+.ob-tape{position:absolute;width:86px;height:24px;background:var(--t);z-index:7;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.ob-note{position:absolute;z-index:6;background:#FFF6DC;color:var(--ink);font:400 17px "Patrick Hand","Marhey",var(--body);padding:6px 12px;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.ob-tags{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.ob-tag{position:relative;display:flex;align-items:center;gap:14px;width:100%;background:var(--sheet);color:var(--ink);border:1.5px solid #EADFCD;border-radius:8px 16px 16px 8px;padding:12px 16px 12px 14px;box-shadow:0 6px 16px rgba(63,33,22,.12);text-align:start}
+.ob-tag:not(.on){opacity:.7}
+.ob-tag.on{outline:2px solid var(--lantern);outline-offset:3px}
+.ob-tag>span:nth-child(2){flex:1}
+.ob-tag small{display:block;font:800 9.5px var(--body);letter-spacing:2px;color:var(--muted)}
+.ob-tag b{font:800 19px var(--body)}
+.ob-tag em{font-style:normal;font:900 22px var(--body);color:var(--lantern);letter-spacing:1px;padding-inline-start:12px;border-inline-start:2px dashed #E2D4BF}
+.ob-hole{order:9;width:12px;height:12px;border-radius:50%;background:#FAF4E8;box-shadow:inset 0 0 0 3px #C9B49A;flex:none}
+.ob-map{position:absolute;top:calc(110px + env(safe-area-inset-top));left:34px;right:34px;z-index:4;background:var(--sheet);border-radius:18px;box-shadow:0 18px 36px rgba(63,33,22,.28);transform:rotate(-2deg)}
+.ob-map svg{display:block;width:100%;border-radius:18px 18px 0 0}
+.ob-pin{position:absolute;width:40px;height:40px;border-radius:50%;padding:3px;background:#fff;box-shadow:0 4px 10px rgba(0,0,0,.3)}
+.ob-pin img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.ob-mfoot{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-top:1px solid #EFE4D3}
+.ob-mfoot small{display:block;font:700 11.5px var(--body);color:var(--muted)}
+.ob-mfoot b{font:900 15px var(--body)}
+.ob-mfoot em{font-style:normal;background:var(--ink);color:#fff;border-radius:999px;padding:5px 11px;font:800 12.5px var(--body)}
+.ob-tix{position:absolute;top:calc(100px + env(safe-area-inset-top));left:30px;right:30px;z-index:4;background:var(--sheet);color:var(--ink);border-radius:14px;padding:14px 16px;box-shadow:0 18px 36px rgba(63,33,22,.28);transform:rotate(2deg);direction:ltr;background-image:repeating-linear-gradient(0deg,rgba(29,82,160,.03) 0 2px,transparent 2px 6px)}
+.ob-tixh{display:flex;justify-content:space-between;font:900 10px var(--body);letter-spacing:1.5px;color:#1D52A0;border-bottom:2px solid #1D52A0;padding-bottom:6px}
+.ob-tixr{display:flex;align-items:center;gap:10px;margin:10px 0 6px}
+.ob-tixr small{display:block;font:800 9px var(--body);letter-spacing:2px;color:var(--muted)}
+.ob-tixr b{font:400 32px "Bagel Fat One",var(--body)}
+.ob-tixr i{flex:1;border-top:2px dashed #C9B49A}
+.ob-tixl{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px dashed #E2D4BF}
+[dir=rtl] .ob-tixl{direction:rtl}
+.ob-tixl em{font-style:normal;font:900 13px var(--body);width:44px;direction:ltr}
+.ob-tixl span{flex:1;font:800 14px var(--body)}
+.ob-tixl i{font-style:normal;color:#1D52A0;font-weight:900}
+.ob-tixf{display:flex;justify-content:space-between;margin-top:6px;padding-top:8px;border-top:2px solid var(--ink);font:900 10px var(--body);letter-spacing:1.5px}
+.ob-paw{position:absolute;left:150px;top:46px;width:74px;height:74px;border-radius:50%;border:3px solid var(--lantern);color:var(--lantern);display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-14deg);box-shadow:inset 0 0 0 3px #FFFDF7,inset 0 0 0 5px var(--lantern);background:rgba(255,253,247,.6)}
+.ob-s.in .ob-paw{animation:obstamp .5s .5s both}
+@keyframes obstamp{from{opacity:0;transform:rotate(-14deg) scale(2.2)}to{opacity:1;transform:rotate(-14deg) scale(1)}}
+.ob-paw b{font-size:20px;line-height:1}
+.ob-paw small{font:900 7.5px/1.2 var(--body);letter-spacing:1px;text-align:center}
+.ob-oms{display:flex;gap:8px;margin-top:20px;justify-content:space-between}
+.ob-om{position:relative;flex:1;height:112px;border-radius:12px 12px 22px 22px;background:linear-gradient(#2A2320,#1A1512);border:1.5px solid rgba(232,199,122,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0;color:#fff}
+.ob-om i{position:absolute;top:-14px;width:2px;height:16px;background:#E8C77A}
+.ob-om span{font:700 17px/1.15 "Noto Serif JP","Hiragino Mincho ProN",serif;width:18px;text-align:center;color:#E8C77A}
+.ob-om b{font:700 12px var(--body);color:rgba(255,255,255,.8)}
+.ob-om.on{background:linear-gradient(#F14E24,#C23A15);border-color:#FFD9A0;transform:translateY(-4px)}
+.ob-om.on span,.ob-om.on b{color:#fff}

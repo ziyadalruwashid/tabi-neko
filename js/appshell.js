@@ -335,6 +335,7 @@ function renderExplore(){
     openList(T(L[0]),cityOf(exploreCity),L[1])});
 }
 window.tnRenderExplore=renderExplore;
+window.tnExploreCity=c=>{if(!CITIES[c])return;exploreCity=c;city=c;store.set("tabineko-city",c);renderExplore()};
 // The clock in the header ticks with Japan's time, and the sky changes with it.
 let lastPeriod=period(jst().h);
 setInterval(()=>{if($("explore").hidden)return;const k=period(jst().h);
@@ -394,6 +395,7 @@ window.openPlace=openPlace; // the real map (js/appmap.js) opens places too
 // Explore, on a second press.
 let backAt=0;
 function onBack(){
+  if(window.tnOnbBack&&tnOnbBack())return;
   const H=document.documentElement,top=[...document.querySelectorAll(".tpick,#atsheet")].filter(e=>!e.hidden).pop();
   if(top){top.dispatchEvent(new MouseEvent("click",{bubbles:true}));return}
   if(H.classList.contains("picking")&&typeof endPick==="function"){endPick(true);return}
