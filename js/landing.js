@@ -5,7 +5,7 @@
 // skips the landing page. Never shown inside the app.
 //
 // Motion: the headline rises word by word, the phones tilt with the pointer,
-// numbers count up, sections slide in as they scroll into view, the feature
+// the city stamps press in, sections slide in as they scroll into view, the feature
 // list plays itself, place photos drift past, and a tap leaves a paw print.
 // All of it is switched off for people who ask for reduced motion.
 (function(){
@@ -48,8 +48,7 @@ function photos(){
   const h=Math.ceil(pool.length/2);return row(pool.slice(0,h))+row(pool.slice(h).reverse());
 }
 function draw(){
-  const cities=Object.keys(CITIES).filter(k=>P.some(p=>p.city===k)).length;
-  const stamps=typeof STAMPS!=="undefined"?STAMPS.length:42;
+  const cs=Object.keys(CITIES).filter(k=>P.some(p=>p.city===k));
   el.innerHTML=`
   <header class="lp-nav"><a class="lp-logo" href="#" aria-label="Tabi Neko"><img src="assets/cat.png" alt="">Tabi Neko</a>
     <nav><a href="#lp-feat" data-to="lp-feat">${T("Features")}</a><a href="#lp-how" data-to="lp-how">${T("How it works")}</a><a href="#lp-bud" data-to="lp-bud">${T("Buddies")}</a><a href="#map" class="lp-nb">${T("Explore the notebook")}</a></nav>
@@ -58,11 +57,9 @@ function draw(){
 
   <section class="lp-hero"><div class="lp-glow" aria-hidden="true"></div>
     <div class="lp-copy">
-      <span class="lp-kick lp-in" style="--d:0">✈️ ${T("Your Japan travel notebook")} <b>${T("FREE")}</b></span>
       <h1>${words(T("Japan, planned by a cat"))} <em>${words(T("who's been."),"hl")}</em></h1>
       <p class="lp-lead lp-in" style="--d:6">${T("Tabi Neko is Apollo's travel notebook in your pocket: {n} places he checked himself, a trip planner that fills your days, and stamps to collect as you go.",{n:n(P.length)})}</p>
       <div class="lp-btns lp-in" style="--d:7">${storeBtn()}${iosBtn}<a class="lp-cta ghost lp-nb" href="#map">${T("Explore the notebook")} <i>${isAR()?"←":"→"}</i></a></div>
-      <div class="lp-trust lp-in" style="--d:8"><span>🌐 English & العربية</span><span>🚫 ${T("No ads, ever")}</span><span>☁️ ${T("Saved to your account")}</span></div>
     </div>
     <div class="lp-stage" aria-hidden="true"><div class="lp-tilt">
       ${phone("stamps","l")}${phone("trips","r")}${phone("home","c")}
@@ -72,7 +69,8 @@ function draw(){
     </div></div>
   </section>
 
-  <section class="lp-stats lp-rv">${[[P.length,"places Apollo checked"],[TRIPS.length,"day trips"],[stamps,"stamps to collect"],[3,"travel buddies"],[cities,"cities"]].map(([v,l])=>`<div><b data-n="${v}">${n(v)}</b><span>${T(l)}</span></div>`).join("")}</section>
+  <section class="lp-cities lp-rv" aria-label="${esc(T("The cities in the notebook"))}"><p class="lp-ch">${T("{n} cities, one notebook. Pick one to start.",{n:n(cs.length)})}</p>
+    <div class="lp-hk">${cs.map((k,i)=>`<button type="button" class="lp-hanko" data-c="${k}" style="--d:${i};--r:${[-8,5,-3,7,-6,4,-2][i%7]}deg"><span class="lp-hj">${esc(CITIES[k].jp)}</span><b>${esc(D(CITIES[k],"n"))}</b><small>${esc(D(CITIES[k],"nick")||"")}</small></button>`).join("")}</div></section>
 
   <section class="lp-mq" dir="ltr" aria-label="${esc(T("Some of the places"))}">${photos()}</section>
 
@@ -113,7 +111,7 @@ function wire(){
   // Sections slide in once, and numbers count up, as they come into view.
   if(io)io.disconnect();
   io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add("in");io.unobserve(e.target);
-    if(e.target.classList.contains("lp-stats"))count(e.target)}),{threshold:.18,rootMargin:"0px 0px -40px 0px"});
+}),{threshold:.18,rootMargin:"0px 0px -40px 0px"});
   el.querySelectorAll(".lp-rv").forEach(x=>io.observe(x));
   // The phones lean toward the pointer.
   const st=el.querySelector(".lp-stage"),tilt=el.querySelector(".lp-tilt");
@@ -135,13 +133,12 @@ function wire(){
   const show=el.querySelector(".lp-show");
   const play=()=>{if(featT||still())return;pick(featI,false);featT=setInterval(()=>pick((featI+1)%FEATS.length,false),6000)};
   new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){play();o.disconnect()}},{threshold:.3}).observe(show);
+  // A city's stamp: it presses down, then the notebook opens on that city.
+  el.querySelectorAll(".lp-hanko").forEach(b=>b.onclick=()=>{b.classList.remove("press");void b.offsetWidth;b.classList.add("press");
+    setTimeout(()=>{const k=b.dataset.c;try{store.set("tabineko-city",k);city=k;selected=null;area=null;zoomTo=null;renderAll()}catch(e){}location.hash="#map";requestAnimationFrame(()=>{if(typeof show==="function")show("map")})},still()?0:420)});
   // Buddies: tap one and they say their line.
   el.querySelectorAll(".lp-b").forEach(b=>b.onclick=()=>{const q=b.querySelector(".lp-bq");el.querySelectorAll(".lp-b.talk").forEach(x=>{if(x!==b)x.classList.remove("talk")});
     q.textContent=`“${b.dataset.q}”`;b.classList.remove("talk");void b.offsetWidth;b.classList.add("talk")});
-}
-function count(box){
-  box.querySelectorAll("b[data-n]").forEach(b=>{const to=+b.dataset.n;if(still()||!to)return;const t0=performance.now(),dur=1300;
-    const f=t=>{const k=Math.min(1,(t-t0)/dur),v=Math.round(to*(1-Math.pow(1-k,3)));b.textContent=n(v);if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)});
 }
 // A paw print where you tap or click.
 el.addEventListener("pointerdown",e=>{if(still()||e.target.closest("a,button"))return;const p=document.createElement("span");p.className="lp-paw";p.textContent="🐾";
