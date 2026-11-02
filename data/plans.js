@@ -3,7 +3,7 @@
 // Places are named exactly as in data/places.js, within the stay's city.
 // Arabic sits in _ar, read by D() like the rest of the site.
 const PLANS=[
-{"id":"classic10","n":"Classic Japan · 10 days","_ar":{"n":"10 أيام كلاسيكية","blurb":"أول مرة في اليابان؟ هذي أشهر الأماكن في طوكيو وكيوتو ونارا وأوساكا، مرتبة يوم بيوم."},
+{"id":"classic10","n":"Classic Japan · 10 days","_ar":{"n":"10 أيام كلاسيكية","blurb":"أول مرة في اليابان؟ هذي أشهر الأماكن في طوكيو وكيوتو ونارا وأوساكا، مرتّبة يوماً بيوم."},
  "blurb":"First time in Japan? The most famous sights of Tokyo, Kyoto, Nara and Osaka, sorted day by day.",
  "stays":[
   {"city":"tokyo","days":[
@@ -16,11 +16,11 @@ const PLANS=[
    {"t":"Higashiyama","_ar":{"t":"هيغاشياما"},"p":["Kiyomizu-dera","Sannenzaka & Ninenzaka","Hokan-ji Temple (Yasaka Pagoda)","Philosopher's Path","Ginkaku-ji"]},
    {"t":"Arashiyama & Kinkaku-ji","_ar":{"t":"أراشياما وكينكاكوجي"},"p":["Arashiyama","Kinkaku-ji","Ryoan-ji","Nijo Castle"]}]},
   {"city":"nara","days":[
-   {"t":"Deer & the Great Buddha","_ar":{"t":"الغزلان والبوذا الكبير"},"p":["Nara Park","Todai-ji","Kasuga Taisha","Kofuku-ji","Naramachi"]}]},
+   {"t":"Deer & the Great Buddha","_ar":{"t":"الغزلان وتمثال بوذا الكبير"},"p":["Nara Park","Todai-ji","Kasuga Taisha","Kofuku-ji","Naramachi"]}]},
   {"city":"osaka","days":[
    {"t":"Osaka Castle & Shinsekai","_ar":{"t":"قلعة أوساكا وشينسيكاي"},"p":["Osaka Castle","Shinsekai","Tsutenkaku","Harukas 300"]},
    {"t":"Aquarium & Dotonbori (or Universal Studios)","_ar":{"t":"الأكواريوم ودوتونبوري (أو يونيفرسال)"},"p":["Osaka Aquarium Kaiyukan","Tempozan Ferris Wheel","Shinsaibashi-Suji Shopping Street","Hozenji Yokocho","Dotonbori"]}]}]},
-{"id":"classic7","n":"Classic Japan · 7 days","_ar":{"n":"7 أيام كلاسيكية","blurb":"أسبوع واحد؟ أهم شي في طوكيو وكيوتو وأوساكا، بدون ركض."},
+{"id":"classic7","n":"Classic Japan · 7 days","_ar":{"n":"7 أيام كلاسيكية","blurb":"عندك أسبوع؟ أهم الأماكن في طوكيو وكيوتو وأوساكا، بدون استعجال."},
  "blurb":"One week? The essentials of Tokyo, Kyoto and Osaka, without rushing.",
  "stays":[
   {"city":"tokyo","days":[
