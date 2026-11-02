@@ -2897,17 +2897,6 @@ html.lp-on body{background:var(--paper)}
 .lp-stats{display:grid;grid-template-columns:repeat(5,1fr);margin:0 max(20px,calc((100vw - 1240px)/2));background:var(--ink);color:#fff;border-radius:28px;padding:24px 10px}
 .lp-stats div{text-align:center;border-inline-end:1px solid #ffffff22;padding:0 6px}.lp-stats div:last-child{border:0}
 .lp-stats b{display:block;font:400 clamp(28px,3vw,38px) var(--display);color:#FFC24A;font-variant-numeric:tabular-nums}.lp-stats span{font:700 13.5px var(--body);color:#e8d6c6}
-/* photo marquee */
-.lp-mq{margin-top:46px;display:grid;gap:14px;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
-.lp-mq-row{overflow:hidden}.lp-mq-track{display:flex;gap:14px;width:max-content;animation:lpMq 70s linear infinite}
-.lp-mq-row:nth-child(2) .lp-mq-track{animation-direction:reverse;animation-duration:80s}
-.lp-mq:hover .lp-mq-track{animation-play-state:paused}
-@keyframes lpMq{to{transform:translateX(-50%)}}
-.lp-mq figure{margin:0;position:relative;width:220px;height:150px;border-radius:18px;overflow:hidden;flex:none;transition:transform .3s}
-.lp-mq figure:hover{transform:scale(1.05) rotate(-1deg)}
-.lp-mq img{width:100%;height:100%;object-fit:cover}
-.lp-mq figcaption{position:absolute;left:8px;bottom:8px;right:8px;font:800 12.5px var(--body);color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6);opacity:0;transform:translateY(6px);transition:.25s}
-.lp-mq figure:hover figcaption{opacity:1;transform:none}
 /* sections */
 .lp-sec{padding:90px max(20px,calc((100vw - 1240px)/2)) 0}
 .lp-k{display:block;font:800 13px var(--body);letter-spacing:.14em;color:var(--lantern)}
@@ -2973,29 +2962,45 @@ html[dir=rtl] .lp-bq,html[dir=rtl] .lp-hi,html[dir=rtl] .lp-bub{font-family:var(
   .lp-stage{height:450px}.lp-ph.c{width:220px;margin-left:-110px}.lp-ph.l,.lp-ph.r{width:160px;top:80px}.lp-ph.l{left:-6%}.lp-ph.r{right:-6%}
   .lp-bub{max-width:260px;font-size:16px;left:0}.lp-chip{font-size:12px}.lp-chip.c2{top:auto;bottom:10px;right:4%}.lp-chip.c1{bottom:56px}
   .lp-stats{grid-template-columns:repeat(3,1fr);row-gap:16px}.lp-stats div:nth-child(3){border:0}.lp-stats div:nth-child(n+4){grid-column:span 1}
-  .lp-mq figure{width:160px;height:110px}.lp-sec{padding-top:64px}.lp-b img{height:140px}.lp-final{margin-top:70px}}
+.lp-sec{padding-top:64px}.lp-b img{height:140px}.lp-final{margin-top:70px}}
 @media (prefers-reduced-motion:reduce){#landing *,#landing *:before{animation:none!important;transition:none!important}.lp-w,.lp-in,.lp-rv{opacity:1!important;transform:none!important}}
-/* the city stamps under the hero: a row of red hanko that press in as they
-   come into view; tap one and the notebook opens on that city */
-.lp-cities{margin:0 max(20px,calc((100vw - 1240px)/2));text-align:center}
-.lp-cities.lp-rv{transform:none}
-.lp-ch{font:400 22px var(--hand);color:var(--muted);margin:0}
-html[dir=rtl] .lp-ch{font:700 17px var(--body)}
-.lp-hk{display:flex;flex-wrap:wrap;justify-content:center;gap:18px 22px;margin-top:18px}
-.lp-hanko{--s:118px;width:var(--s);height:var(--s);border-radius:50%;border:0;cursor:pointer;color:#C8321A;background:#FFF6EE;
-  box-shadow:inset 0 0 0 4px #C8321A,inset 0 0 0 8px #FFF6EE,inset 0 0 0 9.5px #C8321Aaa;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  rotate:var(--r);opacity:0;transform:scale(1.6);transition:transform .25s,box-shadow .25s,background .25s;position:relative}
-.lp-cities.in .lp-hanko{animation:lpStamp .55s cubic-bezier(.2,.9,.3,1.3) forwards;animation-delay:calc(var(--d)*110ms)}
-@keyframes lpStamp{0%{opacity:0;transform:scale(1.7)}60%{opacity:1;transform:scale(.92)}100%{opacity:1;transform:scale(1)}}
-.lp-hanko .lp-hj{font:900 30px/1 "Noto Serif CJK JP","Noto Sans CJK JP",serif;letter-spacing:.04em}
-.lp-hanko b{font:800 12.5px var(--body);letter-spacing:.12em;text-transform:uppercase;margin-top:5px}
-html[dir=rtl] .lp-hanko b{letter-spacing:0;font-size:13.5px}
-.lp-hanko small{position:absolute;left:50%;top:calc(100% + 8px);translate:-50% 0;width:150px;font:400 15px/1.2 var(--hand);color:var(--muted);opacity:0;transition:opacity .25s,top .25s;pointer-events:none}
-html[dir=rtl] .lp-hanko small{font:700 12px/1.3 var(--body)}
-.lp-hanko:hover{background:#FFE9DC;rotate:0deg}.lp-hanko:hover small{opacity:1;top:calc(100% + 4px)}
-.lp-hanko:active{transform:scale(.9)}
-.lp-hanko.press{animation:lpPress .42s ease!important;opacity:1}
-@keyframes lpPress{0%{transform:scale(1)}35%{transform:scale(.82);background:#C8321A;color:#fff}100%{transform:scale(1)}}
-.lp-cities+.lp-mq{margin-top:56px}
-@media (max-width:620px){.lp-hk{gap:12px;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;padding:8px 6px 26px;margin:10px -20px 0;padding-inline:20px;scroll-snap-type:x mandatory}.lp-hk::-webkit-scrollbar{display:none}.lp-hanko{flex:none;scroll-snap-align:center}.lp-hanko{--s:92px}.lp-hanko .lp-hj{font-size:24px}.lp-hanko b{font-size:10.5px}.lp-ch{font-size:19px}}
-@media (prefers-reduced-motion:reduce){.lp-hanko{opacity:1;transform:none}}
+
+/* the city postcards: they fan out from a stack as they scroll into view;
+   hover (or tap) lifts one out of the fan */
+.lp-pcs{margin:10px max(20px,calc((100vw - 1240px)/2)) 0;text-align:center}
+.lp-pcs.lp-rv{transform:none}
+.lp-pcs h2{font-size:clamp(28px,3vw,38px);margin:0}
+.lp-ch{font:400 20px var(--hand);color:var(--muted);margin:2px 0 0}
+html[dir=rtl] .lp-ch{font:700 16px var(--body)}
+.lp-fan{display:flex;justify-content:center;padding:34px 0 30px;min-height:300px}
+.lp-pc{position:relative;flex:none;width:180px;margin:0 -14px;background:#fff;border:0;padding:8px 8px 12px;border-radius:6px;cursor:pointer;color:var(--ink);text-align:start;
+  box-shadow:0 14px 26px -12px rgba(63,33,22,.45);transform:translateX(calc(var(--o)*-150px)) rotate(0deg);transition:transform .8s cubic-bezier(.2,.9,.3,1.1),box-shadow .3s;transition-delay:calc(var(--a)*70ms);z-index:calc(10 - var(--a))}
+.lp-pcs.in .lp-pc{transform:rotate(calc(var(--o)*3deg)) translateY(calc(var(--a)*var(--a)*2.2px))}
+html[dir=rtl] .lp-pc{transform:translateX(calc(var(--o)*150px)) rotate(0deg)}
+html[dir=rtl] .lp-pcs.in .lp-pc{transform:rotate(calc(var(--o)*-3deg)) translateY(calc(var(--a)*var(--a)*2.2px))}
+.lp-pcs.in .lp-pc:hover,.lp-pcs.in .lp-pc.up{transform:translateY(-24px) rotate(0deg) scale(1.05);z-index:20;transition-delay:0s;box-shadow:0 28px 40px -16px rgba(63,33,22,.55)}
+.lp-pim{display:block;height:156px;border-radius:3px;background:#EFE5D6 center/cover}
+.lp-pst{position:absolute;right:14px;top:14px;width:40px;height:46px;border:2px dashed #fff;background:#ffffffc0;display:grid;place-items:center;font:900 16px "Noto Serif CJK JP","Noto Sans CJK JP",serif;color:#C8321A;rotate:6deg}
+html[dir=rtl] .lp-pst{right:auto;left:14px;rotate:-6deg}
+.lp-pc b{display:block;font:400 19px var(--display);margin-top:8px}.lp-pc b i{font:700 12.5px "Noto Sans CJK JP",sans-serif;font-style:normal;color:var(--muted);margin-inline-start:6px}
+.lp-pc small{display:block;font:400 14.5px/1.2 var(--hand);color:var(--muted);margin-top:1px}
+html[dir=rtl] .lp-pc small{font:700 12px/1.4 var(--body)}
+/* place tags drifting past in two rows */
+.lp-tags{margin-top:40px;text-align:center}
+.lp-tags h3{font:400 clamp(22px,2.2vw,28px) var(--display);margin:0}
+.lp-tg-row{overflow:hidden;margin-top:14px;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.lp-tg-row+.lp-tg-row{margin-top:12px}
+.lp-tg-track{display:flex;gap:10px;width:max-content;padding:6px 0;animation:lpMq 60s linear infinite}
+.lp-tg-row:nth-child(odd) .lp-tg-track{animation-direction:reverse;animation-duration:70s}
+.lp-tg-row:hover .lp-tg-track{animation-play-state:paused}
+@keyframes lpMq{to{transform:translateX(-50%)}}
+.lp-tag{display:inline-flex;align-items:center;gap:8px;background:#fff;border-radius:99px;padding:8px 15px 8px 8px;box-shadow:0 4px 12px -6px rgba(63,33,22,.25);white-space:nowrap;transition:transform .2s,box-shadow .2s}
+.lp-tag:hover{transform:translateY(-4px) rotate(-1.5deg);box-shadow:0 10px 18px -8px rgba(63,33,22,.35)}
+.lp-tag img{width:30px;height:30px;object-fit:contain}.lp-tag b{font:800 14px var(--body)}.lp-tag small{font:700 12px var(--body);color:var(--muted)}
+@media (max-width:760px){.lp-fan{justify-content:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 -20px;padding:30px 30px 34px;gap:14px}.lp-fan::-webkit-scrollbar{display:none}
+  .lp-pc{margin:0;width:160px;scroll-snap-align:center}.lp-pim{height:136px}
+  .lp-pcs.in .lp-pc,html[dir=rtl] .lp-pcs.in .lp-pc{transform:rotate(calc(var(--o)*1.6deg))}
+  .lp-tag b{font-size:13px}.lp-tag img{width:26px;height:26px}}
+@media (prefers-reduced-motion:reduce){.lp-pc{transform:rotate(calc(var(--o)*3deg))!important}}
+.lp-nav .lp-cta,.lp-logo{white-space:nowrap}
+@media (max-width:420px){.lp-nav .lp-logo{font-size:0;gap:0}.lp-nav{gap:8px}}
