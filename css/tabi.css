@@ -5,8 +5,9 @@
    split by script with unicode-range, so a browser only downloads the Arabic
    files when Arabic letters are on the page. Japanese names use the system's
    Japanese font.
-   Bagel Fat One: English headings. Nunito: everything you read (one variable
-   file for every weight; sized down a little to match the old DM Sans width).
+   Bagel Fat One: English headings. Inter: everything you read, the closest
+   free match to the iPhone's SF Pro (one variable file for every weight;
+   drawn at 90% so its tall letters sit at the old size).
    Patrick Hand: short handwritten notes only. Arabic: Noto Sans Arabic, the
    closest free match to the iPhone's SF Arabic, for text and the handwritten
    notes, and its 800 weight (as "Noto Arabic Display") for headings. Both
@@ -14,8 +15,8 @@
    size as the English next to it. */
 @font-face{font-family:"Bagel Fat One";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/bagel-fat-one-400-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
 @font-face{font-family:"Bagel Fat One";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/bagel-fat-one-400-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
-@font-face{font-family:"Nunito";font-style:normal;font-weight:200 1000;font-display:swap;src:url("../assets/fonts/nunito-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;size-adjust:96%}
-@font-face{font-family:"Nunito";font-style:normal;font-weight:200 1000;font-display:swap;src:url("../assets/fonts/nunito-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;size-adjust:96%}
+@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url("../assets/fonts/inter-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;size-adjust:90%}
+@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url("../assets/fonts/inter-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;size-adjust:90%}
 @font-face{font-family:"Patrick Hand";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/patrick-hand-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
 @font-face{font-family:"Patrick Hand";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/patrick-hand-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
 @font-face{font-family:"Noto Sans Arabic";font-style:normal;font-weight:100 900;font-display:swap;src:url("../assets/fonts/noto-sans-arabic.woff2") format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200E;size-adjust:92%}
@@ -28,7 +29,7 @@
   --food:#E8A800; --coffee:#9A6233; --experience:#7B5EA7; --shrine:var(--lantern); --views:var(--shinkansen); --shop:#E8607A; --gem:#6E9A33; --nature:#5E9A3E; --streets:#2E8C88;
   --display:"Bagel Fat One","Arial Rounded MT Bold",system-ui,sans-serif;
   --hand:"Patrick Hand","Comic Neue","Segoe Print",cursive;
-  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+  --body:"Inter","Segoe UI",system-ui,sans-serif;
   --jp:"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic UI","Meiryo",sans-serif;
 }
 *{box-sizing:border-box}
@@ -935,7 +936,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 :root[dir=rtl]{
   --display:"Bagel Fat One","Noto Arabic Display","Arial Rounded MT Bold",system-ui,sans-serif;
   --hand:"Patrick Hand","Noto Sans Arabic","Comic Neue","Segoe Print",cursive;
-  --body:"Nunito","Noto Sans Arabic","Segoe UI",system-ui,sans-serif;
+  --body:"Inter","Noto Sans Arabic","Segoe UI",system-ui,sans-serif;
 }
 [dir=rtl] *{letter-spacing:0!important}
 [dir=rtl] .search .mag{left:auto;right:11px}
@@ -1621,13 +1622,13 @@ html.tn-app.tn-splash body{overflow:hidden}
 #tnsplash .sp-h span{font:800 11px "Noto Sans Arabic",var(--body);color:#8C6F60}
 #tnsplash .sp-r{display:flex;justify-content:space-between;align-items:center;margin:14px 0 6px}
 #tnsplash .sp-r>div{text-align:center}
-#tnsplash .sp-r small{display:block;font:800 10px Nunito,sans-serif;color:#8C6F60;letter-spacing:1.5px}
+#tnsplash .sp-r small{display:block;font:800 10px Inter,sans-serif;color:#8C6F60;letter-spacing:1.5px}
 #tnsplash .sp-r big{display:block;font:400 44px "Bagel Fat One",var(--body);line-height:1.05}
 #tnsplash .sp-r i{font:700 14px "Noto Sans Arabic",var(--body);font-style:normal;color:#8C6F60}
 #tnsplash .sp-arc{width:130px;height:56px}
 #tnsplash .sp-g{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:6px;margin-top:10px}
-#tnsplash .sp-g small{display:block;font:800 9.5px Nunito,sans-serif;color:#8C6F60;letter-spacing:1px}
-#tnsplash .sp-g b{font:900 17px Nunito,sans-serif;white-space:nowrap}
+#tnsplash .sp-g small{display:block;font:800 9.5px Inter,sans-serif;color:#8C6F60;letter-spacing:1px}
+#tnsplash .sp-g b{font:900 17px Inter,sans-serif;white-space:nowrap}
 #tnsplash .sp-perf{height:0;border-top:3px dotted #D9C6A8;margin:0 14px;position:relative}
 #tnsplash .sp-perf:before,#tnsplash .sp-perf:after{content:"";position:absolute;top:-15px;width:28px;height:28px;border-radius:50%;background:#F14E24}
 #tnsplash .sp-perf:before{left:-30px}
@@ -1639,7 +1640,7 @@ html.tn-app.tn-splash body{overflow:hidden}
 #tnsplash .sp-stamp{position:absolute;right:26px;top:205px;width:120px;height:120px;border-radius:50%;border:4px solid #E0402A;color:#E0402A;display:flex;flex-direction:column;align-items:center;justify-content:center;
   box-shadow:inset 0 0 0 4px #FFFDF7,inset 0 0 0 6px #E0402A;background:rgba(255,253,247,.55);opacity:0}
 #tnsplash .sp-stamp b{font:900 24px "Hiragino Mincho ProN","Noto Serif JP","Noto Sans JP",serif}
-#tnsplash .sp-stamp small{font:900 8.5px Nunito,sans-serif;letter-spacing:1px}
+#tnsplash .sp-stamp small{font:900 8.5px Inter,sans-serif;letter-spacing:1px}
 @media (max-width:360px){#tnsplash .sp-wrap{transform-origin:50% 50%;zoom:.9}}
 
 /* ---- More, edge to edge like a phone's settings (wider rows, icon tiles) ---- */

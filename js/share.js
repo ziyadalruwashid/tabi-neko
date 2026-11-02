@@ -91,7 +91,7 @@ async function dayPicture(ps,stay,num,title,links=[]){
   const{W,H,pad}=SH,ar=isAR(),c=document.createElement("canvas");c.width=W;c.height=H;
   const x=c.getContext("2d");x.direction=ar?"rtl":"ltr";
   const X=v=>ar?W-v:v,L=ar?"right":"left",R=ar?"left":"right";
-  const F={disp:'"Bagel Fat One","Noto Arabic Display",sans-serif',body:'"Nunito","Noto Sans Arabic",sans-serif',hand:'"Patrick Hand","Noto Sans Arabic",cursive'};
+  const F={disp:'"Bagel Fat One","Noto Arabic Display",sans-serif',body:'"Inter","Noto Sans Arabic",sans-serif',hand:'"Patrick Hand","Noto Sans Arabic",cursive'};
   await Promise.all([`400 80px ${F.disp}`,`800 40px ${F.body}`,`400 40px ${F.body}`,`400 40px ${F.hand}`].map(f=>document.fonts.load(f,ar?"ابجد":"Abc").catch(()=>{})));
   const imgs=await Promise.all([shImg("assets/cat.png"),shImg("assets/logo.png"),...ps.map(p=>shImg(p.photo||CATS[p.cat].img))]);
   const[cat,logo]=imgs,pics=imgs.slice(2);
