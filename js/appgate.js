@@ -8,7 +8,7 @@ if(typeof IS_APP==="undefined"||!IS_APP||typeof FB_ON==="undefined"||!FB_ON)retu
 const logged=()=>typeof auth!=="undefined"&&!!auth;
 window.tnLogged=logged;
 // Every button that adds a place to the trip, wherever it is.
-const ADD=".addtrip,.mp-add,.hx-madd,.lr-add,.ar-add,.tsave";
+const ADD=".addtrip,.mp-add,.hx-madd,.lr-add,.ar-add,.tsave,.ap-add";
 let pending=null;
 function ask(){if(typeof openAcct==="function")openAcct("login","trip")}
 // Runs before the buttons' own handlers (capture, on window) and stops them.

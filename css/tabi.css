@@ -3056,3 +3056,39 @@ html:not(.tn-app) #trview .tr-card{width:calc(100% - 24px)}
 html:not(.tn-app) #crewcs .cs-panel{width:min(560px,calc(100% - 24px));margin-left:auto;margin-right:auto}
 #aphome .ah-gets{display:grid;gap:8px;margin-top:14px}#aphome .ah-gets .ah-get{margin:0}
 html:not(.tn-app) #crewcs .cs-top,html:not(.tn-app) #crewcs .cs-stage{width:min(760px,100%);margin-left:auto;margin-right:auto}
+
+/* ---- Ask Apollo: start screen, place cards, day plans (js/apollo.js) ---- */
+.apo-new{margin-inline-end:2px}
+.ap-start{display:flex;flex-direction:column}
+.ap-ctx{display:flex;gap:6px;flex-wrap:wrap}.ap-ctx span{background:var(--sheet);border:1px solid var(--rule);border-radius:99px;padding:5px 10px;font:600 12px var(--body)}
+.ap-hero{text-align:center;margin-top:12px}.ap-hero img{width:118px;height:118px;object-fit:contain;animation:apBob 3.2s ease-in-out infinite}
+@keyframes apBob{50%{transform:translateY(-6px)}}
+.ap-hero b{display:block;font:400 25px/1.2 var(--display);margin-top:4px}.ap-hero p{font:500 13.5px/1.5 var(--body);color:var(--muted);margin:5px 10px 0}
+.ap-qa{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.ap-q{appearance:none;border:0;border-radius:18px;padding:12px;min-height:96px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:8px;text-align:start;cursor:pointer;color:var(--ink);transition:transform .15s}
+.ap-q:active{transform:scale(.97)}.ap-q i{font-style:normal;font-size:24px}
+.ap-q b{display:block;font:700 13.5px/1.3 var(--body)}.ap-q small{display:block;font:500 11.5px/1.3 var(--body);opacity:.7;margin-top:2px}
+.ap-lab{font:700 11.5px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 2px 6px}
+[dir=rtl] .ap-lab{letter-spacing:0}
+.ap-rec{appearance:none;border:0;display:flex;align-items:center;gap:8px;width:100%;background:var(--sheet);border-radius:14px;padding:10px 12px;margin-bottom:6px;cursor:pointer;color:var(--ink);text-align:start}
+.ap-rec b{flex:1;min-width:0;font:500 13px var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ap-rec small{font:500 11px var(--body);color:var(--muted)}
+.ap-cards{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:-2px -14px 0;padding:2px 14px 6px;scroll-snap-type:x mandatory}.ap-cards::-webkit-scrollbar{display:none}
+.ap-card{flex:none;width:172px;background:var(--sheet);border-radius:16px;overflow:hidden;box-shadow:0 3px 12px rgba(63,33,22,.1);scroll-snap-align:start}
+.ap-im{appearance:none;border:0;display:block;width:100%;height:96px;background:center/cover;position:relative;cursor:pointer;padding:0}
+.ap-im em{position:absolute;inset-inline-start:6px;top:6px;font:700 10px var(--body);font-style:normal;background:#2E8B3E;color:#fff;border-radius:99px;padding:2px 7px}
+.ap-ct{padding:8px 9px 9px}.ap-ct b{display:block;font:700 13px/1.25 var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ap-ct small{display:block;font:500 11px var(--body);color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-cb{display:flex;gap:5px;margin-top:7px}.ap-cb button{flex:1;appearance:none;border:0;border-radius:99px;padding:6px 0;font:700 11.5px var(--body);background:#F5EDE0;color:var(--ink);cursor:pointer}
+.ap-cb .ap-add{background:var(--lantern);color:#fff}.ap-cb .ap-add.on{background:#2E8B3E}
+.ap-plan{background:var(--sheet);border:1.5px solid var(--rule);border-radius:16px;padding:8px 12px 10px}
+.ap-st{display:flex;gap:10px;position:relative;padding:6px 0 6px 18px}
+[dir=rtl] .ap-st{padding:6px 18px 6px 0}
+.ap-st:before{content:"";position:absolute;inset-inline-start:3px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--lantern)}
+.ap-st:after{content:"";position:absolute;inset-inline-start:7px;top:24px;bottom:-8px;border-inline-start:2px dashed #E3C3B1}
+.ap-st:last-of-type:after{display:none}
+.ap-st time{flex:none;width:44px;font:700 12px var(--body);color:var(--muted);padding-top:1px}
+.ap-st b{display:block;font:700 13.5px/1.35 var(--body)}.ap-st b .pl{appearance:none;border:0;background:none;padding:0;font:inherit;color:var(--shinkansen);cursor:pointer;text-align:start}
+.ap-st small{display:block;font:500 12px/1.4 var(--body);color:var(--muted);margin-top:1px}
+.ap-save{appearance:none;border:0;width:100%;margin-top:8px;border-radius:12px;padding:11px;background:var(--lantern);color:#fff;font:700 13.5px var(--body);cursor:pointer}
+.ap-acts{display:flex;gap:14px;padding:0 4px;margin-top:-4px}.ap-acts button{appearance:none;border:0;background:none;padding:2px 0;font:600 12px var(--body);color:var(--muted);cursor:pointer}
+.ap-next{margin-top:0}
+.apolog>.ap-cards,.apolog>.ap-plan,.apolog>.ap-acts,.apolog>.chips,.apolog>.ap-start,.apolog>.msg{flex:none}
