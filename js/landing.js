@@ -5,8 +5,9 @@
 // skips the landing page. Never shown inside the app.
 //
 // Motion: the headline rises word by word, the phones tilt with the pointer,
-// the city stamps press in, sections slide in as they scroll into view, the feature
-// list plays itself, place photos drift past, and a tap leaves a paw print.
+// the city postcards fan out from a stack, place tags drift past, sections
+// slide in as they scroll into view, the feature list plays itself, and a
+// tap leaves a paw print.
 // All of it is switched off for people who ask for reduced motion.
 (function(){
 if(typeof IS_APP!=="undefined"&&IS_APP)return;
@@ -42,14 +43,18 @@ const iosBtn=`<span class="lp-store soon" aria-disabled="true"><svg viewBox="0 0
 const words=(s,cls="")=>s.split(" ").map((w,i)=>`<span class="lp-w ${cls}" style="--i:${i}">${esc(w)}</span>`).join(" ");
 const phone=(img,cls)=>`<div class="lp-ph ${cls}"><img src="assets/landing/${img}.webp" alt="" loading="lazy" decoding="async"></div>`;
 
-function photos(){
-  // Famous sights from every city in turn: temples, views, streets, nature.
-  const ok=p=>p.photo&&p.tier!=="worth"&&["shrine","views","streets","nature"].includes(p.cat);
-  const by=new Map();P.filter(ok).forEach(p=>{if(!by.has(p.city))by.set(p.city,[]);by.get(p.city).push(p)});
-  const pool=[];for(let i=0;pool.length<28&&i<40;i++)by.forEach(l=>{if(l[i]&&pool.length<28)pool.push(l[i])});
-  const row=list=>`<div class="lp-mq-row"><div class="lp-mq-track">${[...list,...list].map(p=>`<figure><img src="${esc(p.photo)}" alt="" loading="lazy" decoding="async"><figcaption>${esc(p.n)}</figcaption></figure>`).join("")}</div></div>`;
-  const h=Math.ceil(pool.length/2);return row(pool.slice(0,h))+row(pool.slice(h).reverse());
+// A few of the places, as little name tags with the notebook's sticker for
+// their kind, from every city and every kind in turn.
+function tags(){
+  const ok=p=>p.tier!=="worth"&&CATS[p.cat]&&!/halal/i.test(p.n);
+  const by=new Map();P.filter(ok).forEach(p=>{const k=p.cat;if(!by.has(k))by.set(k,[]);by.get(k).push(p)});
+  const pool=[];for(let i=0;pool.length<32&&i<60;i++)by.forEach(l=>{if(l[i]&&pool.length<32)pool.push(l[i])});
+  const tag=p=>`<span class="lp-tag"><img src="${esc(CATS[p.cat].img)}" alt="" loading="lazy"><b>${esc(p.n)}</b><small>${esc(D(CITIES[p.city]||{},"n")||"")}</small></span>`;
+  const row=list=>`<div class="lp-tg-row"><div class="lp-tg-track">${[...list,...list].map(tag).join("")}</div></div>`;
+  const h=Math.ceil(pool.length/2);return row(pool.slice(0,h))+row(pool.slice(h));
 }
+// The postcard for each city.
+const CARD={tokyo:"tokyo",kyoto:"kyoto",osaka:"osaka",nara:"nara",kobe:"kobe",kamakura:"kamakura",ise:"ise"};
 function draw(){
   const cs=Object.keys(CITIES).filter(k=>P.some(p=>p.city===k));
   el.innerHTML=`
@@ -72,10 +77,11 @@ function draw(){
     </div></div>
   </section>
 
-  <section class="lp-cities lp-rv" aria-label="${esc(T("The cities in the notebook"))}"><p class="lp-ch">${NOTEBOOK?T("{n} cities, one notebook. Pick one to start.",{n:n(cs.length)}):T("{n} cities, one notebook.",{n:n(cs.length)})}</p>
-    <div class="lp-hk">${cs.map((k,i)=>`<button type="button" class="lp-hanko" data-c="${k}" style="--d:${i};--r:${[-8,5,-3,7,-6,4,-2][i%7]}deg"><span class="lp-hj">${esc(CITIES[k].jp)}</span><b>${esc(D(CITIES[k],"n"))}</b><small>${esc(D(CITIES[k],"nick")||"")}</small></button>`).join("")}</div></section>
+  <section class="lp-pcs lp-rv" aria-label="${esc(T("The cities in the notebook"))}"><h2>${T("{n} cities, one notebook",{n:n(cs.length)})}</h2><p class="lp-ch">${T("a postcard from each one")}</p>
+    <div class="lp-fan">${cs.map((k,i)=>{const c=CITIES[k],o=i-(cs.length-1)/2,img=CARD[k]?`assets/landing/pc-${CARD[k]}.webp`:(P.find(p=>p.city===k&&p.photo)||{}).photo||"";
+      return `<button type="button" class="lp-pc" style="--o:${o};--a:${Math.abs(o)};--i:${i}" aria-label="${esc(D(c,"n"))}"><span class="lp-pim" style="background-image:url('${esc(img)}')"></span><span class="lp-pst">${esc((c.jp||"")[0]||"")}</span><b>${esc(D(c,"n"))}<i>${esc(c.jp||"")}</i></b><small>${esc(D(c,"nick")||"")}</small></button>`}).join("")}</div></section>
 
-  <section class="lp-mq" dir="ltr" aria-label="${esc(T("Some of the places"))}">${photos()}</section>
+  <section class="lp-tags lp-rv" dir="ltr" aria-label="${esc(T("Some of the places"))}"><h3 dir="auto">${T("{n} places inside",{n:n(P.length)})}</h3><p class="lp-ch" dir="auto">${T("a few of them, drifting by")}</p>${tags()}</section>
 
   <section class="lp-sec" id="lp-feat"><span class="lp-k lp-rv">${T("WHAT'S INSIDE")}</span><h2 class="lp-rv">${T("Everything for the trip, in one small app")}</h2>
     <p class="lp-d lp-rv">${T("Plan at home, use it on the street. In English and Arabic, with the travel buddy you pick as your guide.")}</p>
@@ -136,9 +142,8 @@ function wire(){
   const show=el.querySelector(".lp-show");
   const play=()=>{if(featT||still())return;pick(featI,false);featT=setInterval(()=>pick((featI+1)%FEATS.length,false),6000)};
   new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){play();o.disconnect()}},{threshold:.3}).observe(show);
-  // A city's stamp presses down (and opens the notebook on that city, when NOTEBOOK is on).
-  el.querySelectorAll(".lp-hanko").forEach(b=>b.onclick=()=>{b.classList.remove("press");void b.offsetWidth;b.classList.add("press");
-    if(NOTEBOOK)setTimeout(()=>{const k=b.dataset.c;try{store.set("tabineko-city",k);city=k;selected=null;area=null;zoomTo=null;renderAll()}catch(e){}location.hash="#map";requestAnimationFrame(()=>{if(typeof show==="function")show("map")})},still()?0:420)});
+  // A postcard lifts out of the fan; on a phone, tapping one does the same.
+  el.querySelectorAll(".lp-pc").forEach(b=>b.onclick=()=>{const on=!b.classList.contains("up");el.querySelectorAll(".lp-pc.up").forEach(x=>x.classList.remove("up"));if(on)b.classList.add("up")});
   // Buddies: tap one and they say their line.
   el.querySelectorAll(".lp-b").forEach(b=>b.onclick=()=>{const q=b.querySelector(".lp-bq");el.querySelectorAll(".lp-b.talk").forEach(x=>{if(x!==b)x.classList.remove("talk")});
     q.textContent=`“${b.dataset.q}”`;b.classList.remove("talk");void b.offsetWidth;b.classList.add("talk")});
