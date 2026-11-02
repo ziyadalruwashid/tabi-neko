@@ -201,7 +201,7 @@ AR.ui={
 "Scan with your phone":"امسح الرمز بجوالك",
 "your Japan travel notebook":"دفتر رحلتك لليابان",
 "i only recommend places i'd go back to.":"أنا ما أنصحك إلا بأماكن أرجع لها.",
-"Great Buddha before 10:00. trust me.":"بوذا العظيم قبل الساعة ١٠. ثق فيني.",
+"Fushimi Inari at 7 in the morning, before the crowds.":"فوشيمي إيناري الساعة ٧ الصبح، قبل الزحمة.",
 "the deer in Nara bow first. bow back.":"غزلان نارا تنحني لك أول. انحنِ لها أنت كمان.",
 "download the city offline before you land.":"نزّل خريطة المدينة أوفلاين قبل ما توصل.",
 "Create a free account":"أنشئ حساب مجاني",
