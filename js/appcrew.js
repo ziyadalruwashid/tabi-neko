@@ -3,7 +3,6 @@
 // or the dots for the next one. Below: who they are, their quote in a speech
 // bubble and a few live numbers. Everyone in data/crew.js shows up here.
 (function(){
-if(typeof IS_APP==="undefined"||!IS_APP)return;
 const el=document.createElement("div");el.id="crewcs";el.hidden=true;el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");document.body.appendChild(el);
 let i=0,dir=0;
 const n=()=>CREW.length,at=k=>CREW[(k%n()+n())%n()];
@@ -51,7 +50,13 @@ addEventListener("keydown",e=>{if(el.hidden)return;if(e.key==="ArrowRight"||e.ke
 
 function open(fromHistory){el.hidden=false;document.documentElement.classList.add("cs-open");if(!fromHistory){i=0;history.pushState({tnCrew:1},"")}dir=0;draw();el.scrollTop=0}
 function closeNow(){el.hidden=true;document.documentElement.classList.remove("cs-open")}
-function close(){if(history.state&&history.state.tnCrew)history.back();else closeNow()}
+function close(){if(WEB){if(navd)history.back();else location.hash="";return}if(history.state&&history.state.tnCrew)history.back();else closeNow()}
 addEventListener("popstate",e=>{const st=e.state||{};if(st.tnCrew){if(el.hidden)open(true)}else if(!el.hidden)closeNow()});
 window.tnOpenCrew=()=>open();
+// On the website the same page shows at #crew: opened by the address, and the
+// back button returns to where you came from (or the landing page).
+const WEB=typeof IS_APP==="undefined"||!IS_APP;
+let navd=false;
+if(WEB){const sync=()=>{if(location.hash==="#crew"){if(el.hidden)open(true)}else if(!el.hidden)closeNow()};
+  addEventListener("hashchange",()=>{navd=true;sync()});sync()}
 })();

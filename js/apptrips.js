@@ -3,7 +3,6 @@
 // and as far out as the train ride is long, on rings for 30 minutes, 1 hour
 // and 2 hours. Tap a pin for its card; tap the card for the whole trip.
 (function(){
-if(typeof IS_APP==="undefined"||!IS_APP)return;
 const el=document.createElement("div");el.id="trview";el.hidden=true;el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");document.body.appendChild(el);
 // Where "your city" is, for the directions.
 const BASE={tokyo:[35.69,139.70],kansai:[34.85,135.62]};
@@ -56,7 +55,7 @@ function card(t){const im=pic(t);
     <span class="tr-cx"><b>${esc(D(t,"n"))}</b>${t.jp?`<small class="tr-jp">${esc(t.jp)}</small>`:""}<span class="tr-best">${esc(D(t,"best"))}</span>
     <span class="tr-mini"><span>⏱ ${esc(D(t,"time"))}</span><span>💴 ${esc(first(D(t,"cost")))}</span>${halalChip(t)}</span>
     <span class="tr-go">${T("See the full trip →")}</span></span></button>`}
-function sheet(t){const c=t.city&&CITIES[t.city]&&P.some(p=>p.city===t.city);
+function sheet(t){const c=!WEB&&t.city&&CITIES[t.city]&&P.some(p=>p.city===t.city);
   return `<div class="tr-scrim"><div class="tr-sheet"><span class="tr-grab"></span><button type="button" class="tr-close" aria-label="${esc(T("Close"))}">✕</button>
     <div class="tr-sh"><span class="tr-pe">${t.e||"🚆"}</span><div><b>${esc(D(t,"n"))}</b>${t.jp?`<small>${esc(t.jp)}</small>`:""}</div></div>
     <p class="tr-sbest">${esc(D(t,"best"))}</p>
@@ -74,8 +73,14 @@ function open(fromHistory){el.hidden=false;document.documentElement.classList.ad
   if(!fromHistory){let ec="tokyo";try{ec=store.get("tabineko-city")||"tokyo"}catch(e){}grp=ec==="tokyo"?"tokyo":"kansai";if(!TRIPS.some(t=>t.h===grp))grp=(TGROUPS[0]||{}).k;sel=null;history.pushState({tnTrips:1},"")}
   draw();el.scrollTop=0}
 function closeNow(){el.hidden=true;document.documentElement.classList.remove("tr-open")}
-function close(){if(history.state&&history.state.tnTrips)history.back();else closeNow()}
+function close(){if(WEB){if(navd)history.back();else location.hash="";return}if(history.state&&history.state.tnTrips)history.back();else closeNow()}
 addEventListener("popstate",e=>{const st=e.state||{};if(st.tnTrips){if(el.hidden)open(true)}else if(!el.hidden)closeNow()});
 window.tnOpenTrips=()=>open();
 window.tnTripsBack=()=>{if(el.hidden||!full)return false;full=false;draw();return true};
+// On the website the same page shows at #trips: opened by the address, and the
+// back button returns to where you came from (or the landing page).
+const WEB=typeof IS_APP==="undefined"||!IS_APP;
+let navd=false;
+if(WEB){const sync=()=>{if(location.hash==="#trips"){if(el.hidden)open(true)}else if(!el.hidden)closeNow()};
+  addEventListener("hashchange",()=>{navd=true;sync()});sync()}
 })();
