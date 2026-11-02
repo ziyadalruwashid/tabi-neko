@@ -3089,7 +3089,7 @@ html:not(.tn-app) #crewcs .cs-top,html:not(.tn-app) #crewcs .cs-stage{width:min(
 .ap-st b{display:block;font:700 13.5px/1.35 var(--body)}.ap-st b .pl{appearance:none;border:0;background:none;padding:0;font:inherit;color:var(--shinkansen);cursor:pointer;text-align:start}
 .ap-st small{display:block;font:500 12px/1.4 var(--body);color:var(--muted);margin-top:1px}
 .ap-save{appearance:none;border:0;width:100%;margin-top:8px;border-radius:12px;padding:11px;background:var(--lantern);color:#fff;font:700 13.5px var(--body);cursor:pointer}
-.ap-acts{display:flex;gap:14px;padding:0 4px;margin-top:-4px}.ap-acts button{appearance:none;border:0;background:none;padding:2px 0;font:600 12px var(--body);color:var(--muted);cursor:pointer}
+.ap-acts{display:flex;flex-wrap:wrap;gap:6px 14px;padding:0 4px;margin-top:-4px}.ap-acts button{appearance:none;border:0;background:none;padding:2px 0;font:600 12px var(--body);color:var(--muted);cursor:pointer}
 .ap-next{margin-top:0}
 .apolog>.ap-cards,.apolog>.ap-plan,.apolog>.ap-acts,.apolog>.chips,.apolog>.ap-start,.apolog>.msg{flex:none}
 /* Privacy: how to delete your account (also the store's delete-account link) */
@@ -3098,3 +3098,8 @@ html:not(.tn-app) #crewcs .cs-top,html:not(.tn-app) #crewcs .cs-stage{width:min(
 .pr-delbox p{margin:0 0 8px;font:500 13px/1.55 var(--body);color:var(--muted)}
 .pr-delbox .pr-del{margin:6px 0 12px}
 .pr-delbox.pr-hi{box-shadow:0 0 0 3px #F14E24}
+/* Ask Apollo: report an answer */
+.ap-acts .ap-rep{margin-inline-start:auto}
+.ap-acts .ap-rq{flex-basis:100%;font:700 12px var(--body);color:var(--muted)}
+.ap-acts .ap-rx{padding-inline:10px}
+.ap-acts button[data-w]{border:1.5px solid #E6D6BF;border-radius:999px;padding:6px 12px;background:#FFF;color:#3B2A20;font-weight:700}

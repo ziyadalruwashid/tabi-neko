@@ -9,7 +9,7 @@
 const QS=[
   ["👀","Who can see my trip?","Only you. The owner of Tabi Neko sees totals (like how many trips include Senso-ji) and a list of accounts with their email, cities and when they last saved, never your trip itself or where you're staying. If someone shared a trip with you before, the people in it can see and edit it and see each other's email."],
   ["📍","Location and camera","Your location is only used on your phone: to measure how far places are and to check you're really at a place for its stamp. Halal Lens reads the photo on your phone and never uploads it. Both ask your permission first, and you can say no."],
-  ["🐱","Ask Apollo","Questions you ask Apollo are sent to Anthropic's Claude to write the answer, under Anthropic's own privacy policy. They aren't linked to your account, and we don't keep them."],
+  ["🐱","Ask Apollo","Questions you ask Apollo are sent to Anthropic's Claude to write the answer, under Anthropic's own privacy policy. They aren't linked to your account, and we don't keep them. Only if you tap Report on an answer do we save that one question and answer, without your account, so we can fix it."],
   ["📊","What we count","One number per day for app opens and one for website visits. Nothing about you goes with it: no cookies, no IP address, no device details."],
   ["🗺️","Maps and hotel search","The map pictures come from OpenFreeMap. When you search for where you're staying, what you type goes to OpenStreetMap's free search to find it."],
   ["🔐","Where it's stored","Your account, trips and stamps are stored with Google Firebase, which runs the server for us. We don't sell it, share it or use it for ads."]

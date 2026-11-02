@@ -205,7 +205,7 @@ function drawBook(){
   if(bk.hidden)return;
   const me=logged(),n=me?count():0,cities=new Set(LIST.filter(s=>me&&have(s)).map(s=>s.c)).size;
   const first=me?Object.values(mine).sort()[0]:"";
-  const name=me?auth.email.split("@")[0]:"";
+  const name=me?myName():"";
   bk.innerHTML=`<div class="sb-scroll"><div class="apbar"><button type="button" class="pv-cb sb-back" aria-label="${esc(T("Back"))}">${SVG_BACK}</button><b>${T("Stamp book")}</b></div>
     <div class="sb-pass"><small>TABI NEKO PASSPORT</small><b>${me?esc(T("{n}'s Japan",{n:name})):T("Your Japan")}</b>
       <span>${me?esc(T("{n} of {all} stamps",{n,all:LIST.length})+(cities?" · "+(cities===1?T("1 city"):T("{n} cities",{n:num(cities)})):"")+(first?" · "+T("since {d}",{d:longDate(first)}):"")):T("Log in to start collecting")}</span>
