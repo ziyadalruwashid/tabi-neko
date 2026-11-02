@@ -7,5 +7,4 @@ All fonts here are licensed under the SIL Open Font License 1.1
 |---|---|---|
 | Bagel Fat One | English headings | Google Fonts / Fontsource |
 | Inter | All reading text (variable) | Google Fonts, https://github.com/rsms/inter |
-| Patrick Hand | Short handwritten notes | Google Fonts / Fontsource |
 | Noto Sans Arabic | Arabic text and notes (variable), and its 800 weight for headings | Google Fonts, https://github.com/notofonts/arabic |

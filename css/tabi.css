@@ -8,7 +8,8 @@
    Bagel Fat One: English headings. Inter: everything you read, the closest
    free match to the iPhone's SF Pro (one variable file for every weight;
    drawn at 90% so its tall letters sit at the old size).
-   Patrick Hand: short handwritten notes only. Arabic: Noto Sans Arabic, the
+   Tabi Note: the short notes and Apollo's quotes, Inter again but drawn a
+   little smaller (86%), since those sizes were set for a handwriting face. Arabic: Noto Sans Arabic, the
    closest free match to the iPhone's SF Arabic, for text and the handwritten
    notes, and its 800 weight (as "Noto Arabic Display") for headings. Both
    are drawn ~8–10% smaller (size-adjust) so Arabic sits at the same visual
@@ -17,8 +18,8 @@
 @font-face{font-family:"Bagel Fat One";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/bagel-fat-one-400-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
 @font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url("../assets/fonts/inter-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;size-adjust:90%}
 @font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url("../assets/fonts/inter-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;size-adjust:90%}
-@font-face{font-family:"Patrick Hand";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/patrick-hand-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
-@font-face{font-family:"Patrick Hand";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/patrick-hand-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Tabi Note";font-style:normal;font-weight:100 900;font-display:swap;src:url("../assets/fonts/inter-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;size-adjust:86%}
+@font-face{font-family:"Tabi Note";font-style:normal;font-weight:100 900;font-display:swap;src:url("../assets/fonts/inter-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;size-adjust:86%}
 @font-face{font-family:"Noto Sans Arabic";font-style:normal;font-weight:100 900;font-display:swap;src:url("../assets/fonts/noto-sans-arabic.woff2") format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200E;size-adjust:92%}
 @font-face{font-family:"Noto Arabic Display";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/noto-sans-arabic-800.woff2") format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200E;size-adjust:90%}
 :root{
@@ -28,7 +29,7 @@
   --land:#FFFBF2; --water:#D3E4F2; --park:#E1EDCB; --hill:#EBF0DC;
   --food:#E8A800; --coffee:#9A6233; --experience:#7B5EA7; --shrine:var(--lantern); --views:var(--shinkansen); --shop:#E8607A; --gem:#6E9A33; --nature:#5E9A3E; --streets:#2E8C88;
   --display:"Bagel Fat One","Arial Rounded MT Bold",system-ui,sans-serif;
-  --hand:"Patrick Hand","Comic Neue","Segoe Print",cursive;
+  --hand:"Tabi Note","Inter",system-ui,sans-serif;
   --body:"Inter","Segoe UI",system-ui,sans-serif;
   --jp:"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic UI","Meiryo",sans-serif;
 }
@@ -935,7 +936,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
    so Arabic headings come out bold while Bagel stays at its only weight. */
 :root[dir=rtl]{
   --display:"Bagel Fat One","Noto Arabic Display","Arial Rounded MT Bold",system-ui,sans-serif;
-  --hand:"Patrick Hand","Noto Sans Arabic","Comic Neue","Segoe Print",cursive;
+  --hand:"Tabi Note","Noto Sans Arabic",system-ui,sans-serif;
   --body:"Inter","Noto Sans Arabic","Segoe UI",system-ui,sans-serif;
 }
 [dir=rtl] *{letter-spacing:0!important}
@@ -2145,7 +2146,7 @@ html.onb-open #tabbar{display:none}
 .ob-s:not(.in) .ob-tags,.ob-s:not(.in) .ob-oms{opacity:0;transform:translateY(20px)}
 .ob-stk{position:absolute;z-index:6;filter:drop-shadow(0 6px 10px rgba(0,0,0,.2));pointer-events:none}
 .ob-tape{position:absolute;width:86px;height:24px;background:var(--t);z-index:7;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.ob-note{position:absolute;z-index:6;background:#FFF6DC;color:var(--ink);font:400 17px "Patrick Hand","Noto Sans Arabic",var(--body);padding:6px 12px;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.ob-note{position:absolute;z-index:6;background:#FFF6DC;color:var(--ink);font:400 17px var(--hand);padding:6px 12px;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.18)}
 .ob-tags{display:flex;flex-direction:column;gap:10px;margin-top:18px}
 .ob-tag{position:relative;display:flex;align-items:center;gap:14px;width:100%;background:var(--sheet);color:var(--ink);border:1.5px solid #EADFCD;border-radius:8px 16px 16px 8px;padding:12px 16px 12px 14px;box-shadow:0 6px 16px rgba(63,33,22,.12);text-align:start}
 .ob-tag:not(.on){opacity:.7}
@@ -2538,7 +2539,7 @@ html.tn-app .bl-bell:after{content:"";position:absolute;left:19px;right:19px;top
 html.tn-app .bl-rope{width:32px;height:min(250px,30vh);margin:0 auto;border-radius:12px;position:relative;cursor:grab;touch-action:none;background:repeating-linear-gradient(135deg,#F14E24 0 10px,#fff 10px 20px);box-shadow:0 6px 16px rgba(0,0,0,.4);transition:height .35s cubic-bezier(.3,1.6,.5,1)}
 html.tn-app .bl-rope.drag{transition:none;cursor:grabbing}
 html.tn-app .bl-rope i{position:absolute;left:-12px;right:-12px;bottom:-32px;height:42px;background:repeating-linear-gradient(90deg,#fff 0 4px,#F14E24 4px 8px);border-radius:0 0 14px 14px;clip-path:polygon(15% 0,85% 0,100% 100%,0 100%)}
-html.tn-app .bl-pull{position:absolute;left:50%;top:calc(env(safe-area-inset-top) + 250px);margin-left:46px;font:400 21px "Patrick Hand",cursive;color:#FFD9A0;white-space:nowrap;pointer-events:none}
+html.tn-app .bl-pull{position:absolute;left:50%;top:calc(env(safe-area-inset-top) + 250px);margin-left:46px;font:400 21px var(--hand);color:#FFD9A0;white-space:nowrap;pointer-events:none}
 html.tn-app .bl-pull i{display:block;font-style:normal;font-size:26px;animation:bob 1.4s ease-in-out infinite}
 html.tn-app .bl-fly{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 150px);pointer-events:none}
 html.tn-app .bl-fly span{position:absolute;left:50%;background:#fff;color:var(--ink);border-radius:14px;padding:8px 12px;font:800 13px var(--body);white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.3);opacity:0;animation:blfly 1.2s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--i) * .18s)}
@@ -2570,7 +2571,7 @@ html.tn-app .ax-pills small{opacity:.6;font-weight:700}
 html.tn-app .ax-pills .on{background:var(--ink);border-color:var(--ink);color:#fff}
 html.tn-app .ax-moods button{flex:none;border:0;background:#F3E9DA;color:var(--ink);border-radius:99px;padding:7px 12px;font:800 13px var(--body);cursor:pointer}
 html.tn-app .ax-moods .on{background:var(--lantern);color:#fff}
-html.tn-app .ax-hint{font:400 18px "Patrick Hand",var(--hand),cursive;color:var(--muted);margin:2px 2px 10px}
+html.tn-app .ax-hint{font:400 18px var(--hand);color:var(--muted);margin:2px 2px 10px}
 html.tn-app .ax-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 html.tn-app .ax-card{position:relative;display:block;border:0;padding:0;border-radius:18px;overflow:hidden;height:210px;background:#d9cbb8;cursor:pointer;text-align:start;box-shadow:0 6px 16px -8px rgba(63,33,22,.5)}
 html.tn-app .ax-card.big{grid-column:1/-1;height:220px}
