@@ -25,6 +25,9 @@ try{if(/[?&]app=1/.test(location.search))sessionStorage.setItem("tabineko-app","
   if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()||sessionStorage.getItem("tabineko-app")==="1"){document.documentElement.classList.add("tn-app");
     // The boarding-pass opening (js/appsplash.js), once each time the app starts.
     if(!sessionStorage.getItem("tabineko-splash"))document.documentElement.classList.add("tn-splash")}}catch(e){}
+// The website's landing page (js/landing.js) shows at the bare address, so
+// the notebook behind it is hidden from the first paint.
+try{if(!document.documentElement.classList.contains("tn-app")&&!location.hash&&!location.search)document.documentElement.classList.add("lp-on")}catch(e){}
 try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.lang="ar";document.documentElement.dir="rtl";
   document.write('<script src="data/ar/ui.js"><\/script><script src="data/ar/content.js"><\/script>')}}catch(e){}
 </script>
@@ -243,6 +246,7 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
 <script src="js/account.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/webadmin.js"></script>
+<script src="js/landing.js"></script>
 <script src="js/appshell.js"></script>
 <script src="js/appmap.js"></script>
 <script src="js/apptrip.js"></script>
