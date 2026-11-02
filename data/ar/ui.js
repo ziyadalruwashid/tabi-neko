@@ -113,6 +113,8 @@ AR.ui={
 "This replaces the days in your current trip. Your ideas and where you're staying are kept.":"هذا بيستبدل أيام رحلتك الحالية، بس أفكارك ومكان سكنك باقية.",
 "Use this plan":"اعتمد هالخطة",
 "Explore":"استكشف",
+"The cities in the notebook":"المدن في الدفتر",
+"{n} cities, one notebook. Pick one to start.":"{n} مدن، ودفتر واحد. اختار وحدة وابدأ.",
 "travel buddies":"رفقاء سفر",
 "Download for":"حمّله على",
 "Coming soon to":"قريباً على",
