@@ -1,4 +1,8 @@
 {
+  "redirects": [
+    { "source": "/privacy", "destination": "/?privacy#privacy", "permanent": false },
+    { "source": "/delete-account", "destination": "/?delete#privacy", "permanent": false }
+  ],
   "headers": [
     {
       "source": "/data/(.*)",

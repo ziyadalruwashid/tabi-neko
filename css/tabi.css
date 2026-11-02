@@ -3092,3 +3092,9 @@ html:not(.tn-app) #crewcs .cs-top,html:not(.tn-app) #crewcs .cs-stage{width:min(
 .ap-acts{display:flex;gap:14px;padding:0 4px;margin-top:-4px}.ap-acts button{appearance:none;border:0;background:none;padding:2px 0;font:600 12px var(--body);color:var(--muted);cursor:pointer}
 .ap-next{margin-top:0}
 .apolog>.ap-cards,.apolog>.ap-plan,.apolog>.ap-acts,.apolog>.chips,.apolog>.ap-start,.apolog>.msg{flex:none}
+/* Privacy: how to delete your account (also the store's delete-account link) */
+.pr-delbox{margin-top:16px;border-radius:18px;background:#FFF;border:1px solid #F1E3CF;padding:14px 14px 2px;scroll-margin:80px}
+.pr-delbox h3{margin:0 0 6px;font:800 15px var(--body)}
+.pr-delbox p{margin:0 0 8px;font:500 13px/1.55 var(--body);color:var(--muted)}
+.pr-delbox .pr-del{margin:6px 0 12px}
+.pr-delbox.pr-hi{box-shadow:0 0 0 3px #F14E24}

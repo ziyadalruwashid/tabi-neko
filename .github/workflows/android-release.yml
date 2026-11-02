@@ -1,0 +1,80 @@
+# Builds the Google Play version of the Android app: a signed .aab file to
+# upload in the Play Console. Run it by hand from the Actions tab ("Store
+# build for Google Play" > Run workflow) whenever you want to send a new
+# version to Google. Each run gets a higher version number automatically.
+#
+# Needs two repository secrets (Settings > Secrets and variables > Actions):
+#   ANDROID_KEYSTORE_BASE64    the upload key file (upload.p12), as base64
+#   ANDROID_KEYSTORE_PASSWORD  its password
+# They are only read here, never printed, and never stored in the repo.
+#
+# The newest store file is always at:
+# https://github.com/ziyadalruwashid/tabi-neko/releases/download/android-store/tabi-neko.aab
+name: Store build for Google Play
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version name people see in the store (like 1.0 or 1.1)"
+        required: true
+        default: "1.0"
+
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the upload key is set up
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KS" ] || [ -z "$PW" ]; then
+            echo "::error::Add the ANDROID_KEYSTORE_BASE64 and ANDROID_KEYSTORE_PASSWORD secrets first (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Copy the site into the app
+        working-directory: app
+        run: npm ci && npm run web && npx cap sync android
+      - name: Build and sign the store file
+        working-directory: app/android
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          TN_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          # Run 1 is version 2: the test APKs have always been version 1.
+          TN_VERSION_CODE: ${{ github.run_number + 1 }}
+          TN_VERSION_NAME: ${{ inputs.version }}
+        run: |
+          export TN_KEYSTORE="$RUNNER_TEMP/upload.p12"
+          printf '%s' "$KS" | base64 -d > "$TN_KEYSTORE"
+          # The alias is whatever the key was saved under; take the first one.
+          export TN_KEY_ALIAS="$(keytool -list -storetype pkcs12 -keystore "$TN_KEYSTORE" -storepass "$TN_KEYSTORE_PASSWORD" 2>/dev/null | awk -F, '/PrivateKeyEntry/{print $1; exit}')"
+          if [ -z "$TN_KEY_ALIAS" ]; then echo "::error::The upload key or its password doesn't open. Check both secrets."; exit 1; fi
+          ./gradlew bundleRelease --no-daemon
+          rm -f "$TN_KEYSTORE"
+          echo "Built version $TN_VERSION_NAME (code $TN_VERSION_CODE)" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tabi-neko-store-aab
+          path: app/android/app/build/outputs/bundle/release/*.aab
+          retention-days: 30
+      - name: Publish it at the fixed download link
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/android/app/build/outputs/bundle/release/app-release.aab tabi-neko.aab
+          gh release view android-store >/dev/null 2>&1 || gh release create android-store --prerelease --title "Google Play store file" --notes "The newest signed .aab for uploading to the Google Play Console. To try the app on a phone, use the APK from the Android test build instead."
+          gh release upload android-store tabi-neko.aab --clobber
