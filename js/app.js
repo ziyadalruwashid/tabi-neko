@@ -25,7 +25,7 @@ let GUIDE=null;
 const KEEP_APOLLO=new Set(["Apollo's stamp book","Apollo's stamp 🐾"]);
 const guideText=(s,out)=>!GUIDE||KEEP_APOLLO.has(s)||typeof out!=="string"?out:out
   .replace(/Meow!/g,GUIDE.hello||"Hi!").replace(/مياو!/g,GUIDE.helloAr||"هلا!")
-  .replace(/travel cat/g,GUIDE.kind||"travel buddy").replace(/قطوك المسافر/g,GUIDE.kindAr||"رفيقك المسافر")
+  .replace(/travel cat/g,GUIDE.kind||"travel buddy").replace(/قط(?:ّ|و)ك المسافر/g,GUIDE.kindAr||"رفيقك المسافر")
   .replace(/Apollo/g,GUIDE.n).replace(/أبولو/g,GUIDE.ar||GUIDE.n);
 const GI=()=>GUIDE?GUIDE.img:"assets/cat.png"; // the guide's picture
 const T=(s,v)=>guideText(s,fill(isAR()&&AR.ui[s]||s,v));
