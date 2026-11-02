@@ -27,7 +27,7 @@ try{if(/[?&]app=1/.test(location.search))sessionStorage.setItem("tabineko-app","
     if(!sessionStorage.getItem("tabineko-splash"))document.documentElement.classList.add("tn-splash")}}catch(e){}
 // The website's landing page (js/landing.js) shows at the bare address, so
 // the notebook behind it is hidden from the first paint.
-try{if(!document.documentElement.classList.contains("tn-app")&&!location.hash&&!location.search)document.documentElement.classList.add("lp-on")}catch(e){}
+try{if(!document.documentElement.classList.contains("tn-app")&&(!location.hash||/^#lp-/.test(location.hash))&&!location.search)document.documentElement.classList.add("lp-on")}catch(e){}
 try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.lang="ar";document.documentElement.dir="rtl";
   document.write('<script src="data/ar/ui.js"><\/script><script src="data/ar/content.js"><\/script>')}}catch(e){}
 </script>
