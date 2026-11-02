@@ -8,13 +8,13 @@
 // Other sites (Firebase, Ask Apollo, Google Maps) are never touched.
 //
 // The store apps carry every file inside them and don't use this.
-const CACHE="tabineko-v1";
+const CACHE="tabineko-v2";
 const SHELL=["./","index.html","css/tabi.css","manifest.webmanifest",
   "data/map.js","data/places.js","data/apps.js","data/trips.js","data/crew.js","data/album.js","data/hoods.js","data/ar/ui.js","data/ar/content.js",
   "js/app.js","js/apollo.js","js/trip.js","js/share.js","js/planner.js","js/account.js","js/admin.js",
   "assets/logo.png","assets/cat.png","assets/icon-32.png","assets/app/icon-192.png",
   "assets/fonts/bagel-fat-one-400-latin.woff2","assets/fonts/nunito-latin.woff2","assets/fonts/patrick-hand-latin.woff2",
-  "assets/fonts/baloo-bhaijaan-2-arabic.woff2","assets/fonts/baloo-bhaijaan-2-arabic-800.woff2","assets/fonts/marhey-arabic-400.woff2"];
+  "assets/fonts/readex-pro-arabic.woff2","assets/fonts/lalezar-arabic.woff2"];
 
 self.addEventListener("install",e=>{
   // One missing file shouldn't stop the rest from being saved.
