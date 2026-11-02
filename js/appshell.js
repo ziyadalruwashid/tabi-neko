@@ -411,13 +411,14 @@ function onBack(){
   if(window.tnProfBack&&tnProfBack())return;
   if(window.tnLensBack&&tnLensBack())return;
   if(window.tnAppsBack&&tnAppsBack())return;
+  if(window.tnTripsBack&&tnTripsBack())return;
   const H=document.documentElement,top=[...document.querySelectorAll(".tpick,#atsheet")].filter(e=>!e.hidden).pop();
   if(top){top.dispatchEvent(new MouseEvent("click",{bubbles:true}));return}
   if(H.classList.contains("picking")&&typeof endPick==="function"){endPick(true);return}
   if(H.classList.contains("chat-open")&&typeof closeApollo==="function"){closeApollo();return}
   const mc=document.querySelector(".mp-cities:not([hidden])");if(mc){mc.hidden=true;return}
   const st=history.state||{};
-  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay||st.tnTrip||st.tnBook||st.tnProf||st.tnLens||st.tnRemind||st.tnAreas||st.tnCrew||st.tnApps){history.back();return}
+  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay||st.tnTrip||st.tnBook||st.tnProf||st.tnLens||st.tnRemind||st.tnAreas||st.tnCrew||st.tnApps||st.tnTrips){history.back();return}
   const c=current(),h=location.hash.slice(1);
   if(h==="hoods"){go("explore");return}
   if(SUB.includes(h)){go("menu");return}
@@ -584,6 +585,7 @@ function renderMore(){
     if(k==="remind"){if(typeof tnOpenReminders==="function")tnOpenReminders();return}
     if(k==="crew"&&window.tnOpenCrew){tnOpenCrew();return}
     if(k==="apps"&&window.tnOpenApps){tnOpenApps();return}
+    if(k==="trips"&&window.tnOpenTrips){tnOpenTrips();return}
     location.hash="#"+k;window.scrollTo(0,0)});
 }
 
