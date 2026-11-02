@@ -34,7 +34,7 @@
 // login token, checked the same way. A token is remembered for a few minutes
 // so a conversation doesn't ask Firebase on every message.
 
-const MODEL = "claude-opus-5-5";
+const MODEL = "claude-haiku-5-5";
 const DATA = "https://raw.githubusercontent.com/ziyadalruwashid/tabi-neko/main/data/";
 // The website, plus the store apps: Capacitor serves the app's own copy of
 // the site from capacitor://localhost on iPhone and https://localhost on Android.
