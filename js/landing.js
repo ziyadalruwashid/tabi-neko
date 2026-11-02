@@ -33,7 +33,7 @@ const FEATS=[
 const BUDS=[["apollo","assets/cat.png","--lantern","guide","i only recommend places i'd go back to."],
   ["kenbo","assets/crew/kenbo.png","--wasabi","scout","if it's more than an hour out of the city, it's my page. pack water."],
   ["fa","assets/crew/fa.png","--mochi","support","slow down. drink something warm. you've got this."]];
-const TIPS=["i only recommend places i'd go back to.","Great Buddha before 10:00. trust me.","the deer in Nara bow first. bow back.","download the city offline before you land."];
+const TIPS=["i only recommend places i'd go back to.","Fushimi Inari at 7 in the morning, before the crowds.","the deer in Nara bow first. bow back.","download the city offline before you land."];
 const bud=k=>(typeof BUDDIES!=="undefined"&&BUDDIES.find(b=>b.k===k))||{};
 const crewOf=k=>(typeof CREW!=="undefined"&&CREW.find(c=>c.n.toLowerCase()===k))||{};
 
