@@ -35,6 +35,15 @@
 // so a conversation doesn't ask Firebase on every message.
 
 const MODEL = "claude-haiku-5-5";
+// The automatic backup model (if a safety check declines a question) is only
+// offered for the bigger models; Haiku rejects the setting, so it's left out.
+const FALLBACK = !MODEL.includes("haiku");
+const HEADERS = key => ({
+  "content-type": "application/json",
+  "x-api-key": key,
+  "anthropic-version": "2026-10-21",
+  ...(FALLBACK ? { "anthropic-beta": "server-side-fallback-2026-07-01" } : {}),
+});
 const DATA = "https://raw.githubusercontent.com/ziyadalruwashid/tabi-neko/main/data/";
 // The website, plus the store apps: Capacitor serves the app's own copy of
 // the site from capacitor://localhost on iPhone and https://localhost on Android.
@@ -157,19 +166,12 @@ export default {
     // site rarely has questions five minutes apart, hence the one-hour cache.
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2026-10-21",
-        // If a safety check declines an answer, retry it on the model
-        // Anthropic recommends for that case instead of failing outright.
-        "anthropic-beta": "server-side-fallback-2026-07-01",
-      },
+      headers: HEADERS(env.ANTHROPIC_API_KEY),
       body: JSON.stringify({
         model: MODEL,
         max_tokens: MAX_OUTPUT,
         stream: true,
-        fallbacks: "default",
+        ...(FALLBACK ? { fallbacks: "default" } : {}),
         // A chat answer doesn't need long deliberation; low effort keeps
         // replies quick and cheap.
         output_config: { effort: "low" },
@@ -295,16 +297,11 @@ async function planTrip(raw, idToken, env, h) {
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": env.ANTHROPIC_API_KEY,
-      "anthropic-version": "2026-10-21",
-      "anthropic-beta": "server-side-fallback-2026-07-01",
-    },
+    headers: HEADERS(env.ANTHROPIC_API_KEY),
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 16000,
-      fallbacks: "default",
+      ...(FALLBACK ? { fallbacks: "default" } : {}),
       // Planning is worth a bit more thought than a chat answer.
       output_config: { effort: "medium", format: { type: "json_schema", schema } },
       system: [
