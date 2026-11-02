@@ -8,5 +8,4 @@ All fonts here are licensed under the SIL Open Font License 1.1
 | Bagel Fat One | English headings | Google Fonts / Fontsource |
 | Nunito | All reading text (variable) | https://github.com/googlefonts/nunito |
 | Patrick Hand | Short handwritten notes | Google Fonts / Fontsource |
-| Readex Pro | Arabic text and notes (variable, 160–700) | Google Fonts, https://github.com/ThomasJockin/readexpro |
-| Lalezar | Arabic headings | Google Fonts, https://github.com/BornaIz/Lalezar |
+| Noto Sans Arabic | Arabic text and notes (variable), and its 800 weight for headings | Google Fonts, https://github.com/notofonts/arabic |
