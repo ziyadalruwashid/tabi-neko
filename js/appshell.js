@@ -344,6 +344,8 @@ function renderExplore(){
     openList(T(L[0]),cityOf(exploreCity),L[1])});
 }
 window.tnRenderExplore=renderExplore;
+// For Ask Apollo's start screen: the city you're exploring and its weather.
+window.tnChatCtx=()=>({city:exploreCity,wx:WX[exploreCity]||null,icon:wxIcon});
 window.tnExploreCity=c=>{if(!CITIES[c])return;exploreCity=c;city=c;store.set("tabineko-city",c);renderExplore()};
 // The clock in the header ticks with Japan's time, and the sky changes with it.
 let lastPeriod=period(jst().h);
