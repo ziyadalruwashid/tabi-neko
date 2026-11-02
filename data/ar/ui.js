@@ -113,6 +113,7 @@ AR.ui={
 "This replaces the days in your current trip. Your ideas and where you're staying are kept.":"هذا بيستبدل أيام رحلتك الحالية، بس أفكارك ومكان سكنك باقية.",
 "Use this plan":"اعتمد هالخطة",
 "Explore":"استكشف",
+"Share your trip PDF":"شارك ملف رحلتك",
 "A trip PDF with every day and its map links":"ملف PDF للرحلة، فيه كل يوم وروابط الخريطة",
 "Free. No ads. Your trip is saved to your account, so it's safe on any phone.":"مجاني. بدون إعلانات. رحلتك محفوظة في حسابك، فتكون بأمان على أي جوال.",
 "{n} cities, one notebook":"{n} مدن، ودفتر واحد",

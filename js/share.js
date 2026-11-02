@@ -2,7 +2,8 @@
 // canvas, with a tappable link over every place (it opens in Google Maps) and
 // over the site address. The PDF is written here by hand, one JPEG per page
 // plus link annotations, so there's no library to load. On a phone it goes to
-// the share sheet; where sharing files isn't supported it downloads instead.
+// the share sheet (in the app through Capacitor's Share, see shareNative);
+// where sharing files isn't supported it downloads instead.
 // Arabic draws right to left with the Arabic faces.
 const SH={W:1080,H:1350,pad:72};
 const shImg=src=>new Promise(ok=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src});
@@ -19,6 +20,8 @@ async function sharePdf(refs){
     const pages=[];for(const d of days)pages.push(await dayPage(d.ps,d.s,d.num,d.t));
     const one=days.length===1,title=one?T("Day {n}",{n:days[0].num}):(trip.name||T("My Japan trip"));
     const blob=pdfFrom(pages,title),name=one?`tabi-neko-day-${days[0].num}.pdf`:"tabi-neko-trip.pdf";
+    // In the app: save it to the phone's cache and open Android's share sheet.
+    if(await shareNative(blob,name,title))return;
     const file=new File([blob],name,{type:"application/pdf"});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
       try{await navigator.share({files:[file],title,text:T("Planned with Tabi Neko. Tap a place to open it in Google Maps.")})}
@@ -28,6 +31,20 @@ async function sharePdf(refs){
       setTimeout(()=>URL.revokeObjectURL(u),4000);toast(T("PDF saved ✓"));
     }
   }catch(e){toast(T("Couldn't make the PDF. Try again?"))}
+}
+
+// The store apps can't share a file from the page itself, so the PDF goes
+// through Capacitor: written to the app's cache folder, then handed to the
+// phone's share sheet (WhatsApp, Drive, Files, print…). False when that's
+// not available, and the website's way is used instead.
+async function shareNative(blob,name,title){
+  const C=window.Capacitor,P=C&&C.Plugins,FS=P&&P.Filesystem,SH=P&&P.Share;
+  if(!(C&&C.isNativePlatform&&C.isNativePlatform()&&FS&&SH))return false;
+  const b64=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(",")[1]);r.onerror=no;r.readAsDataURL(blob)});
+  const {uri}=await FS.writeFile({path:name,data:b64,directory:"CACHE"});
+  try{await SH.share({title,text:T("Planned with Tabi Neko. Tap a place to open it in Google Maps."),files:[uri],dialogTitle:T("Share your trip PDF")})}
+  catch(e){if(!/cancel/i.test(String(e&&e.message||e)))throw e}
+  return true;
 }
 
 // A canvas page plus the link boxes on it, in canvas pixels.
