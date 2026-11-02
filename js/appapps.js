@@ -4,7 +4,6 @@
 // opens big; tap an app and a card slides up with what it does, the tip and
 // one store button: Google Play on Android, the App Store on an iPhone.
 (function(){
-if(typeof IS_APP==="undefined"||!IS_APP)return;
 const el=document.createElement("div");el.id="aphome";el.hidden=true;el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");document.body.appendChild(el);
 const EMO={move:"🚆",pay:"💳",book:"🎟️",food:"🍜",halal:"🥩",net:"📶"};
 const DOCK=["Google Maps","Halal Gourmet Japan","GO","Google Translate"];
@@ -16,6 +15,9 @@ const grp=k=>AGROUPS.find(g=>g.k===k)||{};
 const icon=a=>a.icon?`<img class="ah-ico" src="${esc(a.icon)}" alt="" loading="lazy">`:`<span class="ah-ico ah-ltr" style="--c:var(${grp(a.g).c||"--lantern"})" aria-hidden="true">${a.e||EMO[a.g]||"📱"}</span>`;
 const nm=a=>a.n.replace(/^Japan Travel by /,"");
 function store(a){
+  // The website shows both stores; the app shows its own phone's store.
+  if(typeof IS_APP==="undefined"||!IS_APP){const b=[a.android?`<a class="ah-get" href="${esc(a.android)}" target="_blank" rel="noopener">▶ ${T("Get it on Google Play")}</a>`:"",a.ios?`<a class="ah-get" href="${esc(a.ios)}" target="_blank" rel="noopener">🍎 ${T("Get it on the App Store")}</a>`:""].join("");
+    return b?`<div class="ah-gets">${b}</div>`:`<p class="ah-none">${T("Pick any one you like from the store.")}</p>`}
   const ios=IOS(),url=ios?a.ios:a.android;
   if(url)return `<a class="ah-get" href="${esc(url)}" target="_blank" rel="noopener">${ios?"":"▶ "}${T(ios?"Get it on the App Store":"Get it on Google Play")}</a>`;
   if(!a.ios&&!a.android)return `<p class="ah-none">${T("Pick any one you like from the store.")}</p>`;
@@ -52,9 +54,15 @@ function openApp(){
 }
 function open(fromHistory){el.hidden=false;document.documentElement.classList.add("aph-open");fold=null;app=null;if(!fromHistory)history.pushState({tnApps:1},"");draw();el.scrollTop=0}
 function closeNow(){el.hidden=true;document.documentElement.classList.remove("aph-open")}
-function close(){if(history.state&&history.state.tnApps)history.back();else closeNow()}
+function close(){if(WEB){if(navd)history.back();else location.hash="";return}if(history.state&&history.state.tnApps)history.back();else closeNow()}
 addEventListener("popstate",e=>{const st=e.state||{};if(st.tnApps){if(el.hidden)open(true)}else if(!el.hidden)closeNow()});
 window.tnOpenApps=()=>open();
 // The phone's back button: the app card, then the folder, then the page.
 window.tnAppsBack=()=>{if(el.hidden)return false;if(app!==null){app=null;draw();return true}if(fold){fold=null;draw();return true}return false};
+// On the website the same page shows at #apps: opened by the address, and the
+// back button returns to where you came from (or the landing page).
+const WEB=typeof IS_APP==="undefined"||!IS_APP;
+let navd=false;
+if(WEB){const sync=()=>{if(location.hash==="#apps"){if(el.hidden)open(true)}else if(!el.hidden)closeNow()};
+  addEventListener("hashchange",()=>{navd=true;sync()});sync()}
 })();
