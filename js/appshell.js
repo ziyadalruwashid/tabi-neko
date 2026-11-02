@@ -186,6 +186,8 @@ function season(){const mo=jst().mo;
   const hit=p=>S[3].test(`${p.n} ${p.t||""} ${p.tip||""}`),score=p=>(hit(p)?4:0)+(p.tier==="must"?2:0)+(p.gem?1:0);
   const ps=inCity().filter(p=>p.photo&&(hit(p)||S[2].includes(p.cat))).sort((x,y)=>score(y)-score(x));
   return {t:S[0],s:S[1],ps,hit,icon:[...S[0]].pop()}}
+// The "New on Tabi Neko" row on Explore. Hidden for now; set to true to bring it back.
+const SHOW_NEW=false;
 // Apollo's pick of the day: the same all day, a new one tomorrow.
 function dailyPick(){const a=inCity().filter(p=>p.photo&&(p.gem||p.tier==="must"));if(!a.length)return null;return a[jst().day%a.length]}
 const MONTHS_AR=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
@@ -322,7 +324,7 @@ function renderExplore(){
     ${moodPicker()}
     ${pick?`<button type="button" class="xs-pick" data-id="${pick.id}"><span class="xs-tape"></span><span class="xs-pola"><img src="${pick.photo}" alt=""><small>${esc(D(pick,"cap"))}</small></span>
       <span class="xs-pt"><small>${T("Apollo's pick for today 🐾")}</small><b><bdi>${esc(pick.n)}</bdi></b><i>${esc((D(pick,"tip")||"").split(/(?<=[.!؟?])\s/)[0])}</i><em>${T("See the place")} ${isAR()?"←":"→"}</em></span></button>`:""}
-    ${row("New on Tabi Neko 🆕",T("Apollo just added these"),fresh(),"new")}
+    ${SHOW_NEW?row("New on Tabi Neko 🆕",T("Apollo just added these"),fresh(),"new"):""}
     ${row("Hidden gems ⭐",T("Even locals don't know these"),photoFirst(inCity().filter(p=>p.gem)),"gems")}
     ${areasRow()}`;
   wireCards(el);
