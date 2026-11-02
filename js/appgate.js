@@ -23,7 +23,7 @@ function gateHTML(){
   return `<div class="gt-box"><div class="gt-art"><img src="${GI()}" alt=""><span class="gt-pin">🗺️</span></div>
     <h2>${T("Plan your trip with Apollo")}</h2>
     <p>${T("Log in, or create a free account, to plan your days and add places to your trip. It's saved to your account, so it's safe on any phone.")}</p>
-    <ul class="gt-list"><li>📅 ${T("Your days, hotels and bookings in one place")}</li><li>🐾 ${T("Apollo fills empty days with places from the notebook")}</li><li>👥 ${T("Plan together with your travel buddies")}</li></ul>
+    <ul class="gt-list"><li>📅 ${T("Your days, hotels and bookings in one place")}</li><li>🐾 ${T("Apollo fills empty days with places from the notebook")}</li><li>📘 ${T("A trip PDF with every day and its map links")}</li></ul>
     <button type="button" class="gt-in">${T("Log in")}</button><button type="button" class="gt-up">${T("Create a free account")}</button></div>`;
 }
 if(typeof renderTrip==="function"){const _r=renderTrip;renderTrip=function(){

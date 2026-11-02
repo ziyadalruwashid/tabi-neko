@@ -87,8 +87,11 @@ const tStart=t=>t.start?new Date(t.start+"T00:00:00Z"):null;
 const isPast=t=>{const d=tStart(t);if(!d)return false;const e=new Date(d);e.setUTCDate(e.getUTCDate()+tripDays(t)-1);return e<todayJ()};
 function coverFor(t){return t.cover||(t.stays[0]&&coverPhoto(t.stays[0].city))||"assets/hoods/asakusa.jpg"}
 function openTrip(id){
+  // The open trip may not have an id yet (one started with ＋ on a place):
+  // its card passes an empty id, and it gets one here.
+  const mine=!id||id===trip.id;
   if(!trip.id&&hasContent(trip)){trip.id=newId();saveTrip()}
-  if(id!==trip.id){
+  if(!mine){
     if(sharedLock())return lockMsg();
     const t=lib().find(x=>x.id===id);if(!t)return;
     stash();saveLib(lib().filter(x=>x.id!==id));trip=cleanTrip(t);saveTrip();renderList();renderMap();
@@ -239,7 +242,7 @@ function tripHTML(){
   const t=trip,nd=tripDays(t),d0=dayAt(0),dz=dayAt(Math.max(0,nd-1));
   const when=[d0?`${md(d0)} – ${md(dz)}`:"",N(nd,"1 day","{n} days")].filter(Boolean).join(" · ");
   let h=`<div class="at-cover tv-hdr"><img src="${esc(coverFor(t))}" alt=""><div class="at-shade"></div>
-    <div class="at-cbtn tv-cbtn"><button type="button" class="at-cb tv-back" aria-label="${esc(T("My trips"))}">${SVG(I.back)}</button><span></span><button type="button" class="at-cb at-share" aria-label="${esc(T("Share"))}">${SVG(I.share)}</button></div>
+    <div class="at-cbtn tv-cbtn"><button type="button" class="at-cb tv-back" aria-label="${esc(T("My trips"))}">${SVG(I.back)}</button><span></span></div>
     <div class="at-ctext">${countdown(nd)}<input class="tname-in at-title" id="tripname" value="${esc(t.name)}" placeholder="${esc(T("My Japan trip 🇯🇵"))}" maxlength="60" aria-label="${esc(T("Trip name"))}"><p>${esc(isAR()?iso(when):when)}</p></div></div>`;
   if(shareAsk)h+=`<div class="tshareask"><p>${T("Include where you're staying? Anyone with the link will see it.")}</p><button type="button" class="store" data-home="0">${T("Share without it")}</button><button type="button" class="store" data-home="1">${T("Include it")}</button></div>`;
   h+=`<div class="tv-pills" role="tablist">${[["plan","Schedule"],["map","Map"],["bk","Bookings"]].map(([k,l])=>`<button type="button" role="tab" data-tab="${k}" class="${tab===k?"on":""}">${T(l)}</button>`).join("")}</div>`;
@@ -251,7 +254,7 @@ function tripHTML(){
   h+=`<div class="tv-pad"><h2 class="at-h">${T("Do more")}</h2><div class="at-acts">
     ${typeof openPlanner==="function"?`<button type="button" class="tplanb at-act a1"><span>✨</span><b>${T("Let Apollo sort it")}</b><small>${T("From his notebook, with halal food")}</small></button>`:""}
     ${tripCount(t)?`<button type="button" class="at-act a2" id="tpdf"><span>📘</span><b>${T("Trip PDF")}</b><small>${T("Every day, with map links")}</small></button>`:""}
-    <button type="button" class="at-act a3" id="tshare"><span>👥</span><b>${T("Share with friends")}</b><small>${T("Send them a link")}</small></button></div>
+    </div>
     ${typeof acctBar==="function"?`<div class="at-acct">${acctBar()}</div>`:""}
     <div class="at-foot"><button type="button" class="at-link tv-del">${T("Delete this trip")}</button></div></div>
     <button type="button" class="at-fab tv-fab">${SVG(I.plus,22)} <span>${T("Add new")}</span></button>`;

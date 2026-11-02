@@ -100,7 +100,7 @@ function draw(){
       <span class="lp-bq" aria-live="polite"></span><img src="${img}" alt=""><b>${esc(isAR()?b.ar||D(cr,"n")||b.n:b.n||cr.n||k)}</b><small>${esc(D(cr,"role")||role)}</small><span class="lp-hi">${esc(isAR()?b.helloAr||"مياو!":b.hello||"Meow!")}</span></button>`}).join("")}</div></section>
 
   <section class="lp-final lp-rv" id="lp-get"><div><h2>${T("Your Japan trip, in your pocket.")}</h2>
-      <p>${T("Free. No ads. Your trip is saved to your account, so it's safe on any phone, and you can plan it together with your travel buddies.")}</p>
+      <p>${T("Free. No ads. Your trip is saved to your account, so it's safe on any phone.")}</p>
       <div class="lp-btns">${storeBtn("light")}${NOTEBOOK?`<a class="lp-cta ghost light lp-nb" href="#map">${T("Explore the notebook")}</a>`:""}</div></div>
     <div class="lp-qr"><img src="assets/landing/qr.svg" alt="${esc(T("QR code to download the Android app"))}"><span>${T("Scan with your phone")}</span></div></section>
 
