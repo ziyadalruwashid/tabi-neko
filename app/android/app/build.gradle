@@ -7,8 +7,10 @@ android {
         applicationId "com.tabineko.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // The store build passes a new number each upload (see
+        // .github/workflows/android-release.yml); test builds stay at 1.
+        versionCode((System.getenv("TN_VERSION_CODE") ?: "1") as int)
+        versionName(System.getenv("TN_VERSION_NAME") ?: "1.0")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +18,24 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // The Google Play upload key comes from GitHub secrets at build time and
+    // is never in the repo. Without it (on a laptop, or the test APK) the
+    // release build is simply left unsigned.
+    signingConfigs {
+        release {
+            def ks = System.getenv("TN_KEYSTORE")
+            if (ks && file(ks).exists()) {
+                storeFile file(ks)
+                storeType System.getenv("TN_KEYSTORE_TYPE") ?: "pkcs12"
+                storePassword System.getenv("TN_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("TN_KEY_ALIAS") ?: "upload"
+                keyPassword System.getenv("TN_KEY_PASSWORD") ?: System.getenv("TN_KEYSTORE_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         release {
+            if (System.getenv("TN_KEYSTORE")) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

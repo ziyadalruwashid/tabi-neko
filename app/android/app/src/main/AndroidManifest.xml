@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -37,4 +38,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- Halal Lens: the camera reads food labels and menus on the phone. -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Trip reminders don't need to ring to the minute, and Google Play asks
+         apps that use exact alarms to justify them, so the notifications
+         plugin's request for it is taken out. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
 </manifest>

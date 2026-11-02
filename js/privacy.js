@@ -25,18 +25,24 @@ function html(){
       <div class="pr-box ac"><h3>☁️ ${T("In your account")}</h3><ul>${ACCT.map(([i,t])=>`<li><i>${i}</i>${T(t)}</li>`).join("")}</ul></div></div>
     <p class="pr-opt">${T("Exploring needs no account. You only need one to plan trips and collect stamps.")}</p>
     <div class="pr-acc">${QS.map(([i,q,a],k)=>`<div class="pr-q${k===openQ?" open":""}"><button type="button" data-k="${k}" aria-expanded="${k===openQ}"><span>${i}</span><b>${T(q)}</b><i aria-hidden="true">⌄</i></button><div class="pr-a"><p>${T(a)}</p></div></div>`).join("")}</div>
+    <div class="pr-delbox" id="pr-delete"><h3>🗑️ ${T("Delete your Tabi Neko account")}</h3>
+      <p>${T("In the app: More → Privacy → Delete my account. On the website: log in, then tap the button below.")}</p>
+      <p>${T("Your account, email, name, trips and stamps are deleted straight away and can't be brought back. Nothing is kept afterwards: Ask Apollo questions are never saved, and the daily counts were never linked to you.")}</p>
     ${logged?`<button type="button" class="pr-del">🗑️<span><b>${T("Delete my account")}</b><small>${T("Your account, trips and stamps, gone straight away")}</small></span></button>`
-      :`<p class="pr-none">${T("You're not logged in, so nothing is saved in an account.")}</p>`}`;
+      :`<button type="button" class="pr-del pr-login">🔑<span><b>${T("Log in to delete your account")}</b><small>${T("You're not logged in, so nothing is saved in an account.")}</small></span></button>`}</div>`;
 }
 function wire(box){
   box.querySelectorAll(".pr-q button").forEach(b=>b.onclick=()=>{const k=+b.dataset.k;openQ=openQ===k?-1:k;
     box.querySelectorAll(".pr-q").forEach((q,i)=>{q.classList.toggle("open",i===openQ);q.querySelector("button").setAttribute("aria-expanded",i===openQ)})});
-  const d=box.querySelector(".pr-del");if(d)d.onclick=()=>{if(typeof openAcct==="function")openAcct("delete")};
+  const d=box.querySelector(".pr-del");if(d)d.onclick=()=>{if(typeof openAcct==="function")openAcct(d.classList.contains("pr-login")?"login":"delete")};
 }
 // ---- the website: fill #privacy ----
 function web(){const sec=document.getElementById("privacy");if(!sec)return;
   let box=sec.querySelector(".pr-page");if(!box){sec.innerHTML=`<div class="pr-page"></div>`;box=sec.querySelector(".pr-page")}
-  box.innerHTML=`<h1 class="pr-h">${T("Privacy")}</h1>`+html();wire(box)}
+  box.innerHTML=`<h1 class="pr-h">${T("Privacy")}</h1>`+html();wire(box);
+  // tabi-neko.vercel.app/delete-account (for the store listings) lands here
+  // with ?delete: go straight to the delete section.
+  if(/[?&]delete\b/.test(location.search)&&!web.went){web.went=1;setTimeout(()=>{const d=document.getElementById("pr-delete");if(d){d.scrollIntoView({block:"center"});d.classList.add("pr-hi")}},300)}}
 if(typeof IS_APP==="undefined"||!IS_APP){web();
   if(typeof setLang==="function"){const _s=setLang;setLang=function(l){_s(l);setTimeout(web,l==="ar"&&typeof AR_ON==="function"&&!AR_ON()?400:30)}}
   if(typeof userBtn==="function"){const _u=userBtn;userBtn=function(){_u();web()}}
