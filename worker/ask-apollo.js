@@ -182,7 +182,11 @@ export default {
         messages,
       }),
     });
-    if (!res.ok || !res.body) return fail(502, "claude " + res.status, h);
+    if (!res.ok || !res.body) {
+      // Anthropic's own reason (never the key), visible in the Worker's Logs.
+      console.error("Claude chat", MODEL, res.status, (await res.text().catch(() => "")).slice(0, 800));
+      return fail(502, "claude " + res.status, h);
+    }
 
     // Pass only the answer's text on to the browser, as a plain text stream.
     const { readable, writable } = new TransformStream();
@@ -311,7 +315,10 @@ async function planTrip(raw, idToken, env, h) {
       messages: [{ role: "user", content: ask }],
     }),
   });
-  if (!res.ok) return fail(502, "claude " + res.status, h);
+  if (!res.ok) {
+    console.error("Claude plan", MODEL, res.status, (await res.text().catch(() => "")).slice(0, 800));
+    return fail(502, "claude " + res.status, h);
+  }
   const msg = await res.json();
   if (msg.stop_reason === "refusal") return fail(422, "refusal", h);
   const text = (msg.content || []).filter(b => b.type === "text").map(b => b.text).join("");
@@ -361,6 +368,7 @@ async function relay(sse, writable) {
         } else if (d.type === "message_delta" && d.delta) {
           stop = d.delta.stop_reason || stop;
         } else if (d.type === "error") {
+          console.error("Claude stream", MODEL, JSON.stringify(d.error || d).slice(0, 800));
           stop = "error";
         }
       }
