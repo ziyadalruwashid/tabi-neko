@@ -478,6 +478,9 @@ async function deleteAccount(pw){
 function setSync(s){syncState=s;const el=$("tripbook")&&$("tripbook").querySelector(".tacct-s");if(el)el.textContent=syncText()}
 const syncText=()=>({saving:T("Saving…"),saved:T("Saved ✓"),offline:T("Offline. It'll save when you're back online.")})[syncState]||"";
 const barText=()=>isShared()?T("Planning together · {n} people",{n:1+share.members.filter(x=>x!==tripOwner()).length}):T("Saved to your account");
+// In the app, sharing a trip and planning together are switched off for now:
+// "Plan together" only shows on a trip that's already shared, so its people
+// can still see who's in it or leave.
 function acctBar(){
   if(!FB_ON)return "";
   let h="";
@@ -486,7 +489,7 @@ function acctBar(){
     <div class="tbtns"><button type="button" class="store tinv-go">${T(auth?"Join the trip":"Log in to join")}</button><button type="button" class="tclear tinv-no">${T("No thanks")}</button></div></div></div>`;
   if(!auth)return h+`<div class="tacct"><span>📱 ${T("Saved on this phone only.")}</span><button type="button" class="store tacct-in">☁️ ${T("Log in to keep it safe")}</button></div>`;
   return h+`<div class="tacct on"><span>${isShared()?"👨‍👩‍👧":"☁️"} <span class="tacct-t">${esc(barText())}</span> <small class="tacct-s" role="status">${esc(syncText())}</small></span>
-    <span class="tacct-r"><button type="button" class="store tacct-pt">👨‍👩‍👧 ${T("Plan together")}</button><button type="button" class="tclear tacct-me" dir="ltr">${esc(auth.email)}</button></span></div>`;
+    <span class="tacct-r">${IS_APP&&!isShared()?"":`<button type="button" class="store tacct-pt">👨‍👩‍👧 ${T("Plan together")}</button>`}<button type="button" class="tclear tacct-me" dir="ltr">${esc(auth.email)}</button></span></div>`;
 }
 function wireAcct(box){
   const q=s=>box.querySelector(s);
