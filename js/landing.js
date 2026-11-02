@@ -10,10 +10,13 @@
 // All of it is switched off for people who ask for reduced motion.
 (function(){
 if(typeof IS_APP!=="undefined"&&IS_APP)return;
+// While NOTEBOOK is false the landing page has no way into the website's
+// notebook (map, pages): only the app. Direct links (#map, #admin…) still work.
+const NOTEBOOK=false;
 const APK="https://github.com/ziyadalruwashid/tabi-neko/releases/download/android-latest/tabi-neko.apk";
 const H=document.documentElement;
 const still=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
-const wanted=()=>!location.hash&&!location.search;
+const wanted=()=>(!location.hash||/^#lp-/.test(location.hash))&&!location.search;
 const el=document.createElement("div");el.id="landing";document.body.prepend(el);
 const n=v=>isAR()?iso(String(v)):String(v);
 const android=/Android/i.test(navigator.userAgent);
@@ -51,7 +54,7 @@ function draw(){
   const cs=Object.keys(CITIES).filter(k=>P.some(p=>p.city===k));
   el.innerHTML=`
   <header class="lp-nav"><a class="lp-logo" href="#" aria-label="Tabi Neko"><img src="assets/cat.png" alt="">Tabi Neko</a>
-    <nav><a href="#lp-feat" data-to="lp-feat">${T("Features")}</a><a href="#lp-how" data-to="lp-how">${T("How it works")}</a><a href="#lp-bud" data-to="lp-bud">${T("Buddies")}</a><a href="#map" class="lp-nb">${T("Explore the notebook")}</a></nav>
+    <nav><a href="#lp-feat" data-to="lp-feat">${T("Features")}</a><a href="#lp-how" data-to="lp-how">${T("How it works")}</a><a href="#lp-bud" data-to="lp-bud">${T("Buddies")}</a>${NOTEBOOK?`<a href="#map" class="lp-nb">${T("Explore the notebook")}</a>`:""}</nav>
     <span class="lp-sp"></span><button type="button" class="lp-lang" lang="${isAR()?"en":"ar"}">${isAR()?"English":"العربية"}</button>
     <a class="lp-cta lp-get" href="${APK}">↓ ${T("Get the app")}</a></header>
 
@@ -59,7 +62,7 @@ function draw(){
     <div class="lp-copy">
       <h1>${words(T("Japan, planned by a cat"))} <em>${words(T("who's been."),"hl")}</em></h1>
       <p class="lp-lead lp-in" style="--d:6">${T("Tabi Neko is Apollo's travel notebook in your pocket: {n} places he checked himself, a trip planner that fills your days, and stamps to collect as you go.",{n:n(P.length)})}</p>
-      <div class="lp-btns lp-in" style="--d:7">${storeBtn()}${iosBtn}<a class="lp-cta ghost lp-nb" href="#map">${T("Explore the notebook")} <i>${isAR()?"←":"→"}</i></a></div>
+      <div class="lp-btns lp-in" style="--d:7">${storeBtn()}${iosBtn}${NOTEBOOK?`<a class="lp-cta ghost lp-nb" href="#map">${T("Explore the notebook")} <i>${isAR()?"←":"→"}</i></a>`:""}</div>
     </div>
     <div class="lp-stage" aria-hidden="true"><div class="lp-tilt">
       ${phone("stamps","l")}${phone("trips","r")}${phone("home","c")}
@@ -69,7 +72,7 @@ function draw(){
     </div></div>
   </section>
 
-  <section class="lp-cities lp-rv" aria-label="${esc(T("The cities in the notebook"))}"><p class="lp-ch">${T("{n} cities, one notebook. Pick one to start.",{n:n(cs.length)})}</p>
+  <section class="lp-cities lp-rv" aria-label="${esc(T("The cities in the notebook"))}"><p class="lp-ch">${NOTEBOOK?T("{n} cities, one notebook. Pick one to start.",{n:n(cs.length)}):T("{n} cities, one notebook.",{n:n(cs.length)})}</p>
     <div class="lp-hk">${cs.map((k,i)=>`<button type="button" class="lp-hanko" data-c="${k}" style="--d:${i};--r:${[-8,5,-3,7,-6,4,-2][i%7]}deg"><span class="lp-hj">${esc(CITIES[k].jp)}</span><b>${esc(D(CITIES[k],"n"))}</b><small>${esc(D(CITIES[k],"nick")||"")}</small></button>`).join("")}</div></section>
 
   <section class="lp-mq" dir="ltr" aria-label="${esc(T("Some of the places"))}">${photos()}</section>
@@ -92,11 +95,11 @@ function draw(){
 
   <section class="lp-final lp-rv" id="lp-get"><div><h2>${T("Your Japan trip, in your pocket.")}</h2>
       <p>${T("Free. No ads. Your trip is saved to your account, so it's safe on any phone, and you can plan it together with your travel buddies.")}</p>
-      <div class="lp-btns">${storeBtn("light")}<a class="lp-cta ghost light lp-nb" href="#map">${T("Explore the notebook")}</a></div></div>
+      <div class="lp-btns">${storeBtn("light")}${NOTEBOOK?`<a class="lp-cta ghost light lp-nb" href="#map">${T("Explore the notebook")}</a>`:""}</div></div>
     <div class="lp-qr"><img src="assets/landing/qr.svg" alt="${esc(T("QR code to download the Android app"))}"><span>${T("Scan with your phone")}</span></div></section>
 
   <footer class="lp-foot"><a class="lp-logo" href="#"><img src="assets/cat.png" alt="">Tabi Neko</a><span>${T("made in Riyadh")} 🐾</span><span class="lp-sp"></span>
-    <a href="#map" class="lp-nb">${T("Explore the notebook")}</a><a href="#privacy">${T("Privacy")}</a><a href="#crew">${T("Contributors")}</a></footer>`;
+    ${NOTEBOOK?`<a href="#map" class="lp-nb">${T("Explore the notebook")}</a><a href="#privacy">${T("Privacy")}</a><a href="#crew">${T("Contributors")}</a>`:""}</footer>`;
   wire();
 }
 
@@ -133,9 +136,9 @@ function wire(){
   const show=el.querySelector(".lp-show");
   const play=()=>{if(featT||still())return;pick(featI,false);featT=setInterval(()=>pick((featI+1)%FEATS.length,false),6000)};
   new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){play();o.disconnect()}},{threshold:.3}).observe(show);
-  // A city's stamp: it presses down, then the notebook opens on that city.
+  // A city's stamp presses down (and opens the notebook on that city, when NOTEBOOK is on).
   el.querySelectorAll(".lp-hanko").forEach(b=>b.onclick=()=>{b.classList.remove("press");void b.offsetWidth;b.classList.add("press");
-    setTimeout(()=>{const k=b.dataset.c;try{store.set("tabineko-city",k);city=k;selected=null;area=null;zoomTo=null;renderAll()}catch(e){}location.hash="#map";requestAnimationFrame(()=>{if(typeof show==="function")show("map")})},still()?0:420)});
+    if(NOTEBOOK)setTimeout(()=>{const k=b.dataset.c;try{store.set("tabineko-city",k);city=k;selected=null;area=null;zoomTo=null;renderAll()}catch(e){}location.hash="#map";requestAnimationFrame(()=>{if(typeof show==="function")show("map")})},still()?0:420)});
   // Buddies: tap one and they say their line.
   el.querySelectorAll(".lp-b").forEach(b=>b.onclick=()=>{const q=b.querySelector(".lp-bq");el.querySelectorAll(".lp-b.talk").forEach(x=>{if(x!==b)x.classList.remove("talk")});
     q.textContent=`“${b.dataset.q}”`;b.classList.remove("talk");void b.offsetWidth;b.classList.add("talk")});
