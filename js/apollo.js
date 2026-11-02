@@ -133,7 +133,7 @@ function renderChat(){
       let o=r.txt?`<div class="msg apo"><p dir="auto">${chatHTML(r.txt)}</p></div>`:"";
       if(r.plan)o+=planBox(r.plan,i);
       if(done&&!m.skip&&!r.plan)o+=placeCards(r.places);
-      if(done&&!m.skip&&i===lastA)o+=`<div class="ap-acts"><button type="button" class="ap-copy" data-i="${i}">⧉ ${T("Copy")}</button><button type="button" class="ap-again">↻ ${T("Ask again")}</button></div>`
+      if(done&&!m.skip&&i===lastA)o+=`<div class="ap-acts"><button type="button" class="ap-copy" data-i="${i}">⧉ ${T("Copy")}</button><button type="button" class="ap-again">↻ ${T("Ask again")}</button>${m.reported?`<button type="button" class="ap-rep" disabled>⚑ ${T("Reported ✓")}</button>`:`<button type="button" class="ap-rep" data-i="${i}">⚑ ${T("Report")}</button>`}</div>`
         +(r.next.length?`<div class="chips ap-next">${r.next.map(q=>`<button type="button" class="chip" dir="auto">${esc(q)}</button>`).join("")}</div>`:"");
       return o}).join("");
     if(chatBusy&&!(chat.length&&chat[chat.length-1].role==="assistant"))h+=`<div class="msg apo typing" aria-label="${esc(T("Apollo is typing"))}"><p><i></i><i></i><i></i></p></div>`;
@@ -150,7 +150,27 @@ function renderChat(){
     const t=(r.txt+(r.plan?"\n"+r.plan.map(x=>`${x.t} ${x.what}${x.note?" - "+x.note:""}`).join("\n"):"")).replace(/\*\*/g,"");
     try{navigator.clipboard.writeText(t).then(()=>toast(T("Copied ✓")),()=>{})}catch(e){}});
   log.querySelectorAll(".ap-again").forEach(b=>b.onclick=()=>{if(chatBusy)return;const qi=chat.map(m=>m.role).lastIndexOf("user");if(qi<0)return;const q=chat[qi].text;chat=chat.slice(0,qi);send(q)});
+  log.querySelectorAll(".ap-rep[data-i]").forEach(b=>b.onclick=()=>askReport(b.closest(".ap-acts"),+b.dataset.i));
   if(chat.length)log.scrollTop=log.scrollHeight;else log.scrollTop=0;
+}
+// Report an answer (Google Play asks every AI chat to have one). It saves
+// just that question and answer, with no account attached, in Firestore's
+// reports/ list, which only the owner can read (firebase/firestore.rules).
+const REPORT_WHY=[["wrong","Wrong or made up"],["offensive","Offensive or unsafe"],["other","Something else"]];
+function askReport(box,i){if(!box)return;
+  box.innerHTML=`<span class="ap-rq">${T("What's wrong with this answer?")}</span>`+REPORT_WHY.map(([k,t])=>`<button type="button" data-w="${k}">${T(t)}</button>`).join("")+`<button type="button" class="ap-rx" aria-label="${esc(T("Cancel"))}">✕</button>`;
+  box.querySelector(".ap-rx").onclick=renderChat;
+  box.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>sendReport(i,b.dataset.w))}
+async function sendReport(i,why){
+  const a=chat[i];if(!a||a.reported)return;
+  const q=(chat.slice(0,i).reverse().find(m=>m.role==="user")||{}).text||"";
+  try{
+    if(typeof FS==="undefined"||typeof auth==="undefined"||!auth)throw 0;
+    await call(`${FS}/reports`,{method:"POST",token:await token(),body:{fields:{
+      q:{stringValue:q.slice(0,600)},a:{stringValue:a.text.slice(0,6000)},why:{stringValue:why},
+      lang:{stringValue:isAR()?"ar":"en"},at:{timestampValue:new Date().toISOString()}}}});
+    a.reported=true;saveChat();renderChat();toast(T("Thanks, we'll take a look ✓"));
+  }catch(e){toast(T("Couldn't send that. Try again in a moment."));renderChat()}
 }
 // A day plan from Apollo goes into My trip: the first empty day in that
 // city, or a new day at the end of that city's stay, or a new stay.

@@ -71,6 +71,21 @@ service cloud.firestore {
         && request.resource.data.n == resource.data.n + 1;
     }
 
+    // Reports on Ask Apollo answers (Google Play asks every AI chat for a
+    // way to flag a bad answer). Anyone logged in can send one; it holds
+    // the question, the answer, a reason and the language, and no account.
+    // Only the owner can read or clear them.
+    match /reports/{id} {
+      allow read, delete: if admin();
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['q', 'a', 'why', 'lang', 'at'])
+        && request.resource.data.q is string && request.resource.data.q.size() <= 600
+        && request.resource.data.a is string && request.resource.data.a.size() <= 6000
+        && request.resource.data.why in ['wrong', 'offensive', 'other']
+        && request.resource.data.lang in ['en', 'ar']
+        && request.resource.data.at is timestamp;
+    }
+
     // Apollo Scout: scout/picks holds the owner's ✓/✗ on the weekly
     // suggestions (just place ids). The weekly scout task reads it without
     // signing in, so it's public to read; only the owner can change it.
