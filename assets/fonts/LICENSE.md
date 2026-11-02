@@ -6,6 +6,6 @@ All fonts here are licensed under the SIL Open Font License 1.1
 | Font | Use | Source |
 |---|---|---|
 | Bagel Fat One | English headings | Google Fonts / Fontsource |
-| Nunito | All reading text (variable) | https://github.com/googlefonts/nunito |
+| Inter | All reading text (variable) | Google Fonts, https://github.com/rsms/inter |
 | Patrick Hand | Short handwritten notes | Google Fonts / Fontsource |
 | Noto Sans Arabic | Arabic text and notes (variable), and its 800 weight for headings | Google Fonts, https://github.com/notofonts/arabic |

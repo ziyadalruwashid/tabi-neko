@@ -115,15 +115,15 @@ function stampSVG(s,{size=100,got,date,spin}={}){
    :shape==="square"?`<rect x="5" y="5" width="90" height="90" rx="14" stroke-width="3.2"/><rect x="10.5" y="10.5" width="79" height="79" rx="10" stroke-width="1.2"/>`
    :shape==="hex"?`<polygon points="50,3 91,26.5 91,73.5 50,97 9,73.5 9,26.5" stroke-width="3.2" stroke-linejoin="round"/><polygon points="50,10 85,30 85,70 50,90 15,70 15,30" stroke-width="1.2"/>`
    :`<path d="M50 4 C64 4 70 9 79 15 C88 21 96 30 96 50 C96 70 88 79 79 85 C70 91 64 96 50 96 C36 96 30 91 21 85 C12 79 4 70 4 50 C4 30 12 21 21 15 C30 9 36 4 50 4Z" stroke-width="3.2"/><circle cx="50" cy="50" r="40" stroke-width="1.2" stroke-dasharray="2.5 2.5"/>`;
-  const top=shape!=="square"?`<path id="${id}" d="M15,52 A35,35 0 0 1 85,52" fill="none"/><text font-family="Nunito,sans-serif" font-weight="900" font-size="${txt.length>14?6.8:8.6}" letter-spacing="1.1" fill="${c}"><textPath href="#${id}" startOffset="50%" text-anchor="middle">${esc(txt)}</textPath></text>`
-   :`<text x="50" y="21" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="8" letter-spacing=".6" fill="${c}"${txt.length>11?` textLength="62" lengthAdjust="spacingAndGlyphs"`:""}>${esc(txt)}</text>`;
+  const top=shape!=="square"?`<path id="${id}" d="M15,52 A35,35 0 0 1 85,52" fill="none"/><text font-family="Inter,sans-serif" font-weight="900" font-size="${txt.length>14?6.8:8.6}" letter-spacing="1.1" fill="${c}"><textPath href="#${id}" startOffset="50%" text-anchor="middle">${esc(txt)}</textPath></text>`
+   :`<text x="50" y="21" text-anchor="middle" font-family="Inter,sans-serif" font-weight="900" font-size="8" letter-spacing=".6" fill="${c}"${txt.length>11?` textLength="62" lengthAdjust="spacingAndGlyphs"`:""}>${esc(txt)}</text>`;
   const [ax,ay]=AP[s.ic]||[70,58],d=date?date.split("-"):null;
   return `<svg class="tns" width="${size}" height="${size}" viewBox="0 0 100 100" aria-hidden="true"${spin?` style="transform:rotate(${spin}deg)"`:""}><g${got?` filter="url(#tn-ink)"`:""} style="color:${c}">
     <g fill="none" stroke="${c}">${frame}</g>${top}
     <g transform="translate(0 ${shape==="hex"?2:4}) scale(1 ${shape==="hex"?.88:.92})" transform-origin="50 40" fill="none" stroke="${c}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">${(ICON[s.ic]||ICON.torii)(c)}</g>
     ${apollo(c,ax,ay,.36)}
     <text x="50" y="${shape==="hex"?72:75}" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="${jp.length>5?7.6:shape==="hex"?8.5:9.5}" fill="${c}" lang="ja">${esc(jp)}</text>
-    ${d?`<text x="50" y="${shape==="hex"?81:85}" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="6.5" letter-spacing="1" fill="${c}">${+d[2]}·${+d[1]}·${d[0].slice(2)}</text>`:""}</g></svg>`;
+    ${d?`<text x="50" y="${shape==="hex"?81:85}" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="6.5" letter-spacing="1" fill="${c}">${+d[2]}·${+d[1]}·${d[0].slice(2)}</text>`:""}</g></svg>`;
 }
 // Stamps sit at a slight angle, the same one every time.
 const tilt=s=>{let h=0;for(const ch of KEY(s))h=(h*31+ch.charCodeAt(0))|0;return (Math.abs(h)%17)-8};
