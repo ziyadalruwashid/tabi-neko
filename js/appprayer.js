@@ -2,8 +2,7 @@
 //
 // - Times are worked out on the phone (no internet needed) from the sun's
 //   position for where you are, or the centre of the city you're exploring.
-//   Umm al-Qura by default; Muslim World League and Egyptian can be picked,
-//   and the Hanafi Asr. Japan time always.
+//   Umm al-Qura with the standard Asr, in Japan time.
 // - A bell on each prayer sets a reminder (Capacitor local notifications,
 //   ids 5000+, so the trip reminders in js/appremind.js leave them alone).
 // - The Qibla compass turns with the phone (the device's compass). Where
@@ -18,6 +17,8 @@ const LN=()=>window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.LocalNotific
 // ---- settings ----
 let set={method:"uq",hanafi:false,bells:{}};
 try{set={...set,...JSON.parse(store.get(KEY)||"{}")}}catch(e){}
+// No settings on the page (the owner asked): always Umm al-Qura, standard Asr.
+set.method="uq";set.hanafi=false;
 const save=()=>{try{store.set(KEY,JSON.stringify(set))}catch(e){}};
 const METHODS={uq:{n:"Umm al-Qura",fajr:18.5,isha:{min:90}},mwl:{n:"Muslim World League",fajr:18,isha:17},egypt:{n:"Egyptian",fajr:19.5,isha:17.5}};
 const NAMES={fajr:"Fajr",sunrise:"Sunrise",dhuhr:"Dhuhr",asr:"Asr",maghrib:"Maghrib",isha:"Isha"};
@@ -146,9 +147,6 @@ function draw(){
     <div class="py-card py-rooms">${shown.length?shown.map((r,i)=>`<button type="button" class="py-room" data-i="${i}"><span class="py-ic">${/Airport/.test(r.n)?"✈️":/Mosque|Camii/.test(r.n)?"🕌":"🍽️"}</span><span><b dir="auto">${esc(r.n)}</b><small>${T(r.note)}</small></span><em>${dist(r)}</em></button>`).join("")
       :`<p class="py-none">${T("No prayer rooms in the notebook here yet.")}</p>`}
       ${list.length>3?`<button type="button" class="py-more">${T(showAll?"Show less":"See all {n}",{n:list.length})}</button>`:""}</div>
-    <h3 class="py-h">⚙️ ${T("Settings")}</h3>
-    <div class="py-card py-set"><label>${T("Method")}<select class="py-m">${Object.entries(METHODS).map(([k,v])=>`<option value="${k}"${k===set.method?" selected":""}>${T(v.n)}</option>`).join("")}</select></label>
-      <label>${T("Asr")}<select class="py-a"><option value="0"${set.hanafi?"":" selected"}>${T("Standard")}</option><option value="1"${set.hanafi?" selected":""}>${T("Hanafi")}</option></select></label></div>
     <p class="py-foot">${T("Times are worked out on your phone for {c}, so they work offline. For Friday prayer, check the times with the mosque.",{c:w.name})}</p>
     </div>`;
   el.querySelector(".py-x").onclick=close;
@@ -159,8 +157,6 @@ function draw(){
     if(r.id&&typeof openPlace==="function")return openPlace(r.id);
     window.open(r.lat?`https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lng}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.q||r.n)}`,"_blank")});
   if(el.querySelector(".py-more"))el.querySelector(".py-more").onclick=()=>{showAll=!showAll;draw()};
-  el.querySelector(".py-m").onchange=e=>{set.method=e.target.value;save();draw();schedule()};
-  el.querySelector(".py-a").onchange=e=>{set.hanafi=e.target.value==="1";save();draw();schedule()};
 }
 function open(fromHistory){el.hidden=false;document.documentElement.classList.add("py-open");if(!fromHistory){showAll=false;history.pushState({tnPray:1},"")}
   draw();clearInterval(tick);tick=setInterval(draw,30000);
