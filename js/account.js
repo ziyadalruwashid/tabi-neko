@@ -64,11 +64,13 @@ const BUDDY_BASE="https://tabi-neko.vercel.app/";
 // GOOGLE_WEB is the Web client ID of Firebase's Google sign-in (Firebase →
 // Authentication → Sign-in method → Google → Web SDK configuration). It's
 // public by design; the client secret never goes here. Google won't open its
-// sign-in page inside the app's web view, so the app needs Android's own
-// account picker (a native plugin) before GOOGLE_IN_APP can be true; until
-// then the app shows email and password only.
-const GOOGLE_WEB="568755432691-h5ek5vcounaooeoj86f66i3v9fdre54q.apps.googleusercontent.com",GOOGLE_IN_APP=false;
-const googleOn=()=>FB_ON&&!!GOOGLE_WEB&&(!IS_APP||GOOGLE_IN_APP);
+// sign-in page inside the app's web view, so the app uses Android's own
+// account picker instead (@capgo/capacitor-social-login). That only works
+// for an app whose signing fingerprint (SHA-1) is registered in Firebase;
+// GOOGLE_IN_APP turns it off in the app again if that's ever needed.
+const GOOGLE_WEB="568755432691-h5ek5vcounaooeoj86f66i3v9fdre54q.apps.googleusercontent.com",GOOGLE_IN_APP=true;
+const SOCIAL=()=>window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.SocialLogin;
+const googleOn=()=>FB_ON&&!!GOOGLE_WEB&&(!IS_APP||(GOOGLE_IN_APP&&!!SOCIAL()));
 // An account that only signs in with Google has no password to type.
 const googleOnly=()=>!!auth&&!!auth.google&&auth.pass===false;
 const G_LOGO=`<svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>`;
@@ -84,7 +86,21 @@ function googleToken(){return new Promise((ok,no)=>{
   google.accounts.oauth2.initTokenClient({client_id:GOOGLE_WEB,scope:"openid email profile",
     callback:r=>r&&r.access_token?ok(r.access_token):no({code:"GOOGLE_CANCELLED"}),
     error_callback:()=>no({code:"GOOGLE_CANCELLED"})}).requestAccessToken()})}
+// The app: Android's account picker gives a Google ID token, which Firebase
+// turns into the same Tabi Neko login as on the website.
+let socialReady=null;
+async function nativeGoogle(){
+  const sl=SOCIAL();if(!sl)throw {};
+  if(!socialReady)socialReady=sl.initialize({google:{webClientId:GOOGLE_WEB,skipAuthOnlyAuthorizationAfterSignIn:true}}).catch(e=>{socialReady=null;throw e});
+  await socialReady;
+  let r;
+  try{r=await sl.login({provider:"google",options:{}})}
+  catch(e){const m=String(e&&(e.message||e.code)||e);throw /cancel/i.test(m)?{code:"GOOGLE_CANCELLED"}:{code:"GOOGLE_NATIVE",msg:m}}
+  const tok=r&&r.result&&r.result.idToken;if(!tok)throw {code:"GOOGLE_NATIVE"};
+  return ID("signInWithIdp",{postBody:`id_token=${encodeURIComponent(tok)}&providerId=google.com`,requestUri:location.origin+"/",returnSecureToken:true,returnIdpCredential:true});
+}
 async function googleIdp(){
+  if(IS_APP)return nativeGoogle();
   if(!gisP)await loadGIS();
   const tok=await googleToken();
   return ID("signInWithIdp",{postBody:`access_token=${encodeURIComponent(tok)}&providerId=google.com`,requestUri:location.origin+"/",returnSecureToken:true,returnIdpCredential:true});
@@ -425,7 +441,7 @@ function renderAcct(){
   const q=s=>el.querySelector(s);
   if(q(".acct-x"))q(".acct-x").onclick=closeAcct;
   el.querySelectorAll(".acct-priv").forEach(l=>l.onclick=e=>{e.preventDefault();closeAcct();show("privacy");history.replaceState(null,"","#privacy")});
-  if(hi){q(".acct-g").onclick=()=>{if(!acct.busy)logInGoogle()};q(".acct-mail").onclick=()=>{acct.mail=true;acct.msg="";renderAcct()};loadGIS().catch(()=>{})}
+  if(hi){q(".acct-g").onclick=()=>{if(!acct.busy)logInGoogle()};q(".acct-mail").onclick=()=>{acct.mail=true;acct.msg="";renderAcct()};if(!IS_APP)loadGIS().catch(()=>{})}
   else if(a.step==="login"||a.step==="signup"){
     wirePw(el);
     q(".acct-f").onsubmit=e=>{e.preventDefault();logIn(q("#acct-email").value,q("#acct-pw").value,a.step==="signup",q("#acct-name")&&q("#acct-name").value)};
@@ -515,6 +531,8 @@ async function forgot(email){
 }
 function loggedOut(expired){
   auth=null;saveAuth();sync={...SYNC0};share={members:[],emails:{},code:""};saveSync();setSync("");
+  // Forget the Google account picked in the app, so the next login can pick another.
+  try{const sl=SOCIAL();if(sl&&socialReady)sl.logout({provider:"google"}).catch(()=>{})}catch(e){}
   if(expired)toast(T("You were logged out. Log in again to keep syncing."));
   // Ask Apollo is for logged-in visitors: logging out closes it and, on a
   // shared phone, leaves nothing of the last person's chat behind.

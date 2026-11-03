@@ -34,6 +34,11 @@ android {
         }
     }
     buildTypes {
+        // The test APK is signed with the same upload key when GitHub has it,
+        // so its fingerprint (SHA-1) never changes and Google sign-in works.
+        debug {
+            if (System.getenv("TN_KEYSTORE")) signingConfig signingConfigs.release
+        }
         release {
             if (System.getenv("TN_KEYSTORE")) signingConfig signingConfigs.release
             minifyEnabled false
