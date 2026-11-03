@@ -36,7 +36,7 @@ function draw(){
       ${auth.verified?`<span class="pf-ok">✓ ${T("confirmed")}</span>`:`<button type="button" class="pf-verify">${T("Confirm your email")}</button>`}
       <div class="pf-stats"><div><b>${num(c.trips)}</b><span>${T("trips")}</span></div><div><b>${num(c.stamps)}</b><span>${T("stamps")}</span></div><div><b>${num(c.places)}</b><span>${T("places saved")}</span></div></div></div>
     <h2 class="pf-h">${T("Account")}</h2>
-    <div class="pf-list">${row("name","🙂",T("Name"),auth.name||"")}${row("buddy","🐾",T("Travel buddy"),b?b.n:"")}${row("email","✉️",T("Email"),auth.email)}${row("password","🔑",T("Password"),since(auth.pwAt))}</div>
+    <div class="pf-list">${row("name","🙂",T("Name"),auth.name||"")}${row("buddy","🐾",T("Travel buddy"),b?b.n:"")}${typeof googleOnly==="function"&&googleOnly()?`<div class="pf-row pf-g">${G_LOGO}<b>${T("Signed in with Google")}</b><small dir="ltr">${esc(auth.email)}</small></div>`:row("email","✉️",T("Email"),auth.email)+row("password","🔑",T("Password"),since(auth.pwAt))}</div>
     <h2 class="pf-h">${T("App")}</h2>
     <div class="pf-list">${row("lang","🌐",T("Language"),isAR()?"العربية":"English")}${row("privacy","🔒",T("Privacy"),"")}</div>
     <div class="pf-list pf-end"><button type="button" class="pf-row pf-out" data-k="out"><b>${T("Log out")}</b></button><button type="button" class="pf-row pf-del" data-k="delete"><b>${T("Delete my account")}</b></button></div>

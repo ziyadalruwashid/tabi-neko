@@ -3103,3 +3103,17 @@ html:not(.tn-app) #crewcs .cs-top,html:not(.tn-app) #crewcs .cs-stage{width:min(
 .ap-acts .ap-rq{flex-basis:100%;font:700 12px var(--body);color:var(--muted)}
 .ap-acts .ap-rx{padding-inline:10px}
 .ap-acts button[data-w]{border:1.5px solid #E6D6BF;border-radius:999px;padding:6px 12px;background:#FFF;color:#3B2A20;font-weight:700}
+/* Login, option C: Apollo says hi, then Google or email */
+.acct-hi{text-align:center}
+.acct-hi h2{padding-inline-end:0;margin-top:2px}
+.acct-hi>p{margin-bottom:14px}
+.acct-hi .acct-cat{position:static;display:block;width:96px;margin:0 auto 4px;transform:none}
+html.tn-app .acct-hi .acct-cat{width:96px}
+.acct-g,.acct-mail{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;height:52px;border-radius:14px;font:700 15px var(--body);cursor:pointer}
+.acct-g{border:1.5px solid #DADCE0;background:#FFF;color:#1F1F1F;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.acct-g:disabled{opacity:.6}
+.acct-mail{margin-top:10px;border:1.5px solid var(--ink,#3B2A20);background:none;color:var(--ink,#3B2A20)}
+.acct-hi .acct-small{margin-top:14px}
+.acct-danger .store svg{vertical-align:-4px;margin-inline-end:4px;background:#FFF;border-radius:50%;padding:2px}
+.pf-g{display:flex;align-items:center;gap:10px}.pf-g small{margin-inline-start:auto;color:var(--muted)}
+
