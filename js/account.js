@@ -52,12 +52,43 @@ const signedIn=r=>({token:r.idToken,refresh:r.refreshToken,uid:r.localId,email:r
 // Your name, travel buddy and whether your email is confirmed, from Firebase.
 async function lookup(){
   try{const r=await ID("lookup",{idToken:await token()}),u=r&&r.users&&r.users[0];if(!u||!auth)return;
-    auth={...auth,email:u.email||auth.email,name:u.displayName||"",photo:u.photoUrl||"",verified:!!u.emailVerified,pwAt:+u.passwordUpdatedAt||0};saveAuth()}
+    const via=(u.providerUserInfo||[]).map(x=>x.providerId);
+    auth={...auth,email:u.email||auth.email,name:u.displayName||"",photo:u.photoUrl||"",verified:!!u.emailVerified,pwAt:+u.passwordUpdatedAt||0,google:via.includes("google.com"),pass:via.includes("password")};saveAuth()}
   catch(e){if(e&&e.status===401)loggedOut(true)}
 }
 // Change your name or picture (the travel buddy's web address).
 async function updateProfile(fields){await ID("update",{idToken:await token(),...fields,returnSecureToken:false});await lookup()}
 const BUDDY_BASE="https://tabi-neko.vercel.app/";
+
+// ---- Sign in with Google ----
+// GOOGLE_WEB is the Web client ID of Firebase's Google sign-in (Firebase →
+// Authentication → Sign-in method → Google → Web SDK configuration). It's
+// public by design; the client secret never goes here. Google won't open its
+// sign-in page inside the app's web view, so the app needs Android's own
+// account picker (a native plugin) before GOOGLE_IN_APP can be true; until
+// then the app shows email and password only.
+const GOOGLE_WEB="",GOOGLE_IN_APP=false;
+const googleOn=()=>FB_ON&&!!GOOGLE_WEB&&(!IS_APP||GOOGLE_IN_APP);
+// An account that only signs in with Google has no password to type.
+const googleOnly=()=>!!auth&&!!auth.google&&auth.pass===false;
+const G_LOGO=`<svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>`;
+// Google's own sign-in script, loaded only when the login sheet opens, so
+// the popup can open straight from the tap.
+let gisP=null;
+const loadGIS=()=>gisP||(gisP=new Promise((ok,no)=>{if(window.google&&google.accounts&&google.accounts.oauth2)return ok();
+  const sc=document.createElement("script");sc.src="https://accounts.google.com/gsi/client";sc.async=true;sc.onload=ok;sc.onerror=()=>{gisP=null;no({})};document.head.appendChild(sc)}));
+// Google's popup: you pick an account, and Google hands back a short-lived
+// token that Firebase turns into a Tabi Neko login.
+function googleToken(){return new Promise((ok,no)=>{
+  if(!(window.google&&google.accounts&&google.accounts.oauth2))return no({});
+  google.accounts.oauth2.initTokenClient({client_id:GOOGLE_WEB,scope:"openid email profile",
+    callback:r=>r&&r.access_token?ok(r.access_token):no({code:"GOOGLE_CANCELLED"}),
+    error_callback:()=>no({code:"GOOGLE_CANCELLED"})}).requestAccessToken()})}
+async function googleIdp(){
+  if(!gisP)await loadGIS();
+  const tok=await googleToken();
+  return ID("signInWithIdp",{postBody:`access_token=${encodeURIComponent(tok)}&providerId=google.com`,requestUri:location.origin+"/",returnSecureToken:true,returnIdpCredential:true});
+}
 const buddyOf=a=>typeof BUDDIES==="undefined"?null:BUDDIES.find(b=>a&&a.photo&&a.photo.endsWith("/"+b.img))||BUDDIES[0];
 // The buddy you picked guides you through the app (see GUIDE in js/app.js).
 function setGuide(){const b=auth&&typeof BUDDIES!=="undefined"?buddyOf(auth):null;GUIDE=b&&b.k!=="apollo"?b:null}
@@ -335,9 +366,15 @@ function renderAcct(){
   const el=$("acct"),a=acct;if(!el||!a)return;
   const err=a.msg?`<p class="thome-msg${a.ok?" ok":""}" role="alert">${esc(a.msg)}</p>`:"";
   let h="";
-  if(a.step==="login"||a.step==="signup"){const up=a.step==="signup";
+  // Option C: Apollo says hi, then Google or email. Email opens the form.
+  const why=T(invite?"Log in, or create an account, to join the trip you were invited to.":a.why==="plan"?"Log in, or create a free account, and Apollo will plan your trip. Your plan is saved to your account too.":a.why==="chat"?"Log in, or create a free account, to chat with Apollo. Ask him anything about your trip.":a.why==="trip"?"Log in, or create a free account, to plan your trip. It's saved to your account, so it's safe on any phone.":"One tap and your trip is saved on every phone.");
+  if(a.step==="login"&&googleOn()&&!a.mail)h=`<h2 id="acct-h">${T("Hi! Ready to plan?")}</h2><p>${why}</p>
+    <button type="button" class="acct-g"${a.busy?" disabled":""}>${G_LOGO}<span>${a.busy?T("One moment…"):T("Continue with Google")}</span></button>
+    <button type="button" class="acct-mail">✉️ ${T("Continue with email")}</button>${err}
+    <p class="acct-small">${T("We only keep your email and your trip, and you can delete both anytime.")} <a href="#privacy" class="acct-priv">${T("Privacy")}</a></p>`;
+  else if(a.step==="login"||a.step==="signup"){const up=a.step==="signup";
     h=`<h2 id="acct-h">${T(up?"Create your account":"Log in to Tabi Neko")}</h2>
-    <p>${T(invite?"Log in, or create an account, to join the trip you were invited to.":a.why==="plan"?"Log in, or create a free account, and Apollo will plan your trip. Your plan is saved to your account too.":a.why==="chat"?"Log in, or create a free account, to chat with Apollo. Ask him anything about your trip.":a.why==="trip"?"Log in, or create a free account, to plan your trip. It's saved to your account, so it's safe on any phone.":"Keep your trip safe and open it on any phone or laptop.")}</p>
+    <p>${a.why||invite?why:T("Keep your trip safe and open it on any phone or laptop.")}</p>
     <form class="acct-f" novalidate>${up?`<input type="text" class="thome-q" id="acct-name" value="${esc(a.name||"")}" placeholder="${esc(T("Your name"))}" aria-label="${esc(T("Your name"))}" autocomplete="given-name" maxlength="40" required>`:""}<input type="email" class="thome-q" id="acct-email" value="${esc(a.email)}" placeholder="${esc(T("your@email.com"))}" aria-label="${esc(T("Email"))}" autocomplete="email" required dir="ltr">
       ${pwField("acct-pw",up?"Password (8 or more characters)":"Password",up?"new-password":"current-password",up)}
       <button type="submit" class="store"${a.busy?" disabled":""}>${a.busy?T("One moment…"):T(up?"Create account":"Log in")}</button></form>${err}
@@ -354,7 +391,11 @@ function renderAcct(){
     <div class="acct-two"><button type="button" class="store" data-keep="server">☁️ ${T("The one in my account")}<small>${esc(a.rec.data&&a.rec.data.name||T("My Japan trip"))}</small></button>
       <button type="button" class="store" data-keep="local">📱 ${T("The one on this phone")}<small>${esc(trip.name||T("My Japan trip"))}</small></button></div>
     <p class="acct-small">${T("The other one is replaced.")}</p>`;
-  else if(a.step==="delete")h=`<h2 id="acct-h">${T("Delete your account?")}</h2>
+  else if(a.step==="delete")h=googleOnly()?`<h2 id="acct-h">${T("Delete your account?")}</h2>
+    <p>${T(googleOn()?"This deletes your account and the trip saved in it. The trip on this phone stays. Confirm with Google.":"This deletes your account and the trip saved in it. The trip on this phone stays.")}</p>
+    <form class="acct-f acct-danger" novalidate><button type="submit" class="store"${a.busy?" disabled":""}>${a.busy?T("One moment…"):googleOn()?G_LOGO+" "+T("Confirm with Google and delete"):T("Delete my account and trip")}</button></form>${err}
+    <p class="acct-small"><button type="button" class="tclear acct-back">${T("Cancel")}</button></p>`
+    :`<h2 id="acct-h">${T("Delete your account?")}</h2>
     <p>${T("This deletes your account and the trip saved in it. The trip on this phone stays. Type your password to confirm.")}</p>
     <form class="acct-f acct-danger" novalidate>${pwField("acct-pw","Password","current-password")}
       <button type="submit" class="store"${a.busy?" disabled":""}>${a.busy?T("One moment…"):T("Delete my account and trip")}</button></form>${err}
@@ -377,16 +418,18 @@ function renderAcct(){
     <p>${T("Logged in as {e}. Your trip is saved to your account.",{e:`<b dir="ltr">${esc(auth&&auth.email||"")}</b>`})}</p>
     <div class="acct-two">${typeof isAdmin==="function"&&isAdmin()?`<button type="button" class="store acct-admin">📊 ${T("Admin dashboard")}</button>`:""}<button type="button" class="store acct-out">${T("Log out")}</button></div>
     <p class="acct-small"><button type="button" class="tclear acct-del">${T("Delete my account and trip")}</button> · <a href="#privacy" class="acct-priv">${T("Privacy")}</a></p>`;
-  el.innerHTML=`<div class="tpick-sheet acct-sheet" role="dialog" aria-modal="true" aria-labelledby="acct-h">
+  const hi=a.step==="login"&&googleOn()&&!a.mail;
+  el.innerHTML=`<div class="tpick-sheet acct-sheet${hi?" acct-hi":""}" role="dialog" aria-modal="true" aria-labelledby="acct-h">
     ${a.step==="choose"?"":`<button type="button" class="tdel acct-x" aria-label="${esc(T("Close"))}">×</button>`}
-    <img src="assets/cat.png" alt="" class="acct-cat">${h}</div>`;
+    <img src="${hi&&typeof GI==="function"?GI():"assets/cat.png"}" alt="" class="acct-cat">${h}</div>`;
   const q=s=>el.querySelector(s);
   if(q(".acct-x"))q(".acct-x").onclick=closeAcct;
   el.querySelectorAll(".acct-priv").forEach(l=>l.onclick=e=>{e.preventDefault();closeAcct();show("privacy");history.replaceState(null,"","#privacy")});
-  if(a.step==="login"||a.step==="signup"){
+  if(hi){q(".acct-g").onclick=()=>{if(!acct.busy)logInGoogle()};q(".acct-mail").onclick=()=>{acct.mail=true;acct.msg="";renderAcct()};loadGIS().catch(()=>{})}
+  else if(a.step==="login"||a.step==="signup"){
     wirePw(el);
     q(".acct-f").onsubmit=e=>{e.preventDefault();logIn(q("#acct-email").value,q("#acct-pw").value,a.step==="signup",q("#acct-name")&&q("#acct-name").value)};
-    q(".acct-mode").onclick=()=>{acct={step:a.step==="signup"?"login":"signup",email:q("#acct-email").value,msg:"",why:a.why};renderAcct()};
+    q(".acct-mode").onclick=()=>{acct={step:a.step==="signup"?"login":"signup",email:q("#acct-email").value,msg:"",why:a.why,mail:true};renderAcct()};
     if(q(".acct-forgot"))q(".acct-forgot").onclick=()=>forgot(q("#acct-email").value);
     if(!a.busy)(a.step==="signup"&&!a.name?q("#acct-name"):a.email?q("#acct-pw"):q("#acct-email")).focus()}
   if(a.step==="welcome"){
@@ -402,8 +445,8 @@ function renderAcct(){
   if(a.step==="me"){q(".acct-out").onclick=()=>{loggedOut(false);closeAcct();toast(T("Logged out. Your trip stays on this phone."))};
     if(q(".acct-admin"))q(".acct-admin").onclick=()=>{closeAcct();show("admin");history.replaceState(null,"","#admin");renderAdmin()};
     q(".acct-del").onclick=()=>{acct={step:"delete",msg:""};renderAcct()}}
-  if(a.step==="delete"){wirePw(el);q(".acct-f").onsubmit=e=>{e.preventDefault();deleteAccount(q("#acct-pw").value)};
-    q(".acct-back").onclick=()=>{acct={step:"me",msg:""};renderAcct()};if(!a.busy)q("#acct-pw").focus()}
+  if(a.step==="delete"){wirePw(el);q(".acct-f").onsubmit=e=>{e.preventDefault();deleteAccount(q("#acct-pw")&&q("#acct-pw").value)};
+    q(".acct-back").onclick=()=>{acct={step:"me",msg:""};renderAcct()};if(!a.busy&&q("#acct-pw"))q("#acct-pw").focus()}
   if(a.step==="share"){
     if(q(".acct-f"))q(".acct-f").onsubmit=e=>{e.preventDefault();setCode(true)};
     if(q(".acct-send"))q(".acct-send").onclick=sendInvite;
@@ -428,7 +471,7 @@ async function logIn(email,pw,signup,name){
   acct={...acct,busy:true,msg:"",ok:false};renderAcct();
   try{
     const r=await ID(signup?"signUp":"signInWithPassword",{email,password:pw,returnSecureToken:true});
-    auth=signedIn({...r,email:r.email||email});
+    auth=signedIn({...r,email:r.email||email});auth.pass=true;
     // A new account gets its name, and an email to confirm the address.
     if(signup){auth.name=name;try{await ID("update",{idToken:r.idToken,displayName:name,returnSecureToken:false})}catch(e){}
       try{await ID("sendOobCode",{requestType:"VERIFY_EMAIL",idToken:r.idToken})}catch(e){}}
@@ -441,6 +484,27 @@ async function logIn(email,pw,signup,name){
     say(c==="EMAIL_EXISTS"?T("There's already an account with this email. Log in instead."):c==="WEAK_PASSWORD"?T("Your password needs at least 8 characters.")
       :c==="USER_DISABLED"?T("This account has been turned off."):WRONG.includes(c)?T("Wrong email or password."):failMsg(e));
   }
+}
+// Log in, or make an account, with Google. A new account gets the person's
+// first name and Apollo as their buddy (so Google's photo isn't kept), then
+// the buddy picker, like a new email account.
+async function logInGoogle(){
+  let r;
+  try{r=await googleIdp()}catch(e){if(!acct)return;if(e&&e.code==="GOOGLE_CANCELLED")return;return say(e&&e.status?failMsg(e):T("Couldn't open Google sign-in. Try again, or use your email."))}
+  if(!acct)acct={step:"login",msg:""};
+  if(r.needConfirmation||!r.idToken)return say(T("There's already a Tabi Neko account with this email. Log in with your email and password."));
+  acct={...acct,busy:true,msg:""};renderAcct();
+  try{
+    auth=signedIn(r);auth.google=true;auth.pass=false;auth.name=r.displayName||"";
+    if(r.isNewUser){const first=String(r.firstName||(r.displayName||"").split(" ")[0]||"").slice(0,40);auth.name=first;
+      const b=typeof BUDDIES!=="undefined"&&BUDDIES[0];
+      try{await ID("update",{idToken:r.idToken,displayName:first,...(b?{photoUrl:BUDDY_BASE+b.img}:{}),returnSecureToken:false})}catch(e){}
+      if(b)auth.photo=BUDDY_BASE+b.img}
+    saveAuth();
+    toast(T(r.isNewUser?"Account created ✓ Your trip is saved to your account.":"Logged in ✓ Your trip is saved to your account."));
+    acct.busy=false;await afterLogin();
+    if(r.isNewUser){if(!(acct&&acct.step==="choose"))openAcct("welcome")}else lookup();
+  }catch(e){say(e&&e.code==="USER_DISABLED"?T("This account has been turned off."):failMsg(e))}
 }
 // Firebase sends the reset email itself, with a page to choose a new password.
 async function forgot(email){
@@ -461,17 +525,23 @@ function loggedOut(expired){
 // password is asked again. You leave any shared trip and your own trip is
 // deleted first, while we're still allowed.
 async function deleteAccount(pw){
-  if(!pw)return say(T("Type your password."));
+  const g=googleOnly();
+  if(!g&&!pw)return say(T("Type your password."));
+  // Deleting needs a fresh login: the password, or Google once more. (In the
+  // app before Google works there, the current login is tried as it is.)
+  let r=null;
+  if(g&&googleOn()){try{r=await googleIdp()}catch(e){if(e&&e.code==="GOOGLE_CANCELLED")return;return say(T("Couldn't open Google sign-in. Try again, or use your email."))}
+    if(!r.idToken||r.localId!==auth.uid)return say(T("That's a different Google account. Pick the one you log in with."))}
   acct={...acct,busy:true,msg:""};renderAcct();
   try{
-    const r=await ID("signInWithPassword",{email:auth.email,password:pw,returnSecureToken:true});
-    auth=signedIn({...r,email:auth.email});
+    if(!g)r=await ID("signInWithPassword",{email:auth.email,password:pw,returnSecureToken:true});
+    if(r)auth={...auth,...signedIn({...r,email:auth.email})};
     if(tripOwner()!==me())try{await fsCommit([{update:{name:`${FS_PATH}/trips/${tripOwner()}`,fields:{}},updateMask:{fieldPaths:["emails."+KEYP(me())]},
       updateTransforms:[{fieldPath:"members",removeAllFromArray:{values:[S(me())]}}],currentDocument:{exists:true}}])}catch(e){}
     for(const p of ["trips/"+me(),"users/"+me(),"stamps/"+me()])try{await call(`${FS}/${p}`,{method:"DELETE",token:auth.token})}catch(e){if(!(e&&e.status===404))throw e}
     await ID("delete",{idToken:auth.token});
     loggedOut(false);closeAcct();toast(T("Your account is deleted."));
-  }catch(e){say(WRONG.includes(e&&e.code)?T("That password isn't right."):failMsg(e))}
+  }catch(e){const c=e&&e.code;say(c==="CREDENTIAL_TOO_OLD_LOGIN_AGAIN"?T("For your safety, log out and log in again, then delete."):WRONG.includes(c)?T("That password isn't right."):failMsg(e))}
 }
 
 // ---- the bar at the top of My trip ----

@@ -12,7 +12,7 @@ const QS=[
   ["🐱","Ask Apollo","Questions you ask Apollo are sent to Anthropic's Claude to write the answer, under Anthropic's own privacy policy. They aren't linked to your account, and we don't keep them. Only if you tap Report on an answer do we save that one question and answer, without your account, so we can fix it."],
   ["📊","What we count","One number per day for app opens and one for website visits. Nothing about you goes with it: no cookies, no IP address, no device details."],
   ["🗺️","Maps and hotel search","The map pictures come from OpenFreeMap. When you search for where you're staying, what you type goes to OpenStreetMap's free search to find it."],
-  ["🔐","Where it's stored","Your account, trips and stamps are stored with Google Firebase, which runs the server for us. We don't sell it, share it or use it for ads."]
+  ["🔐","Where it's stored","Your account, trips and stamps are stored with Google Firebase, which runs the server for us. If you log in with Google, Google only tells us your name and email; we don't keep your Google photo. We don't sell any of it, share it or use it for ads."]
 ];
 const PHONE=[["📍","Your location (Near me, stamps)"],["📸","Halal Lens photos, read on the phone"],["🔔","Your reminders"],["🌐","Your language"]];
 const ACCT=[["✉️","Email (password scrambled)"],["🐱","Your name and buddy"],["🗓️","Your trips"],["🐾","Your stamps"]];
