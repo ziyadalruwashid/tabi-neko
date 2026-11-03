@@ -422,7 +422,10 @@ function onBack(){
   if(H.classList.contains("chat-open")&&typeof closeApollo==="function"){closeApollo();return}
   const mc=document.querySelector(".mp-cities:not([hidden])");if(mc){mc.hidden=true;return}
   const st=history.state||{};
-  if(st.tnPlace||st.tnList||st.tnSearch||st.tnDay||st.tnTrip||st.tnBook||st.tnProf||st.tnLens||st.tnRemind||st.tnAreas||st.tnCrew||st.tnApps||st.tnTrips||st.tnPriv){history.back();return}
+  // Every page the app opens on top (a place, a list, Prayer times, Show
+  // the staff…) pushes a history entry marked tn…; back closes the top one.
+  // Any marker counts, so a new page can't be left out of this list.
+  if(Object.keys(st).some(k=>/^tn[A-Z]/.test(k)&&st[k])){history.back();return}
   const c=current(),h=location.hash.slice(1);
   if(h==="hoods"){go("explore");return}
   if(SUB.includes(h)){go("menu");return}
