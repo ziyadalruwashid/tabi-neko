@@ -3161,4 +3161,31 @@ html.tn-app .py-card-btn .py-cbig{font-size:30px}html.tn-app .py-card-btn b{disp
 .qb-start{display:block;margin:10px auto 0;border:0;border-radius:999px;background:var(--ink);color:#FFF;padding:12px 20px;font:700 14px var(--body)}
 .qb-strip{display:flex;gap:8px;overflow-x:auto;padding:8px 16px 4px}.qb-pc{flex:none;min-width:70px;border-radius:16px;background:#FFF;padding:10px 8px;text-align:center;box-shadow:0 2px 0 var(--rule)}
 .qb-pc small{display:block;font:700 11px var(--body);color:var(--muted)}.qb-pc b{font:800 15px var(--body)}.qb-pc.on{background:var(--lantern);color:#FFF}.qb-pc.on small{color:#FFE2D6}
+/* Show the staff (js/appstaff.js) */
+#staffview{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}#staffview[hidden],#staffshow[hidden]{display:none}
+.sf-taxi{position:relative;overflow:hidden;display:block;width:calc(100% - 32px);margin:6px 16px 4px;border:0;border-radius:24px;padding:18px 18px 16px;background:linear-gradient(160deg,#FFD13B,#F5B70A);color:var(--ink);text-align:start;font:inherit;cursor:pointer}
+.sf-taxi small{display:block;font:800 11px var(--body);letter-spacing:.06em}.sf-taxi b{display:block;font:400 23px/1.15 var(--display);margin:4px 0 0;padding-inline-end:70px;overflow-wrap:anywhere}
+.sf-taxi .sf-jp{display:block;text-align:start;font:800 19px/1.4 "Hiragino Sans","Noto Sans JP","Noto Sans CJK JP",sans-serif;margin-top:6px}
+.sf-taxi>span:not(.sf-jp):not(.sf-pin){display:block;font:600 13px/1.45 var(--body);margin-top:4px;padding-inline-end:60px}
+.sf-pin{display:inline-block;margin-top:10px;background:rgba(255,255,255,.6);border-radius:999px;padding:6px 12px;font:700 12px var(--body)}
+.sf-taxi img{position:absolute;inset-inline-end:10px;top:12px;width:62px}
+.sf-next{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer}.sf-next small{display:block;font:600 12px var(--body);color:var(--muted)}.sf-next b{font:700 15px var(--body)}.sf-next>i{margin-inline-start:auto;font-style:normal;font-size:20px}
+.sf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 16px}
+.sf-g{border:0;background:#FFF;border-radius:18px;padding:14px;box-shadow:0 2px 0 var(--rule);text-align:start;font:inherit;color:var(--ink);cursor:pointer}
+.sf-g em{font-style:normal;font-size:24px}.sf-g b{display:block;font:700 14px var(--body);margin-top:6px}.sf-g small{display:block;font:600 12px "Hiragino Sans","Noto Sans JP",sans-serif;color:var(--muted);margin-top:2px}
+.sf-g.sos{background:#FCE3DA}
+#staffshow{position:fixed;inset:0;z-index:62;background:#FFF;display:flex;flex-direction:column;padding:calc(12px + env(safe-area-inset-top)) 20px calc(22px + env(safe-area-inset-bottom))}
+.ss-top{display:flex;align-items:center;gap:10px}.ss-top span{flex:1;text-align:center;font:700 13px var(--body);color:var(--muted)}.ss-top i{width:46px}
+.ss-x,.ss-say{width:46px;height:46px;border-radius:50%;border:0;font-size:20px;cursor:pointer}.ss-x{background:#F6EEE2;color:var(--ink)}.ss-say{background:var(--lantern);color:#FFF}
+.ss-main{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;overflow-y:auto}
+.ss-jp{font-family:"Hiragino Sans","Noto Sans JP","Noto Sans CJK JP",sans-serif;font-weight:800;line-height:1.35;color:#2A140C;text-align:center}
+.ss-jp span{display:inline-block;word-break:keep-all;overflow-wrap:anywhere}
+.ss-sub{font:800 22px var(--body);color:var(--shinkansen);margin-top:10px}
+.ss-tr{font:600 15px/1.45 var(--body);color:var(--muted);margin:10px 0 0}.ss-tr+.ss-tr{margin-top:2px}
+.ss-pin{align-self:center;margin-top:14px;border:0;border-radius:999px;background:#EEF2FA;color:var(--shinkansen);padding:10px 16px;font:700 14px var(--body)}
+.ss-hint,.ss-heard{text-align:center;font:700 13px var(--body);color:var(--muted);margin:10px 0}.ss-heard b{color:var(--ink);font-size:16px}
+.ss-ans{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ss-a{border:0;border-radius:18px;padding:14px 6px;cursor:pointer;font:inherit}.ss-a b{display:block;font:800 22px "Hiragino Sans","Noto Sans JP",sans-serif}.ss-a small{display:block;font:600 12px var(--body);margin-top:2px}
+.ss-a.yes{background:#E6F2D6;color:#3F6E14}.ss-a.no{background:#FCE3DA;color:#B4361A}.ss-a.there{background:#EEF2FA;color:var(--shinkansen)}.ss-a.wait{background:#F6EEE2;color:var(--ink)}.ss-a.there b,.ss-a.wait b{font-size:17px}
+.ss-a.on{outline:3px solid currentColor;outline-offset:-3px}
 
