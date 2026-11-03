@@ -566,7 +566,7 @@ if(typeof renderHoods==="function"){const _rh=renderHoods;renderHoods=function()
   document.querySelectorAll("#hgrid .hcard").forEach((c,i)=>c.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openArea(list[i])},true))};renderHoods()}
 
 // ---- More ----
-const MORE=[["Discover",[["🚆","Day trips","trips"],["📱","Apps to download","apps"]]],
+const MORE=[["Discover",[["🗣️","Show the staff","staff"],["🚆","Day trips","trips"],["📱","Apps to download","apps"]]],
   ["Settings",[["🔔","Reminders","remind"],["🌐","Language","lang"],["🔒","Privacy","privacy"],["🐾","Contributors","crew"]]]];
 window.tnRenderMore=()=>renderMore();
 function renderMore(){
@@ -589,6 +589,7 @@ function renderMore(){
   el.querySelectorAll(".am-li").forEach(b=>b.onclick=()=>{const k=b.dataset.k;
     if(k==="lang"){setLang(isAR()?"en":"ar");return}
     if(k==="remind"){if(typeof tnOpenReminders==="function")tnOpenReminders();return}
+    if(k==="staff"&&window.tnOpenStaff){tnOpenStaff();return}
     if(k==="crew"&&window.tnOpenCrew){tnOpenCrew();return}
     if(k==="privacy"&&window.tnOpenPrivacy){tnOpenPrivacy();return}
     if(k==="apps"&&window.tnOpenApps){tnOpenApps();return}
