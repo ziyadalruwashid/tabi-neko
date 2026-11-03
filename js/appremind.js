@@ -49,7 +49,8 @@ let busy=false;
 async function schedule(ask){
   const L=LN();if(!L||busy)return;busy=true;
   try{
-    const pend=await L.getPending();if(pend&&pend.notifications&&pend.notifications.length)await L.cancel({notifications:pend.notifications.map(n=>({id:n.id}))});
+    // Only its own (ids under 5000): prayer reminders (js/appprayer.js) are 5000+.
+    const pend=await L.getPending(),own=(pend&&pend.notifications||[]).filter(n=>n.id<5000);if(own.length)await L.cancel({notifications:own.map(n=>({id:n.id}))});
     const list=plan();if(!list.length)return;
     let p=await L.checkPermissions();
     // Asking is the shrine bell's job (js/appbell.js); this only sets them.
@@ -59,7 +60,7 @@ async function schedule(ask){
 }
 // Tapping one opens that day in My trip.
 try{const L=LN();if(L&&L.addListener)L.addListener("localNotificationActionPerformed",e=>{const x=e&&e.notification&&e.notification.extra;
-  if(x&&typeof window.tnOpenDay==="function"){const tb=document.querySelector('#tabbar [data-t="trip"]');if(tb)tb.click();setTimeout(()=>tnOpenDay(x.a,x.b),150)}})}catch(e){}
+  if(x&&x.a!==undefined&&typeof window.tnOpenDay==="function"){const tb=document.querySelector('#tabbar [data-t="trip"]');if(tb)tb.click();setTimeout(()=>tnOpenDay(x.a,x.b),150)}})}catch(e){}
 // Set them when the app opens and again when you leave it (your plan may have changed).
 setTimeout(()=>schedule(false),2500);
 window.tnRemindNow=()=>schedule(false);
