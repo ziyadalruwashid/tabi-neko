@@ -67,7 +67,7 @@ const BUDDY_BASE="https://tabi-neko.vercel.app/";
 // sign-in page inside the app's web view, so the app needs Android's own
 // account picker (a native plugin) before GOOGLE_IN_APP can be true; until
 // then the app shows email and password only.
-const GOOGLE_WEB="",GOOGLE_IN_APP=false;
+const GOOGLE_WEB="568755432691-h5ek5vcounaooeoj86f66i3v9fdre54q.apps.googleusercontent.com",GOOGLE_IN_APP=false;
 const googleOn=()=>FB_ON&&!!GOOGLE_WEB&&(!IS_APP||GOOGLE_IN_APP);
 // An account that only signs in with Google has no password to type.
 const googleOnly=()=>!!auth&&!!auth.google&&auth.pass===false;
