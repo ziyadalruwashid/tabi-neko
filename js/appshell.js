@@ -193,23 +193,6 @@ function dailyPick(){const a=inCity().filter(p=>p.photo&&(p.gem||p.tier==="must"
 const MONTHS_AR=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
 const MONTHS_EN=["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-// A practical tip a day: the things first-timers wish they had known.
-const TIPS=["Put a Suica or PASMO card in your phone's wallet: tap it on trains, buses and at convenience stores.",
-  "Bins are rare on the street. Keep a small bag for your rubbish until you find one at a konbini.",
-  "On escalators, stand on the left in Tokyo and on the right in Osaka.",
-  "Trains are quiet: no phone calls, and keep your voice low.",
-  "There's no tipping in Japan. Leaving money on the table can confuse the staff.",
-  "Many small restaurants take cash only. 7-Eleven ATMs accept foreign cards.",
-  "In a konbini, check snack labels for pork (豚・ポーク) and alcohol (アルコール・みりん).",
-  "Big stations and both Tokyo airports have prayer rooms. Ask at the information desk.",
-  "Coin lockers at stations fit a cabin bag, so you can explore before check-in.",
-  "Send big suitcases to your next hotel with takkyubin, from the hotel desk or a konbini.",
-  "Google Maps is great for trains in Japan: it shows the platform, the car and the fare.",
-  "Tap water is safe to drink everywhere.",
-  "Take your shoes off where you see a step up or slippers at the door.",
-  "In Nara, the deer bow before you feed them. Show empty hands when you're out of crackers."];
-function tipCard(){const t=TIPS[jst().day%TIPS.length];
-  return `<div class="xs-tip"><img src="${GI()}" alt=""><span><small>${T("Apollo's tip of the day 💡")}</small><b>${esc(T(t))}</b></span></div>`}
 // The city's neighbourhoods, from the Areas page, as wide photo cards.
 function areasRow(){const hs=HOODS.filter(h=>h.city===exploreCity&&h.photo);if(!hs.length)return "";
   return `<section class="ax-row"><header><h2>${T("Areas to explore 🏘️")}</h2><button type="button" class="ax-all xs-areas-all">${T("See all")}</button></header><div class="ax-hs">${hs.map(h=>`<button type="button" class="xs-area" data-h="${esc(h.n)}">
@@ -437,7 +420,7 @@ try{const A=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.App;if(A&&A.a
 window.tnBack=onBack; // for tests
 window.goTab=go;window.openListPage=openList; // and so does search (js/appsearch.js)
 // Every way of picking a place opens its page instead of unfolding the card.
-const _select=select;select=function(id){if(!id)return;if(typeof closeApollo==="function")closeApollo();openPlace(id)};
+select=function(id){if(!id)return;if(typeof closeApollo==="function")closeApollo();openPlace(id)};
 
 // ---- a list page: a story, a mood, the season or "See all" ----
 const lv=document.createElement("div");lv.id="lview";lv.hidden=true;lv.setAttribute("role","dialog");lv.setAttribute("aria-modal","true");document.body.appendChild(lv);
@@ -561,7 +544,6 @@ function openAreas(c,fromHistory){axCity=c||axCity||exploreCity;if(!fromHistory)
   if(!fromHistory)history.pushState({tnAreas:1},"")}
 function closeAreasNow(){axv.hidden=true;if(pv.hidden&&lv.hidden)document.documentElement.classList.remove("pv-open")}
 addEventListener("popstate",e=>{const st=e.state||{};if(st.tnAreas){if(axv.hidden)openAreas(null,true)}else if(!st.tnList&&!st.tnPlace&&!axv.hidden)closeAreasNow()});
-window.tnOpenAreas=openAreas;
 
 // On the Areas page, a card opens the area's own page instead of flipping.
 if(typeof renderHoods==="function"){const _rh=renderHoods;renderHoods=function(){_rh();

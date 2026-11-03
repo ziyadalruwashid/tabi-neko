@@ -130,6 +130,5 @@ function close(){if(history.state&&history.state.tnRemind)history.back();else cl
 addEventListener("popstate",e=>{const st=e.state||{};if(st.tnRemind)open(true);else if(!pg.hidden)closeNow()});
 window.tnOpenReminders=()=>open();
 // For tests: what would be scheduled now.
-window.tnRemindPlan=plan;
 if(typeof window.tnRenderMore==="function")tnRenderMore();
 })();

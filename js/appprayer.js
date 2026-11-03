@@ -217,5 +217,4 @@ addEventListener("popstate",e=>{const st=e.state||{};
   if(st.tnQibla&&qv.hidden)openQibla(true);
   if(st.tnPray){if(el.hidden)open(true)}else if(!el.hidden)closeNow()});
 window.tnOpenPrayer=()=>open();
-window.tnPrayCard=()=>`<button type="button" class="py-card-btn"><span class="py-cbig" aria-hidden="true">🕌</span><span><b>${T("Prayer times & Qibla")}</b><small>${T("Today's times, a Qibla compass and prayer rooms nearby.")}</small></span><i aria-hidden="true">›</i></button>`;
 })();

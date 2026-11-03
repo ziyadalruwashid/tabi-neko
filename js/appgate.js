@@ -6,7 +6,7 @@
 (function(){
 if(typeof IS_APP==="undefined"||!IS_APP||typeof FB_ON==="undefined"||!FB_ON)return;
 const logged=()=>typeof auth!=="undefined"&&!!auth;
-window.tnLogged=logged;
+
 // Every button that adds a place to the trip, wherever it is.
 const ADD=".addtrip,.mp-add,.hx-madd,.lr-add,.ar-add,.tsave,.ap-add";
 let pending=null;

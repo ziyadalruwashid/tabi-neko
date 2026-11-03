@@ -48,16 +48,16 @@ img{max-width:100%;display:block}
 /* header */
 .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:22px 18px;border-bottom:1.5px dashed var(--rule)}
 
-/* search: a taped-in index card, not a search engine box.
+/* search: a taped-in index card,not a search engine box.
    Sits with the city/area/category rows — it filters the same places they do. */
-/* Row order is: areas, search, filters. The three padding-blocks interlock —
+/* Row order is: areas,search,filters. The three padding-blocks interlock —
    each row's bottom plus the next row's top is the gap between them — so
    moving a row means moving its padding with it. */
 .search{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding-block:10px 14px}
 .search .lead{font-family:var(--hand);font-size:20px;color:var(--muted)}
 .sbox{position:relative;display:flex;align-items:center;flex:1 1 240px;max-width:360px}
 /* z-index: the focus transform below promotes the input into the positioned
-   paint layer, which would otherwise cover this icon while you type. */
+   paint layer,which would otherwise cover this icon while you type. */
 .search .mag{position:absolute;left:11px;z-index:1;width:17px;height:17px;color:var(--muted);pointer-events:none}
 .search input{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--sheet);
   border:1.5px solid var(--rule);border-radius:4px;padding:7px 30px 8px 34px;transition:border-color .15s,transform .15s}
@@ -70,7 +70,7 @@ img{max-width:100%;display:block}
 .qres{position:absolute;top:calc(100% + 7px);left:0;right:0;z-index:40;background:var(--sheet);
   border:1.5px solid var(--ink);border-radius:5px;box-shadow:3px 4px 0 rgba(63,33,22,.13);
   max-height:min(62vh,420px);overflow-y:auto;padding:4px}
-/* Both lines are clipped to one row each, so every result is the same height
+/* Both lines are clipped to one row each,so every result is the same height
    and a long Japanese name can't push the meta line out of alignment. */
 .qr{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 9px;align-items:baseline;padding:7px 9px;cursor:pointer;border-radius:4px}
 .qr+.qr{border-top:1px dashed var(--rule)}
@@ -84,7 +84,7 @@ img{max-width:100%;display:block}
 .qr[aria-selected="true"] .qn mark{background:var(--yuzu)}
 .qnone{margin:0;padding:10px 11px;font-family:var(--hand);font-size:19px;color:var(--muted)}
 @media (max-width:760px){.sbox{max-width:none}}
-/* Near me: a pill beside the search box. Pressed, it turns blue to match the
+/* Near me: a pill beside the search box. Pressed,it turns blue to match the
    you-are-here dot on the map and the distance tags on the cards. */
 .nearb{appearance:none;cursor:pointer;font:700 14px var(--body);color:var(--ink);background:var(--sheet);border:1.5px solid var(--ink);border-radius:999px;padding:6px 14px 7px 11px;white-space:nowrap;transition:background .15s,color .15s,border-color .15s}
 .nearb:hover:not(:disabled){background:var(--ink);color:var(--paper)}
@@ -110,7 +110,7 @@ img{max-width:100%;display:block}
 /* On a phone or small tablet the links fold into a menu: a three-line button
    beside the language switch opens them as a taped paper card under the
    header. Seven links and the account button need about 840px to sit on one
-   line, so the menu takes over a little before that. */
+   line,so the menu takes over a little before that. */
 @media (max-width:880px){
   .top{position:relative;padding-block:16px 12px}
   .langb{margin-inline-start:auto;order:1}
@@ -164,12 +164,9 @@ img{max-width:100%;display:block}
 .hero-side .cat{width:230px;transform:rotate(4deg);margin-left:auto}
 .hero-side .note{position:absolute;left:-70px;bottom:-4px;font-family:var(--hand);font-size:22px;line-height:1.1;color:var(--ink);transform:rotate(-5deg);max-width:150px}
 .hero-side .note svg{display:block;width:70px;height:46px;margin:-6px 0 0 70px;transform:rotate(-12deg)}
-.stub{position:absolute;top:-34px;left:-40px;z-index:2;background:var(--sheet);padding:10px 14px 8px;transform:rotate(-8deg);box-shadow:0 2px 6px rgba(63,33,22,.12);font-family:var(--body);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
-  -webkit-mask:radial-gradient(circle 6px at 0 50%,#0000 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 6px at 100% 50%,#0000 98%,#000) right/51% 100% no-repeat}
-.stub b{display:block;font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:.02em;color:var(--ink);text-transform:none}
 
 /* cities */
-/* The row scrolls sideways, so it clips anything outside it, and the circle
+/* The row scrolls sideways,so it clips anything outside it,and the circle
    drawn round the chosen city reaches 14px past the button. The padding gives
    the circle room; the matching negative margin keeps the names in line. */
 .cities{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;align-items:center;gap:4px 14px;padding:18px 20px 8px;margin-inline:-20px;border-top:1.5px dashed var(--rule)}
@@ -225,7 +222,7 @@ img{max-width:100%;display:block}
 .f i{width:11px;height:11px;border-radius:50%;background:var(--c);flex:0 0 auto}
 /* The sticker replaces the colour dot on the category buttons. Each one is
    tilted by its own --r so the row looks stuck down by hand; hover straightens
-   it. Switched off, it drains to grey the way the label dims. */
+   it. Switched off,it drains to grey the way the label dims. */
 .fi{width:26px;height:26px;flex:0 0 auto;object-fit:contain;
   transform:rotate(var(--r,-4deg));transform-origin:50% 60%;
   transition:transform .18s,filter .18s,opacity .18s}
@@ -285,9 +282,9 @@ svg.map{display:block;width:100%;height:auto;border:1px solid var(--rule)}
 .meta .c{color:var(--ink);font-weight:700;display:inline-flex;align-items:center;gap:6px}
 .meta .c i{width:9px;height:9px;border-radius:50%;background:var(--c)}
 .note{font-family:var(--body);font-size:16.5px;line-height:1.6;margin:0 0 10px;color:var(--ink)}
-/* Place descriptions: three lines, then "Read more". */
+/* Place descriptions: three lines,then "Read more". */
 .entry .note:not(.open){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
-/* In Apollo's handwriting and a soft brown, so it reads as part of the note
+/* In Apollo's handwriting and a soft brown,so it reads as part of the note
    and never like the blue Google Maps link under it. */
 .more-note{appearance:none;border:0;background:none;padding:0 2px;margin:-8px 0 14px;cursor:pointer;display:flex;width:fit-content;align-items:center;gap:5px;
   font:700 18px var(--hand);color:var(--muted);border-bottom:1.5px dashed currentColor;line-height:1.3}
@@ -322,7 +319,6 @@ svg.map{display:block;width:100%;height:auto;border:1px solid var(--rule)}
 .save h2,.about h2{font-family:var(--display);font-weight:400;font-size:clamp(34px,5vw,56px);line-height:.95;margin:6px 0 14px;text-wrap:balance}
 .save .how{font-family:var(--hand);font-size:22px;line-height:1.3;margin:0}
 .save .how b{color:var(--lantern)}
-.save .mapimg{width:110px;transform:rotate(-10deg);margin-top:16px}
 .tags{list-style:none;margin:0;padding:0}
 .tags li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 0;border-bottom:1.5px dashed var(--rule)}
 .tags li:first-child{border-top:1.5px dashed var(--rule)}
@@ -409,12 +405,12 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 
 .member .ph{background:color-mix(in srgb,var(--c) 18%,var(--sheet))}
 /* Taking the art out of flow so a portrait cutout can't stretch the square.
-   In flow, height:90% has nothing definite to resolve against and the image
-   falls back to its own aspect ratio, so a tall sticker renders bigger than a
+   In flow,height:90% has nothing definite to resolve against and the image
+   falls back to its own aspect ratio,so a tall sticker renders bigger than a
    square one and gets clipped by the overflow. */
 .member .ph img{position:absolute;top:5%;left:5%;width:90%;height:90%;object-fit:contain}
 .member .ph.photo img{top:0;left:0;width:100%;height:100%;object-fit:cover}
-/* The polaroid only reserves one line of caption below the photo, so clamp
+/* The polaroid only reserves one line of caption below the photo,so clamp
    rather than let a long name wrap out through the bottom of the frame. */
 .member .cap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 5px}
 .member .initial{font-family:var(--display);font-size:44px;line-height:1;color:var(--c);opacity:.85}
@@ -425,8 +421,8 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .member .tip{font-family:var(--body);font-size:15.5px;line-height:1.55;color:var(--muted);margin-top:6px}
 @media (max-width:520px){.member{grid-template-columns:110px minmax(0,1fr);gap:16px}.member .initial{font-size:34px}}
 /* ---- neighbourhood cards ----
-   Trading cards: a coloured frame per city, photo, a vibe strip, five stat
-   bars, and a back you flip to. Both faces sit in the same grid cell, so
+   Trading cards: a coloured frame per city,photo,a vibe strip,five stat
+   bars,and a back you flip to. Both faces sit in the same grid cell,so
    the card is as tall as its longer side and nothing jumps when it turns. */
 .hcities{display:flex;flex-wrap:wrap;gap:8px 10px;padding-block:28px 6px}
 .hcity{appearance:none;cursor:pointer;font:400 20px var(--display);color:var(--ink);background:var(--sheet);border:2px solid var(--ink);border-radius:999px;padding:6px 16px 7px;display:inline-flex;align-items:baseline;gap:7px;transition:background .15s,color .15s,transform .15s}
@@ -477,7 +473,7 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.hinner{transition:none}}
 [dir=rtl] .hvibe{font-size:15.5px}
 /* ---- my trip ----
-   The planner page: an ideas tray like a sticky-note strip, then each day as a
+   The planner page: an ideas tray like a sticky-note strip,then each day as a
    taped paper sheet with a pencil route doodle and numbered stops. */
 .addtrip{appearance:none;cursor:pointer;display:inline-flex;align-items:center;margin:10px 0 0;font:700 13.5px var(--body);color:var(--ink);
   background:var(--sheet);border:1.5px dashed var(--ink);border-radius:999px;padding:5px 13px 6px;transition:background .15s,color .15s,transform .15s}
@@ -577,7 +573,7 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 [dir=rtl] .tnum{direction:ltr}
 [dir=rtl] .tday-t,[dir=rtl] .tnone,[dir=rtl] .tleg,[dir=rtl] .tideas h2 small{font-size:15px}
 @media (max-width:640px){[dir=rtl] .tleg{padding-right:40px}}
-/* stays: a city stamp, where you're staying, then that city's days */
+/* stays: a city stamp,where you're staying,then that city's days */
 .tcitypick h2{font:400 clamp(24px,3vw,32px)/1.1 var(--display);margin:0 0 6px}
 .tcitypick p{margin:0 0 14px;max-width:48ch}
 .tchips{display:flex;flex-wrap:wrap;gap:10px}
@@ -647,7 +643,7 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 html.tpick-open{overflow:hidden}
 .tpick{position:fixed;inset:0;z-index:95;background:rgba(40,22,14,.45);display:flex;align-items:center;justify-content:center;padding:20px}
 .tpick[hidden]{display:none}
-/* The sheet is redrawn on every tap, so only the backdrop animates, once. */
+/* The sheet is redrawn on every tap,so only the backdrop animates,once. */
 .tpick:not([hidden]){animation:tfade .18s ease-out}
 @keyframes tfade{from{opacity:0}to{opacity:1}}
 .tpick-sheet{width:min(640px,100%);max-height:min(86vh,820px);display:flex;flex-direction:column;background:var(--paper);border:2px solid var(--ink);border-radius:18px;
@@ -682,7 +678,7 @@ html.tpick-open{overflow:hidden}
 .tprow.on{background:color-mix(in srgb,var(--wasabi) 14%,var(--sheet));border-color:color-mix(in srgb,var(--wasabi) 50%,transparent)}
 .tprow.on .tpadd{background:var(--wasabi);border-color:var(--wasabi);color:#fff}
 .tpick-more{margin:10px auto 0}
-/* the map: where you're staying, and dropping a pin for it */
+/* the map: where you're staying,and dropping a pin for it */
 .homeb[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
 html.picking #mapsvg{cursor:crosshair}
 html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
@@ -721,7 +717,6 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .acct-sheet .thome-msg.ok{color:#4F7A1E}
 .acct-danger .store{background:var(--lantern)!important;border-color:var(--lantern)!important}
 .acct-danger .store:hover:not(:disabled){background:var(--ink)!important;border-color:var(--ink)!important}
-.acct-code{font:700 24px var(--body)!important;letter-spacing:.3em;text-align:center}
 .acct-small{margin:14px 0 0!important;font-size:13px;color:var(--muted)}
 .acct-small .tclear{font-size:13px;padding:0}
 .acct-small a{color:var(--shinkansen)}
@@ -761,69 +756,18 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 @media (max-width:640px){.tinvite{align-items:flex-start}.tinvite img{width:52px}}
 /* the owner's dashboard */
 #adminbox{padding-block:24px 10px}
-.anote{font-size:15px;color:var(--muted)}
-.anote.small{font-size:13px}
-.anote code{font-size:13px;background:var(--sheet);padding:2px 6px;border-radius:6px;user-select:all}
-.atiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:26px}
-.atile{background:var(--sheet);border:2px solid var(--ink);border-radius:14px;padding:14px 16px;box-shadow:4px 4px 0 rgba(63,33,22,.12);display:flex;flex-direction:column}
-.atile b{font:400 44px/1 var(--display);color:var(--ink)}
-.atile span{font-weight:700;font-size:14px;margin-top:6px}
-.atile small{font:400 15px var(--hand);color:var(--muted)}
-.agrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 26px}
-.acard{position:relative;background:var(--sheet);border-radius:8px;padding:22px 20px 18px;box-shadow:0 1px 1px rgba(63,33,22,.08),0 16px 30px -20px rgba(63,33,22,.5);min-width:0}
-.acard.wide{grid-column:1/-1}
-.ascout{margin-bottom:26px}
-.ascount{margin:0 0 10px;font-size:14px}
-.aslist{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.asitem{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;padding:12px 14px;border:1.5px solid var(--rule);border-radius:12px;background:var(--paper)}
-.asitem.add{border-color:#88B44A;background:color-mix(in srgb,var(--wasabi) 12%,var(--sheet))}
-.asitem.skip{opacity:.5}
-.asinfo{min-width:0}
-.asinfo b{font:800 16px var(--body)}
-.asinfo small{display:block;color:var(--muted);font-size:12.5px;margin:2px 0 6px}
-.asinfo p{margin:0 0 4px;font-size:14px;line-height:1.5}
-.asinfo .ashal{color:#4F7A1E}
-.asinfo .assrc{font-size:12.5px}
-.asinfo .asmap{font-weight:700;color:var(--shinkansen)}
-.asbtns{display:flex;flex-direction:column;gap:6px;flex:none}
-.asb{appearance:none;cursor:pointer;font:700 13px var(--body);border-radius:999px;padding:6px 12px;border:1.5px solid var(--ink);background:var(--sheet);color:var(--ink);white-space:nowrap}
-.asb.yes[aria-pressed="true"]{background:#4F7A1E;border-color:#4F7A1E;color:#fff}
-.asb.no[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
-@media (max-width:640px){.asitem{flex-direction:column}.asbtns{flex-direction:row}}
-.acard .tape{top:-12px;left:40%}
-.acard h2{font:400 24px var(--display);margin:0 0 14px}
-.amuted{color:var(--muted);font-size:13.5px}
-.abars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.abars li{display:grid;grid-template-columns:minmax(80px,30%) 1fr 34px;align-items:center;gap:10px;font-size:14px}
-.abl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.abars b{font-size:13.5px;text-align:end;color:var(--ink)}
-.abt{position:relative;display:block;height:14px;outline:none}
-.abt i{display:block;height:100%;background:var(--lantern);border-radius:0 4px 4px 0}
-[dir=rtl] .abt i{border-radius:4px 0 0 4px}
-.abt.mini{display:inline-block;width:90px;height:10px;margin-inline-end:8px;vertical-align:middle}
-.abt[data-tip]:hover::after,.abt[data-tip]:focus-visible::after,.acol[data-tip]:hover::after,.acol[data-tip]:focus-visible::after{
+.acol[data-tip]:hover::after,.acol[data-tip]:focus-visible::after{
   content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);white-space:nowrap;z-index:5;
   background:var(--ink);color:var(--paper);font:600 12.5px var(--body);padding:5px 9px;border-radius:8px;pointer-events:none}
-.abt:focus-visible,.acol:focus-visible{outline:2px solid var(--yuzu);outline-offset:2px}
+.acol:focus-visible{outline:2px solid var(--yuzu);outline-offset:2px}
 .acols{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;align-items:end;height:170px;padding-top:20px;border-bottom:1.5px solid var(--rule)}
 .acol{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;outline:none}
 .acol i{display:block;width:62%;background:var(--lantern);border-radius:4px 4px 0 0;min-height:0}
 .acol b{font-size:12px;margin-bottom:3px}
 .acol span{position:absolute;top:100%;margin-top:6px;font-size:11px;color:var(--muted);white-space:nowrap}
 .acols+.atable{margin-top:30px}
-.avisits{margin-bottom:30px}
-.acols.a30{grid-template-columns:repeat(30,1fr);height:150px;padding-top:6px}
-.a30 .acol i{width:72%;min-height:1px}
-.atiles+.atiles{margin-top:-12px}
 .atable summary{cursor:pointer;font-size:13px;color:var(--muted)}
-.acard table{width:100%;border-collapse:collapse;font-size:14px}
-.acard th{text-align:start;font-size:12px;font-weight:700;color:var(--muted);padding:6px 8px;border-bottom:1.5px solid var(--rule)}
-.acard td{padding:7px 8px;border-bottom:1px dashed var(--rule);vertical-align:middle}
-.aplaces td small{display:block;font-size:12px;color:var(--muted)}
-.ascroll{overflow-x:auto}
-.aaccts{min-width:640px}
-@media (max-width:760px){.agrid{grid-template-columns:minmax(0,1fr)}.atile b{font-size:36px}}
-/* "Apollo, plan my trip" */
+/* "Apollo,plan my trip" */
 .tmagic{appearance:none;cursor:pointer;width:100%;display:flex;align-items:center;gap:16px;text-align:start;margin:0 0 22px;padding:18px 20px;
   border:2px solid var(--ink);border-radius:16px;color:var(--ink);font:inherit;
   background:linear-gradient(120deg,color-mix(in srgb,var(--yuzu) 55%,var(--sheet)),color-mix(in srgb,var(--sakura,#F7B6C8) 45%,var(--sheet)));
@@ -837,7 +781,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 [dir=rtl] .tmagic-go{transform:scaleX(-1)}
 @keyframes twinkle{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.15) rotate(12deg)}}
 @media (prefers-reduced-motion:reduce){.tmagic-s,.pl-cat{animation:none!important}}
-/* ready plans: a second, quieter card under Apollo's */
+/* ready plans: a second,quieter card under Apollo's */
 .tready{background:var(--sheet)}
 .tready .tmagic-s{animation:none}
 .rd-list{display:grid;gap:14px;margin-top:14px}
@@ -879,7 +823,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .pl-use:hover{background:var(--lantern)!important;border-color:var(--lantern)!important}
 /* Cards that straighten or grow under the pointer. Only with a real mouse
    (on a touch screen, the finger you scroll with counts as hovering, and the
-   card stays lifted), and not while the page is scrolling, so cards don't
+   card stays lifted),and not while the page is scrolling,so cards don't
    jump one after another as they pass under a still pointer. app.js puts
    the "scrolling" class on <html>. */
 @media (hover:hover) and (pointer:fine){
@@ -887,15 +831,15 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
   html:not(.scrolling) .hcard:hover{transform:rotate(0) translateY(-4px)}
 }
 /* ---- album ----
-   One page per memory, laid out as an open notebook: photos taped to the left
-   sheet, words on the right, a soft fold between. The strip scroll-snaps so a
+   One page per memory,laid out as an open notebook: photos taped to the left
+   sheet,words on the right,a soft fold between. The strip scroll-snaps so a
    swipe always lands square on a page. Pages carry their own side padding so
    the polaroid shadows and tilted tape aren't clipped by the scroll container. */
 .album{padding-block:30px 10px}
 .atrack{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 .atrack::-webkit-scrollbar{display:none}
 .atrack:focus-visible{outline-offset:-2px}
-/* Every page is the height of the tallest one, like a real album, so turning
+/* Every page is the height of the tallest one,like a real album,so turning
    the page never makes the arrows below jump up and down. */
 .apage{flex:0 0 100%;display:flex;flex-direction:column;scroll-snap-align:center;scroll-snap-stop:always;padding:18px 10px 40px}
 .apage>.spread{flex:1}
@@ -927,13 +871,11 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 }
 @media (max-width:640px){.apage{padding:14px 4px 32px}.pics.n1{padding-inline:12%}}
 /* ---- Arabic ----
-   Switching to Arabic sets dir="rtl" on <html>, which flips every flex row,
-   grid and text block on its own. What's left here is the handful of rules
-   pinned to a physical left or right, plus type the Arabic faces need. */
-/* The Latin faces have no Arabic letters, so each Arabic letter falls through
-   to the next face in the stack, and English words inside Arabic text keep
-   the English face. Noto Arabic Display is the 800 weight under its own name,
-   so Arabic headings come out bold while Bagel stays at its only weight. */
+   Switching to Arabic sets dir="rtl" on <html>,which flips every flex row,grid and text block on its own. What's left here is the handful of rules
+   pinned to a physical left or right,plus type the Arabic faces need. */
+/* The Latin faces have no Arabic letters,so each Arabic letter falls through
+   to the next face in the stack,and English words inside Arabic text keep
+   the English face. Noto Arabic Display is the 800 weight under its own name,so Arabic headings come out bold while Bagel stays at its only weight. */
 :root[dir=rtl]{
   --display:"Bagel Fat One","Noto Arabic Display","Arial Rounded MT Bold",system-ui,sans-serif;
   --hand:"Tabi Note","Noto Sans Arabic",system-ui,sans-serif;
@@ -965,16 +907,16 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 [dir=rtl] .store{padding:5px 9px 5px 12px}
 [dir=rtl] .nearb{padding:6px 11px 7px 14px}
 /* The map is drawn in its own coordinates and its labels are placed by
-   measuring from their start, so it stays left-to-right; Arabic labels inside
+   measuring from their start,so it stays left-to-right; Arabic labels inside
    it still read right to left. */
 [dir=rtl] .map{direction:ltr}
-/* Arabic letters sit taller and lower than Latin ones, so the tight display
+/* Arabic letters sit taller and lower than Latin ones,so the tight display
    leading clips them. */
 [dir=rtl] .hero h1,[dir=rtl] .apphero h1{line-height:1.2}
 [dir=rtl] .hero h1 .small,[dir=rtl] .apphero h1 .small{line-height:1.4}
 [dir=rtl] .agroup h2,[dir=rtl] .words h2,[dir=rtl] .trip h3,[dir=rtl] .member h3,[dir=rtl] .app h3{line-height:1.35}
-/* Noto Sans Arabic, standing in for the hand font in Arabic, runs larger than the
-   Latin hand at the same size, so every handwritten size steps down to match. */
+/* Noto Sans Arabic,standing in for the hand font in Arabic,runs larger than the
+   Latin hand at the same size,so every handwritten size steps down to match. */
 [dir=rtl] .search .lead{font-size:17.2px}
 [dir=rtl] .search input::placeholder{font-size:16.3px}
 [dir=rtl] .qnone{font-size:16.3px}
@@ -1017,7 +959,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 /* ---- Ask Apollo ----
    A cat sticker with a pill label floats in the bottom corner of the home page;
    it opens a chat card above it. On a phone the chat takes the whole screen.
-   All positions are logical (inset-inline-end), so Arabic mirrors for free. */
+   All positions are logical (inset-inline-end),so Arabic mirrors for free. */
 .apollob{position:fixed;inset-inline-end:max(18px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));z-index:60;
   appearance:none;cursor:pointer;display:flex;align-items:center;gap:0;padding:0;border:0;background:none;font:700 15px var(--body);color:var(--ink)}
 .apollob img{width:64px;height:64px;object-fit:cover;object-position:50% 8%;border-radius:50%;background:var(--sheet);border:2.5px solid var(--ink);
@@ -1026,7 +968,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .apollob span{order:-1;margin-inline-end:-14px;padding-block:7px 8px;padding-inline:16px 22px;background:var(--lantern);color:#fff;
   border:2.5px solid var(--ink);border-radius:999px;box-shadow:0 8px 18px -10px rgba(63,33,22,.6);transform:rotate(-3deg)}
 .apollob:hover img{transform:rotate(-8deg) scale(1.05)}
-/* display:flex above would beat the hidden attribute, which keeps the button
+/* display:flex above would beat the hidden attribute,which keeps the button
    off every page but home. */
 .apollob[hidden]{display:none}
 .apollob[aria-expanded="true"] span{display:none}
@@ -1069,7 +1011,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 @media (max-width:640px){
   .apollob img{width:56px;height:56px}
   .apollob span{font-size:14px;padding-block:6px 7px;padding-inline:13px 20px}
-  /* Full screen on a phone, and the page behind stops scrolling. */
+  /* Full screen on a phone,and the page behind stops scrolling. */
   .apollo{inset:0;width:auto;height:auto;height:100dvh;border:0;border-radius:0;box-shadow:none;bottom:auto}
   .chat-open,.chat-open body{overflow:hidden}
   .chat-open .apollob{display:none}
@@ -1092,13 +1034,13 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
   .cities{gap:4px 6px;margin-inline:-16px;padding-inline:16px;scroll-snap-type:x proximity}
   .cities>*{scroll-snap-align:start;flex:0 0 auto}
   /* .areas is deliberately not in this rule any more: overflow-x makes a
-     scroll container, which would clip the dropdown panel out of sight. */
+     scroll container,which would clip the dropdown panel out of sight. */
   .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(90deg,#000 88%,transparent)}
   .filters::-webkit-scrollbar,.cities::-webkit-scrollbar{display:none}
   .filters>*{flex:0 0 auto;white-space:nowrap}
   .filters{gap:4px 14px;padding-block:0 18px}
   .fi{width:22px;height:22px}
-  /* The trigger sits ~90px in behind "in Tokyo:", so anchoring a 340px panel
+  /* The trigger sits ~90px in behind "in Tokyo:",so anchoring a 340px panel
      to it would run off the right edge of a phone. Span the whole row. */
   .areas{position:relative}
   .adrop{position:static}
@@ -1120,7 +1062,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.cityb svg path{stroke-dashoffset:0}}
 
 /* Installed as an app (from the home screen, or the store apps) the page runs
-   edge to edge, so the top bar, the sheets and the phone chat keep clear of
+   edge to edge,so the top bar,the sheets and the phone chat keep clear of
    the notch and the home bar. In a normal browser tab these insets are 0. */
 .top{padding-top:calc(22px + env(safe-area-inset-top))}
 @media (max-width:880px){.top{padding-top:calc(16px + env(safe-area-inset-top))}}
@@ -1131,7 +1073,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 }
 
 /* ===== The app layout (html.tn-app, see js/appshell.js) =====================
-   Only inside the store apps, or a browser tab opened with ?app=1. */
+   Only inside the store apps,or a browser tab opened with ?app=1. */
 #tabbar,#pview{display:none}
 html.tn-app{-webkit-tap-highlight-color:transparent}
 html.tn-app body{padding-bottom:calc(84px + env(safe-area-inset-bottom));overscroll-behavior-y:none}
@@ -1160,20 +1102,14 @@ html.tn-app #explore,html.tn-app #menu{padding:4px 18px 24px}
 html.tn-app .ax-h{display:flex;justify-content:space-between;align-items:center;margin:6px 0 14px}
 html.tn-app .ax-h small{color:var(--muted);font:600 15px var(--body)}
 html.tn-app .ax-h h1{font:400 30px/1.1 var(--display);margin:2px 0 0}
-html.tn-app .ax-av{width:46px;height:46px;border-radius:50%;border:2px solid var(--ink);background:var(--sheet);overflow:hidden;padding:0;flex:none}
-html.tn-app .ax-av img{width:100%;height:100%;object-fit:cover;object-position:50% 10%}
-html.tn-app .ax-cities,html.tn-app .ax-cats,html.tn-app .ax-hs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-inline:-18px;padding-inline:18px;scroll-snap-type:x mandatory}
-html.tn-app .ax-cities::-webkit-scrollbar,html.tn-app .ax-cats::-webkit-scrollbar,html.tn-app .ax-hs::-webkit-scrollbar{display:none}
+html.tn-app .ax-cities,html.tn-app .ax-hs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-inline:-18px;padding-inline:18px;scroll-snap-type:x mandatory}
+html.tn-app .ax-cities::-webkit-scrollbar,html.tn-app .ax-hs::-webkit-scrollbar{display:none}
 html.tn-app .ax-city{flex:none;padding:7px 15px;border-radius:999px;background:var(--sheet);border:1.5px solid var(--rule);font:800 15px var(--body);color:var(--ink)}
 html.tn-app .ax-city small{color:var(--muted);font-weight:600}
 html.tn-app .ax-city.on{background:var(--ink);border-color:var(--ink);color:#fff}
 html.tn-app .ax-city.on small{color:var(--yuzu)}
 html.tn-app .ax-search{display:flex;width:100%;gap:10px;align-items:center;margin:12px 0 0;background:var(--sheet);border:0;border-radius:16px;padding:12px 14px;
   color:var(--muted);font:500 15px var(--body);box-shadow:0 2px 0 var(--rule);text-align:start}
-html.tn-app .ax-cats{margin-top:12px}
-html.tn-app .ax-cat{flex:none;display:flex;align-items:center;gap:5px;padding:6px 12px 6px 10px;border-radius:999px;background:var(--sheet);border:1.5px solid var(--rule);
-  font:700 14px var(--body);color:var(--ink)}
-html.tn-app .ax-cat img{width:20px;height:20px}
 html.tn-app .ax-row{margin-top:20px}
 html.tn-app .ax-row header{display:flex;justify-content:space-between;align-items:baseline}
 html.tn-app .ax-row h2{font:400 21px/1.2 var(--display);margin:0}
@@ -1247,39 +1183,24 @@ html.tn-app .pv-maps svg{width:18px;height:18px}
 html.tn-app .pv-cta .addtrip{flex:1.4;margin:0;border-radius:16px;padding:12px;font:800 15px var(--body);background:var(--lantern);border:2px solid var(--lantern);color:#fff}
 html.tn-app .pv-cta .addtrip.on{background:#2E8B3E;border-color:#2E8B3E}
 html.tn-app .pv-near .ax-hs .pc{width:128px}
-/* Place names are English: in Arabic they still read left to right, so a
-   long one is cut at its end, not its start. */
+/* Place names are English: in Arabic they still read left to right,so a
+   long one is cut at its end,not its start. */
 [dir=rtl].tn-app .pc b{direction:ltr;text-align:right}
 
-/* ---- app layout v2: bigger, thumb-sized ---- */
+/* ---- app layout v2: bigger,thumb-sized ---- */
 html.tn-app #explore,html.tn-app #menu{padding:4px 20px 28px}
 html.tn-app .ax-h small{font-size:17px}
 html.tn-app .ax-h h1{font-size:31px}
-html.tn-app .ax-av{width:52px;height:52px}
 html.tn-app .ax-search{margin:0;padding:15px 16px;border-radius:18px;font-size:17px}
 html.tn-app .ax-cities{margin-top:14px;margin-inline:-20px;padding-inline:20px}
 html.tn-app .ax-city{padding:9px 18px;font-size:17px}
 html.tn-app .ax-hs{margin-inline:-20px;padding-inline:20px}
-html.tn-app .ax-must{margin-top:14px}
-html.tn-app .ax-must .ax-sub{margin-bottom:2px}
-html.tn-app .pc.bigc{position:relative;width:min(76vw,320px);height:min(92vw,380px)}
-html.tn-app .pc.bigc .pimg{position:absolute;inset:0;aspect-ratio:auto;border-radius:26px;box-shadow:0 8px 20px rgba(63,33,22,.22)}
-html.tn-app .pc.bigc .pimg::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 45%,rgba(30,15,8,.82))}
-html.tn-app .bigc-badge{position:absolute;top:14px;inset-inline-start:14px;background:var(--sheet);color:var(--lantern);border-radius:999px;padding:3px 12px;font:800 14px var(--body);z-index:1}
-html.tn-app .pc.bigc .hb{top:14px;inset-inline-end:14px;font-size:13px;z-index:1}
-html.tn-app .bigc-t{position:absolute;bottom:16px;left:16px;right:16px;color:#fff;z-index:1}
-html.tn-app .bigc-t b{margin:0;font:900 24px/1.15 var(--body);white-space:normal}
-html.tn-app .bigc-t small{color:rgba(255,255,255,.9);font-size:15px;margin-top:3px}
 html.tn-app .ax-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 6px;margin-top:22px}
-html.tn-app .ax-grid .ax-cat{flex-direction:column;gap:5px;padding:0;border:0;background:none;font:700 14px/1.2 var(--body);text-align:center}
-html.tn-app .ax-grid .ax-cat span{display:grid;place-items:center;width:62px;height:62px;border-radius:20px;background:color-mix(in srgb,var(--c) 14%,var(--sheet))}
-html.tn-app .ax-grid .ax-cat img{width:34px;height:34px}
 html.tn-app .ax-row{margin-top:24px}
 html.tn-app .ax-row h2{font-size:23px}
 html.tn-app .ax-all{font-size:16px}
 html.tn-app .ax-sub{font-size:15px}
 html.tn-app .pc{width:210px}
-html.tn-app .ax-row:not(.ax-must) .pimg{aspect-ratio:7/5;border-radius:20px}
 html.tn-app .pc b{font-size:17px;margin-top:8px}
 html.tn-app .pc small{font-size:14.5px}
 html.tn-app .pv-near .ax-hs .pc{width:170px}
@@ -1304,12 +1225,6 @@ html.tn-app .mp-search{display:flex;gap:10px;align-items:center;background:var(-
 html.tn-app .mp-search input{flex:1;min-width:0;border:0;background:none;padding:15px 0;font:600 17px var(--body);color:var(--ink);outline:none;-webkit-appearance:none}
 html.tn-app .mp-search input::-webkit-search-cancel-button{display:none}
 html.tn-app .mp-qx{border:0;background:none;color:var(--muted);padding:6px;display:grid}
-html.tn-app .mp-res{margin-top:8px;background:var(--sheet);border-radius:18px;box-shadow:0 8px 22px rgba(63,33,22,.2);overflow:hidden;max-height:50vh;overflow-y:auto}
-html.tn-app .mp-res button{display:flex;width:100%;gap:12px;align-items:center;border:0;border-bottom:1px solid #F1E7D7;background:none;padding:10px 12px;text-align:start;color:var(--ink)}
-html.tn-app .mp-res img{width:46px;height:46px;border-radius:12px;object-fit:cover;flex:none}
-html.tn-app .mp-res b{display:block;font:800 16px var(--body)}
-html.tn-app .mp-res small{color:var(--muted);font-size:13.5px}
-html.tn-app .mp-res p{margin:0;padding:14px;color:var(--muted)}
 html.tn-app .mp-chips{display:flex;gap:8px;margin:10px -14px 0;padding:0 14px 6px;overflow-x:auto;scrollbar-width:none}
 html.tn-app .mp-chips::-webkit-scrollbar{display:none}
 html.tn-app .mp-ch{flex:none;display:flex;align-items:center;gap:6px;border:0;background:var(--sheet);border-radius:999px;padding:9px 15px;font:800 15px var(--body);color:var(--ink);box-shadow:0 3px 10px rgba(63,33,22,.18)}
@@ -1330,13 +1245,13 @@ html.tn-app .mp-card{flex:none;width:min(84vw,320px);scroll-snap-align:center;di
   box-shadow:0 6px 18px rgba(63,33,22,.22);text-align:start;color:var(--ink)}
 html.tn-app .mp-card.on{border-color:var(--lantern)}
 html.tn-app .mp-card img,html.tn-app .mp-li img{width:92px;height:92px;border-radius:16px;object-fit:cover;flex:none;background:var(--paper)}
-html.tn-app .mp-card img.art,html.tn-app .mp-li img.art,html.tn-app .mp-res img.art{object-fit:contain;padding:10px;box-sizing:border-box}
+html.tn-app .mp-card img.art,html.tn-app .mp-li img.art{object-fit:contain;padding:10px;box-sizing:border-box}
 html.tn-app .mp-card span,html.tn-app .mp-li-go span{min-width:0}
 html.tn-app .mp-card b,html.tn-app .mp-li b{display:block;font:900 17px/1.25 var(--body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 html.tn-app .mp-card small,html.tn-app .mp-li small{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:14px;margin-top:2px}
 html.tn-app .mp-card em,html.tn-app .mp-li em{font-style:normal;color:#2E8B3E;font:800 14px var(--body)}
 html.tn-app .mp-card em.c{color:var(--muted);font-weight:600;font-size:13.5px}
-[dir=rtl].tn-app .mp-card b,[dir=rtl].tn-app .mp-li b,[dir=rtl].tn-app .mp-res b{direction:ltr;text-align:right}
+[dir=rtl].tn-app .mp-card b,[dir=rtl].tn-app .mp-li b{direction:ltr;text-align:right}
 html.tn-app .mp-sel{width:62px;height:62px;padding:0;border:4px solid var(--c,var(--lantern));border-radius:50% 50% 50% 6px;transform:rotate(-45deg);overflow:hidden;background:#fff;box-shadow:0 6px 14px rgba(0,0,0,.3);margin-bottom:14px}
 html.tn-app .mp-sel img{width:100%;height:100%;object-fit:cover;transform:rotate(45deg) scale(1.42)}
 html.tn-app .mp-me{width:18px;height:18px;border-radius:50%;background:#2F7BF5;border:3px solid #fff;box-shadow:0 0 0 10px rgba(47,123,245,.18)}
@@ -1360,7 +1275,7 @@ html.tn-app .mp-none{color:var(--muted);text-align:center;padding:20px}
 html.tn-app .maplibregl-ctrl-bottom-left,html.tn-app .maplibregl-ctrl-bottom-right{bottom:150px}
 html.tn-app #amap.listing .maplibregl-ctrl-bottom-left,html.tn-app #amap.listing .maplibregl-ctrl-bottom-right{display:none}
 
-/* ---- app home: the sky header, stories, pick of the day, moods, season ---- */
+/* ---- app home: the sky header,stories,pick of the day,moods,season ---- */
 html.tn-app #explore{padding-top:0}
 html.tn-app .xs{position:relative;height:calc(290px + env(safe-area-inset-top));margin:calc(-10px - env(safe-area-inset-top)) -20px 0;overflow:hidden}
 html.tn-app .xs-sky{position:absolute;inset:0;width:100%;height:100%}
@@ -1417,13 +1332,10 @@ html.tn-app .lv-bar{position:sticky;top:0;z-index:2;display:flex;align-items:cen
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 html.tn-app .lv-bar b{display:block;font:400 24px/1.15 var(--display)}
 html.tn-app .lv-bar small{color:var(--muted);font-size:14px}
-html.tn-app .lv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px;padding:6px 18px}
-html.tn-app .lv-grid .pc{width:auto}
-html.tn-app .lv-grid .pimg{aspect-ratio:1}
 html.tn-app .lv-none{grid-column:1/-1;text-align:center;color:var(--muted);padding:30px}
 @media (prefers-reduced-motion:reduce){html.tn-app .xs-star,html.tn-app .xs-cloud{animation:none}}
 
-/* ---- app home v2.1: edge to edge, trip card, tip, areas, weather ---- */
+/* ---- app home v2.1: edge to edge,trip card,tip,areas,weather ---- */
 html.tn-app #explore{padding-inline:4px}
 html.tn-app .xs{width:100vw;margin-inline:calc(50% - 50vw)}
 html.tn-app #explore .ax-hs,html.tn-app #explore .ax-cities,html.tn-app #explore .xs-stories{margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%)}
@@ -1434,7 +1346,6 @@ html.tn-app .xs-night .xs-hint{color:#fff}
 html.tn-app .xs-search span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html.tn-app .xs-trip{display:flex;width:100%;gap:12px;align-items:center;margin-top:20px;background:var(--ink);color:#fff;border:0;border-radius:22px;padding:14px 16px;text-align:start}
 html.tn-app .xs-trip.empty{background:linear-gradient(135deg,#F14E24,#E8853A)}
-html.tn-app .xs-tr-ic{font-size:30px;flex:none}
 html.tn-app .xs-trip b{display:block;font:800 18px/1.25 var(--body)}
 html.tn-app .xs-trip small{display:block;color:rgba(255,255,255,.82);font-size:14px;margin-top:2px}
 html.tn-app .xs-trip i{margin-inline-start:auto;font-style:normal;font-weight:800;font-size:20px}
@@ -1453,45 +1364,11 @@ html.tn-app .xs-area small{display:block;font:600 14px/1.35 var(--body);opacity:
 /* ---- My trip in the app (js/apptrip.js) ---- */
 html.tn-app #trip>.apphero{display:none}
 html.tn-app #tripbook{padding:calc(6px + env(safe-area-inset-top)) 4px 20px}
-html.tn-app .at-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 0 12px}
-html.tn-app .at-top small{color:var(--muted);font:700 15px var(--body)}
 html.tn-app .at-title{display:block;width:100%;border:0;background:none;padding:0;margin-top:2px;font:400 30px/1.15 var(--display);color:var(--ink);outline:none}
 html.tn-app .at-title::placeholder{color:#C9B8A2}
 html.tn-app .at-cb{width:44px;height:44px;flex:none;border-radius:50%;border:0;background:var(--sheet);display:grid;place-items:center;color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.08)}
-html.tn-app .at-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-html.tn-app .at-stats div{background:var(--sheet);border-radius:16px;padding:8px 4px;text-align:center}
-html.tn-app .at-stats b{display:block;font:900 23px var(--body);color:var(--lantern)}
-html.tn-app .at-stats .h b{color:#2E8B3E}
-html.tn-app .at-stats small{color:var(--muted);font-size:13px}
-html.tn-app .at-cities,html.tn-app .at-days{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:14px calc(50% - 50vw) 10px;padding:0 calc(50vw - 50%)}
-html.tn-app .at-cities::-webkit-scrollbar,html.tn-app .at-days::-webkit-scrollbar{display:none}
-html.tn-app .at-city{flex:none;padding:9px 16px;border-radius:999px;background:var(--sheet);border:1.5px solid var(--rule);font:800 16px var(--body);color:var(--ink)}
-html.tn-app .at-city small{color:var(--muted);font-weight:600}
-html.tn-app .at-city.on{background:var(--ink);border-color:var(--ink);color:#fff}
-html.tn-app .at-city.on small{color:var(--yuzu)}
-html.tn-app .at-city.add,html.tn-app .at-day.add{border-style:dashed;color:var(--muted);background:none}
-html.tn-app .at-day{flex:none;padding:9px 16px;border-radius:14px;background:var(--sheet);border:1.5px solid var(--rule);font:800 16px var(--body);color:var(--ink)}
-html.tn-app .at-day.on{background:var(--lantern);border-color:var(--lantern);color:#fff}
-html.tn-app .at-home .thome,html.tn-app .at-home .thome-add,html.tn-app .at-home .thome-ed{border-radius:18px;margin:0}
-html.tn-app .at-next{margin:4px 0 10px}
-html.tn-app .at-daycard{background:var(--sheet);border-radius:24px;padding:14px;box-shadow:0 2px 0 var(--rule);margin-top:4px}
-html.tn-app .at-daycard header{display:flex;align-items:center;gap:8px}
-html.tn-app .at-dt{flex:1;min-width:0;border:0;background:none;padding:0;font:800 21px var(--body);color:var(--ink);outline:none}
-html.tn-app .at-dt::placeholder{color:#C9B8A2;font-weight:700;font-size:17px}
-html.tn-app .at-x{width:34px;height:34px;border-radius:50%;border:0;background:var(--paper);color:var(--muted);font-size:20px}
-html.tn-app .at-dsum{margin:2px 0 0;color:var(--muted);font-size:14px}
-html.tn-app .at-mm{position:relative;margin:10px 0 4px;background:#EEF3E8;border-radius:18px;overflow:hidden}
-html.tn-app .at-mm .tdoodle{display:block;width:100%;height:auto;margin:0}
-html.tn-app .at-mapb{position:absolute;top:8px;inset-inline-end:8px;display:flex;align-items:center;gap:5px;border:0;background:var(--sheet);border-radius:999px;padding:5px 11px;font:800 13px var(--body);color:var(--shinkansen);box-shadow:0 2px 6px rgba(0,0,0,.12)}
-html.tn-app .at-mapb svg{width:16px;height:16px}
-html.tn-app .at-tl{list-style:none;margin:6px 0 0;padding:0}
-html.tn-app .at-leg{margin-inline-start:15px;border-inline-start:2.5px dashed var(--rule);padding:6px 16px;color:var(--muted);font:600 13.5px/1.4 var(--body)}
-html.tn-app .at-leg.home{color:var(--ink)}
 html.tn-app .at-stop{position:relative}
-html.tn-app .at-num{position:absolute;inset-inline-start:0;top:22px;width:30px;height:30px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font:900 14px var(--body);box-shadow:0 0 0 3px var(--sheet);z-index:1}
-html.tn-app .at-sc{display:flex;gap:10px;align-items:center;margin-inline-start:40px;background:var(--paper);border-radius:16px;padding:8px}
-html.tn-app .at-sc img{width:60px;height:60px;border-radius:12px;object-fit:cover;flex:none;background:var(--sheet)}
-html.tn-app .at-sc img.art,html.tn-app .at-idea img.art{object-fit:contain;padding:8px;box-sizing:border-box}
+html.tn-app .at-idea img.art{object-fit:contain;padding:8px;box-sizing:border-box}
 html.tn-app .at-si{min-width:0;flex:1}
 html.tn-app .at-si .tname{display:block;max-width:100%;border:0;background:none;padding:0;font:900 16px/1.25 var(--body);color:var(--ink);text-align:start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html.tn-app .at-si small{display:block;color:var(--muted);font-size:13px}
@@ -1500,14 +1377,6 @@ html.tn-app .at-more{flex:none;width:36px;height:36px;border-radius:50%;border:0
 html.tn-app .at-ctl{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0 0;margin-inline-start:40px}
 html.tn-app .at-ctl button,html.tn-app .at-ctl select,html.tn-app .at-iact select{border:1.5px solid var(--rule);background:var(--sheet);border-radius:12px;padding:7px 11px;font:700 14px var(--body);color:var(--ink)}
 html.tn-app .at-ctl .tdel{color:var(--lantern)}
-html.tn-app .at-none{list-style:none;color:var(--muted);text-align:center;padding:14px}
-html.tn-app .at-lunch{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 0;background:#EEF6EA;border-radius:14px;padding:9px 12px;font-size:14px}
-html.tn-app .at-lunch .tname{border:0;background:none;padding:0;font:800 14px var(--body);color:var(--ink);text-decoration:underline}
-html.tn-app .at-lunch span{color:var(--muted)}
-html.tn-app .at-lunch .tlunch-add{margin-inline-start:auto;width:28px;height:28px;border-radius:50%;border:0;background:#2E8B3E;color:#fff;font:800 16px var(--body)}
-html.tn-app .at-dact{display:flex;gap:8px;margin-top:12px}
-html.tn-app .at-btn{flex:1;border-radius:14px;padding:12px 8px;font:800 15px var(--body);background:var(--ink);color:#fff;border:0}
-html.tn-app .at-btn.ghost{background:none;border:2px dashed var(--rule);color:var(--ink)}
 html.tn-app .at-h{font:400 23px var(--display);margin:24px 0 8px}
 html.tn-app .at-h small{display:block;font:600 14px var(--body);color:var(--muted)}
 html.tn-app .at-ideas{list-style:none;display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 calc(50% - 50vw);padding:0 calc(50vw - 50%)}
@@ -1519,40 +1388,16 @@ html.tn-app .at-idea small{color:var(--muted);font-size:13px}
 html.tn-app .at-iact{display:flex;gap:6px;margin-top:6px}
 html.tn-app .at-iact select{flex:1;min-width:0;background:#FFF0EA;border-color:#FFD9CB;color:var(--lantern);font-size:13px;padding:6px}
 html.tn-app .at-iact .tdel{width:32px;border:0;border-radius:10px;background:var(--paper);color:var(--muted);font-size:18px}
-html.tn-app .at-all{background:var(--sheet);border-radius:20px;overflow:hidden}
-html.tn-app .at-ov{display:flex;width:100%;gap:12px;align-items:center;padding:12px 14px;border:0;border-bottom:1px solid #F1E7D7;background:none;text-align:start;color:var(--ink)}
-html.tn-app .at-ov:last-child{border:0}
-html.tn-app .at-ov>span:first-child{background:#FFF0EA;color:var(--lantern);border-radius:10px;padding:4px 8px;font:800 13px var(--body);white-space:nowrap}
-html.tn-app .at-ov.on>span:first-child{background:var(--lantern);color:#fff}
-html.tn-app .at-ov b{display:block;font:800 16px var(--body)}
-html.tn-app .at-ov small{color:var(--muted);font-size:13px}
-html.tn-app .at-ov i{margin-inline-start:auto;font-style:normal;color:#CDBBA2;font-size:18px}
 html.tn-app .at-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 html.tn-app .at-act{border:0;border-radius:20px;padding:14px;text-align:start;color:var(--ink)}
 html.tn-app .at-act span{font-size:26px}
 html.tn-app .at-act b{display:block;font:800 16px var(--body);margin-top:4px}
 html.tn-app .at-act small{color:#6b4b3a;font-size:13px}
-html.tn-app .a1{background:linear-gradient(135deg,#FFE9A8,#FFD0C2)}html.tn-app .a2{background:#E3EEF9}html.tn-app .a3{background:#EEF6EA}
+html.tn-app .a1{background:linear-gradient(135deg,#FFE9A8,#FFD0C2)}html.tn-app .a2{background:#E3EEF9}
 html.tn-app .at-acct{margin-top:12px}
 html.tn-app .at-foot{display:flex;justify-content:center;gap:18px;margin-top:16px}
 html.tn-app .at-link{border:0;background:none;color:var(--muted);font:700 14px var(--body);text-decoration:underline}
-html.tn-app .at-empty{text-align:center;margin-top:10px}
-html.tn-app .at-empty img{width:150px}
-html.tn-app .at-empty h1{font:400 30px var(--display);margin:6px 0}
-html.tn-app .at-empty p{color:#6b4b3a;font-size:16px;line-height:1.6;margin:0 10px}
-html.tn-app .at-big{display:flex;width:100%;gap:12px;align-items:center;margin-top:20px;background:linear-gradient(135deg,#F14E24,#E8853A);color:#fff;border:0;border-radius:22px;padding:16px;text-align:start}
-html.tn-app .at-big>span:first-child{font-size:30px}
-html.tn-app .at-big b{display:block;font:800 19px var(--body)}
-html.tn-app .at-big small{font-size:14px;opacity:.9}
-html.tn-app .at-big i{margin-inline-start:auto;font-style:normal;font-weight:800;font-size:20px}
-html.tn-app .at-cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-html.tn-app .at-cg{position:relative;height:120px;border-radius:20px;overflow:hidden;border:0;padding:0;background:var(--ink)}
-html.tn-app .at-cg img{width:100%;height:100%;object-fit:cover;display:block}
-html.tn-app .at-cg::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 30%,rgba(30,15,8,.75))}
-html.tn-app .at-cg b{position:absolute;bottom:10px;inset-inline-start:14px;color:#fff;font:400 24px var(--display);z-index:1}
 html.tn-app .at-ctl[hidden]{display:none}
-html.tn-app .at-cities .at-city.add,html.tn-app .at-days .at-day.add{width:auto;flex:none;margin:0;padding:9px 16px;border:1.5px dashed var(--rule);border-radius:999px;background:none;color:var(--muted);font:800 16px var(--body);box-shadow:none;transform:none}
-html.tn-app .at-days .at-day.add{border-radius:14px}
 [dir=rtl].tn-app .at-si .tname,[dir=rtl].tn-app .at-idea .tname{direction:ltr;text-align:right}
 
 /* ---- app search screen (js/appsearch.js) ---- */
@@ -1644,7 +1489,7 @@ html.tn-app.tn-splash body{overflow:hidden}
 #tnsplash .sp-stamp small{font:900 8.5px Inter,sans-serif;letter-spacing:1px}
 @media (max-width:360px){#tnsplash .sp-wrap{transform-origin:50% 50%;zoom:.9}}
 
-/* ---- More, edge to edge like a phone's settings (wider rows, icon tiles) ---- */
+/* ---- More,edge to edge like a phone's settings (wider rows, icon tiles) ---- */
 html.tn-app #menu{width:100vw;margin-inline:calc(50% - 50vw);padding:4px 14px 28px;box-sizing:border-box}
 html.tn-app #menu .ax-h{padding-inline:6px}
 html.tn-app #menu .am-prof{padding:16px;border-radius:22px;box-shadow:0 2px 10px rgba(63,33,22,.06)}
@@ -1661,7 +1506,7 @@ html.tn-app #menu .am-li[data-k=lang]{--c:#E1EEF8}
 html.tn-app #menu .am-li[data-k=privacy]{--c:#F1E8DA}
 html.tn-app #menu .am-li[data-k=crew]{--c:#EEE6F6}
 
-/* ---- My trip v3 in the app: cover, day timeline, bookings (js/apptrip.js) ---- */
+/* ---- My trip v3 in the app: cover,day timeline,bookings (js/apptrip.js) ---- */
 html.tn-app .at-cover{position:relative;height:calc(290px + env(safe-area-inset-top));width:100vw;margin:calc(-16px - env(safe-area-inset-top)) calc(50% - 50vw) 0;background:linear-gradient(135deg,#F14E24,#E8853A);overflow:hidden}
 html.tn-app .at-cover>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 html.tn-app .at-shade{position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,0) 32%,rgba(0,0,0,.7))}
@@ -1674,48 +1519,10 @@ html.tn-app .at-ctext p{margin:2px 0 0;font:700 15px var(--body);opacity:.95}
 html.tn-app .at-count{position:relative;display:inline-flex;align-items:center;gap:6px;background:var(--lantern);color:#fff;border-radius:999px;padding:5px 13px;font:800 14px var(--body);overflow:hidden}
 html.tn-app .at-count.set{background:rgba(255,253,247,.92);color:var(--ink)}
 html.tn-app .at-count input{position:absolute;inset:0;opacity:0;width:100%;height:100%;border:0;padding:0}
-html.tn-app .at-route{display:flex;align-items:center;gap:6px;background:var(--sheet);border-radius:20px;padding:10px;margin:-30px 0 0;position:relative;box-shadow:0 8px 20px rgba(63,33,22,.12);overflow-x:auto;scrollbar-width:none}
-html.tn-app .at-route::-webkit-scrollbar{display:none}
-html.tn-app .at-route>i{font-style:normal;color:#C9B8A2;flex:none}
-html.tn-app .at-rc{flex:1;min-width:76px;border:0;border-radius:14px;padding:7px 4px;text-align:center;background:color-mix(in srgb,var(--c) 12%,#fff)}
-html.tn-app .at-rc b{display:block;font:800 16px var(--body);color:var(--c)}
-html.tn-app .at-rc small{color:var(--muted);font-size:12.5px}
-html.tn-app .at-rc.add{flex:none;min-width:58px;background:none;border:1.5px dashed var(--rule);color:var(--muted);font:800 18px var(--body)}
-html.tn-app .at-rc.add small{display:block;font-size:11.5px}
-html.tn-app #tripbook .at-stats{grid-template-columns:repeat(3,1fr);margin-top:12px}
 html.tn-app .at-bi{width:40px;height:40px;border-radius:12px;background:#FFF0EA;display:grid;place-items:center;font-size:20px;flex:none}
-html.tn-app .at-bkrow{display:flex;width:100%;gap:10px;align-items:center;background:var(--sheet);border:0;border-radius:16px;padding:10px 12px;margin-bottom:8px;text-align:start;color:var(--ink)}
-html.tn-app .at-bkrow i{font-style:normal;color:#CDBBA2}
 html.tn-app .at-si>b{display:block;font:800 15.5px var(--body);color:var(--ink)}
-html.tn-app .at-home{margin-bottom:8px}
-html.tn-app .at-home>small{display:block;color:var(--muted);font:800 13px var(--body);margin:0 4px 4px}
-html.tn-app .at-dn{width:34px;height:34px;flex:none;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font:900 15px var(--body)}
-html.tn-app .at-ov>span:first-child.at-dn{padding:0;background:var(--c);color:#fff;border-radius:50%}
-html.tn-app .at-ov em{margin-inline-start:auto;font-style:normal;font:800 14px var(--body);color:#5C4A3E;white-space:nowrap}
 /* a day */
 html.tn-app #tripbook.at-onday{padding-bottom:110px}
-html.tn-app .at-dh{display:flex;align-items:center;gap:10px;margin:2px 0 10px}
-html.tn-app .at-dh>div{flex:1;min-width:0}
-html.tn-app .at-dh small{color:var(--muted);font:700 13.5px var(--body)}
-html.tn-app .at-dh .at-dt{font-size:22px;display:block;width:100%}
-html.tn-app[dir=rtl] .at-back svg{transform:scaleX(-1)}
-html.tn-app .at-dh .at-mapb{position:static;width:46px;height:46px;border-radius:14px;background:var(--ink);color:#fff;padding:0;justify-content:center}
-html.tn-app .at-dh .at-mapb svg{width:22px;height:22px}
-html.tn-app .at-strip{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 calc(50% - 50vw) 10px;padding:2px calc(50vw - 50%)}
-html.tn-app .at-strip::-webkit-scrollbar{display:none}
-html.tn-app .at-sd{flex:none;width:54px;border:0;border-radius:14px;background:var(--sheet);padding:6px 0 7px;text-align:center;color:var(--ink);border-bottom:3px solid var(--c)}
-html.tn-app .at-sd small{display:block;font:700 11px var(--body);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 3px}
-html.tn-app .at-sd b{font:900 19px var(--body)}
-html.tn-app .at-sd.on{background:var(--c);color:#fff}
-html.tn-app .at-sd.on small{color:rgba(255,255,255,.85)}
-html.tn-app .at-sd.add{border:1.5px dashed var(--rule);background:none;color:var(--muted);font:800 20px var(--body)}
-html.tn-app .at-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-html.tn-app .at-chips>*{display:inline-flex;align-items:center;gap:4px;background:#F1E8DA;border:0;border-radius:999px;padding:5px 11px;font:700 13px var(--body);color:#5C4A3E}
-html.tn-app .at-st{position:relative}
-html.tn-app .at-st input{border:0;background:none;font:800 13px var(--body);color:var(--ink);padding:0;width:auto;max-width:96px}
-html.tn-app .at-cmp{margin-inline-start:auto;background:var(--sheet)!important}
-html.tn-app .at-cmp.on{background:var(--ink)!important;color:#fff}
-html.tn-app .at-tline{position:relative}
 html.tn-app .at-row{display:flex;gap:8px;align-items:stretch;position:relative;flex-wrap:wrap}
 html.tn-app .at-time{width:52px;flex:none;text-align:center;padding-top:12px}
 html.tn-app .at-time b{display:block;font:900 13px var(--body);white-space:nowrap}
@@ -1738,14 +1545,8 @@ html.tn-app .at-hal{display:block;font:800 12.5px var(--body);color:#2E8B3E}
 html.tn-app .at-add{flex:none;width:32px;height:32px;border-radius:50%;border:0;background:#2E8B3E;color:#fff;font:800 18px var(--body)}
 html.tn-app .at-bk{background:#EEF2FA}
 html.tn-app .at-bk .at-bi{background:#fff}
-html.tn-app .at-bked{flex:none;width:34px;height:34px;border-radius:50%;border:0;background:none;color:var(--muted)}
 html.tn-app .at-hop{display:flex;align-items:center;gap:6px;margin:0 0 4px;padding-inline-start:74px;font:700 12.5px var(--body);color:var(--muted)}
 html.tn-app .at-hop span{width:24px;height:24px;border-radius:50%;background:#F1E8DA;display:grid;place-items:center;flex:none}
-html.tn-app .at-tline.compact .at-tc{padding:9px 12px}
-html.tn-app .at-tline.compact .at-time{padding-top:9px}
-html.tn-app .at-tline.compact .at-dot::after{top:13px}
-html.tn-app .at-tline.compact .at-hop{display:none}
-html.tn-app .at-tline .at-none{padding:30px 10px}
 html.tn-app .at-fab{position:fixed;inset-inline-end:18px;bottom:calc(98px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;border:0;background:var(--lantern);color:#fff;display:grid;place-items:center;box-shadow:0 8px 20px rgba(241,78,36,.4);z-index:30}
 /* the add sheet */
 #atsheet{display:none}
@@ -1770,14 +1571,12 @@ html.tn-app .at-fg small{display:block;font:700 11.5px var(--body);color:var(--m
 html.tn-app .at-fg input,html.tn-app .at-fg textarea{width:100%;border:0;background:none;padding:2px 0;font:800 16px var(--body);color:var(--ink);outline:none;box-sizing:border-box;resize:none}
 html.tn-app .at-fg input::placeholder,html.tn-app .at-fg textarea::placeholder{color:#C9B8A2;font-weight:700}
 html.tn-app .at-ftip{margin:8px 2px 0;font:700 13.5px var(--body);color:#9A6233}
-html.tn-app .at-save{width:100%;margin-top:10px;border:0;background:var(--lantern);color:#fff;border-radius:14px;padding:13px;font:800 16px var(--body)}
 html.tn-app .at-del{width:100%;margin-top:8px;border:0;background:none;color:var(--lantern);font:700 14px var(--body);text-decoration:underline}
 /* the day on the map: directions */
 html.tn-app .mp-dir{position:absolute;inset-inline:16px;bottom:150px;z-index:3;display:flex;gap:8px;align-items:center;justify-content:center;background:var(--ink);color:#fff;border-radius:16px;padding:12px;font:800 15px var(--body);text-decoration:none;box-shadow:0 6px 16px rgba(0,0,0,.2)}
-html.tn-app .at-route .tnextb.at-rc{width:auto;padding:6px 10px;font-size:18px;line-height:1.2;color:var(--muted)}
 
-/* ---- in the app, every list that pops up is a bottom sheet ---- */
-/* the add-places picker, the account and Apollo's planner */
+/* ---- in the app,every list that pops up is a bottom sheet ---- */
+/* the add-places picker,the account and Apollo's planner */
 html.tn-app .tpick{padding:0;align-items:flex-end;justify-content:stretch;z-index:95}
 html.tn-app .tpick:not([hidden]){animation:atfade .2s ease-out}
 html.tn-app .tpick:not([hidden])>.tpick-sheet{animation:atup .28s cubic-bezier(.2,.8,.2,1)}
@@ -1807,7 +1606,7 @@ html.tn-app .tpick.acct{padding:0!important;align-items:flex-end!important}
 html.tn-app .acct-sheet{border-radius:26px 26px 0 0!important;border:0!important;border-bottom:0!important}
 html.tn-app .acct-cat{position:static;display:block;width:64px;margin:0 auto 2px;transform:none}
 
-/* ---- list pages as rows, like a maps app (js/appshell.js openList) ---- */
+/* ---- list pages as rows,like a maps app (js/appshell.js openList) ---- */
 html.tn-app .lv-f{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 16px 10px;position:sticky;top:calc(70px + env(safe-area-inset-top));z-index:2;background:color-mix(in srgb,var(--paper) 94%,transparent)}
 html.tn-app .lv-f::-webkit-scrollbar{display:none}
 html.tn-app .lv-f button{flex:none;border:1.5px solid var(--rule);background:var(--sheet);border-radius:999px;padding:7px 13px;font:800 14px var(--body);color:var(--ink);white-space:nowrap}
@@ -1837,12 +1636,11 @@ html.tn-app .lr-t b{direction:ltr;unicode-bidi:plaintext}
 html.tn-app #explore{width:100vw;margin-inline:calc(50% - 50vw);padding-inline:14px;box-sizing:border-box}
 html.tn-app #explore .ax-hs,html.tn-app #explore .ax-cities,html.tn-app #explore .xs-stories{scroll-padding-inline:14px}
 
-/* ---- Explore v3: right now, your trip, today, the mood grid (js/appshell.js) ---- */
+/* ---- Explore v3: right now,your trip,today,the mood grid (js/appshell.js) ---- */
 html.tn-app .hx-now,html.tn-app .hx-today{background:var(--sheet);border-radius:22px;padding:14px;margin-top:14px;box-shadow:0 4px 16px rgba(63,33,22,.06)}
 html.tn-app .hx-now header{display:flex;align-items:center;gap:8px}
 html.tn-app .hx-now header b{font:800 16.5px var(--body)}
 html.tn-app .hx-now header small{margin-inline-start:auto;color:var(--muted);font:700 12.5px var(--body);white-space:nowrap}
-html.tn-app .hx-pulse{width:10px;height:10px;border-radius:50%;background:#2E8B3E;box-shadow:0 0 0 4px rgba(46,139,62,.2);flex:none;animation:hxp 2s ease-in-out infinite}
 @keyframes hxp{50%{box-shadow:0 0 0 7px rgba(46,139,62,.08)}}
 html.tn-app .hx-now p{margin:6px 0 10px;font:600 15px/1.55 var(--body)}
 html.tn-app .hx-now p b{color:var(--lantern)}
@@ -1890,15 +1688,6 @@ html.tn-app .hx-rest .h b{color:#2E8B3E}
 html.tn-app .hx-rest span{font:800 11px var(--body);background:#E3F2DF;color:#2E7D32;border-radius:999px;padding:1px 8px;white-space:nowrap}
 html.tn-app .hx-open{display:block;width:calc(100% - 28px);margin:6px 14px 14px;border:0;background:var(--ink);color:#fff;border-radius:14px;padding:11px;font:800 14.5px var(--body)}
 html.tn-app .hx-h{font:400 23px var(--display);margin:22px 2px 10px}
-html.tn-app .hx-bento{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:96px;gap:8px}
-html.tn-app .hx-b{position:relative;overflow:hidden;border:0;border-radius:18px;background:#C9B8A2 center/cover;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;padding:8px 10px;color:#fff;text-align:start}
-html.tn-app .hx-b::before{content:"";position:absolute;inset:0;background:linear-gradient(transparent 35%,rgba(0,0,0,.66))}
-html.tn-app .hx-b>*{position:relative}
-html.tn-app .hx-b span{font:800 15px var(--body);text-shadow:0 1px 4px rgba(0,0,0,.3)}
-html.tn-app .hx-b small{font:600 12px var(--body);opacity:.92}
-html.tn-app .hx-b.big{grid-column:span 2;grid-row:span 2}
-html.tn-app .hx-b.big span{font-size:22px}
-html.tn-app .hx-b.wide{grid-column:1/-1}
 
 /* ---- "What's your mood?": sticker tabs and their top three (js/appshell.js) ---- */
 html.tn-app .hx-moods{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-inline:calc(50% - 50vw);padding:4px calc(50vw - 50%) 6px;scroll-padding-inline:14px}
@@ -1969,7 +1758,7 @@ html.tn-app .ar-go small{font:700 12px var(--body);color:var(--muted)}
 html.tn-app .ar-mc .ar-add{position:absolute;top:8px;inset-inline-end:8px;width:34px;height:34px;border:0;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 html.tn-app .ar-f{position:static;padding-top:2px}
 
-/* ---- My trips, travel-planner style (js/apptrip.js) ---- */
+/* ---- My trips,travel-planner style (js/apptrip.js) ---- */
 html.tn-app .tv-lh{display:flex;justify-content:space-between;align-items:center;margin:6px 2px 12px}
 html.tn-app .tv-lh h1{margin:0;font:400 32px var(--display)}
 html.tn-app .tv-plus{width:48px;height:48px;border-radius:50%;border:0;background:var(--lantern);color:#fff;display:grid;place-items:center;box-shadow:0 6px 14px rgba(241,78,36,.35)}
@@ -2009,7 +1798,6 @@ html.tn-app .tv-pills::-webkit-scrollbar{display:none}
 html.tn-app .tv-pills button{flex:none;border:1.5px solid var(--rule);background:var(--sheet);border-radius:999px;padding:7px 14px;font:800 14px var(--body);color:var(--ink)}
 html.tn-app .tv-pills button.on{background:var(--ink);border-color:var(--ink);color:#fff}
 html.tn-app .tv-pills button i{font-style:normal;background:var(--lantern);color:#fff;border-radius:999px;padding:0 6px;font-size:11.5px}
-html.tn-app .tv-pills .tv-cmp{margin-inline-start:auto;padding:7px 10px;display:grid;place-items:center}
 html.tn-app .tv-day{margin-bottom:6px}
 html.tn-app .tv-dh{display:flex;align-items:center;gap:8px;padding:14px 2px 8px}
 html.tn-app .tv-dh>div{flex:1;min-width:0}
@@ -2043,11 +1831,7 @@ html.tn-app .tv-bk0 p{margin:0 0 12px;font:600 14px/1.6 var(--body);color:#6B504
 html.tn-app .tv-bkb{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 html.tn-app .tv-bkb .tv-q{border:0;background:var(--paper);border-radius:14px;padding:12px 6px;font-size:14px}
 html.tn-app .tv-bkrow{display:flex;width:100%;gap:10px;align-items:center;background:var(--sheet);border:0;border-radius:16px;padding:10px 12px;margin:6px 0;text-align:start;color:var(--ink)}
-html.tn-app .tv-idea0{display:flex;gap:12px;align-items:center;background:#FFF6DC;border-radius:22px;padding:16px;margin-top:6px}
-html.tn-app .tv-idea0 img{width:56px}
-html.tn-app .tv-idea0 b{display:block;font:800 16px var(--body)}
-html.tn-app .tv-idea0 small{font:600 13px/1.5 var(--body);color:#6B5040}
-/* the sheet: new trip, add, forms */
+/* the sheet: new trip,add,forms */
 html.tn-app .tv-sheet{background:var(--paper)}
 html.tn-app .tv-shh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
 html.tn-app .tv-shh b{font:800 18px var(--body)}
@@ -2195,7 +1979,7 @@ html.tn-app .ttoast{bottom:calc(98px + env(safe-area-inset-bottom))}
 html.tn-app.at-sheet-open .ttoast,html.tn-app.onb-open .ttoast{bottom:calc(22px + env(safe-area-inset-bottom))}
 /* The count next to Saved places on a trip. */
 .at-h .tv-n{font:600 13px var(--body);font-style:normal;background:var(--ink);color:var(--paper);border-radius:99px;padding:2px 8px;vertical-align:middle}
-/* In season: the season's emoji in place of the live dot, and a See all link. */
+/* In season: the season's emoji in place of the live dot,and a See all link. */
 html.tn-app .hx-sico{font-style:normal;font-size:17px;line-height:1;flex:none}
 html.tn-app .hx-season p b{color:var(--lantern);margin-inline-end:2px}
 html.tn-app .hx-sall{display:block;margin:10px auto 0;border:0;background:none;color:var(--lantern);font:800 14px var(--body);padding:6px 10px}
@@ -2348,7 +2132,7 @@ html.tn-app .ad-btn{border:0;background:var(--lantern);color:#fff;border-radius:
 html.tn-app .ad-foot{text-align:center;color:var(--muted);font:600 12px/1.5 var(--body);margin-top:14px}
 html.tn-app .am-li .ad-badge{color:#fff;font-size:11px;margin-inline-start:auto}
 
-/* ---- sign up / log in: show password, strength, travel buddies (js/account.js) ---- */
+/* ---- sign up / log in: show password,strength,travel buddies (js/account.js) ---- */
 .acct-pwrap{position:relative}
 .acct-pwrap input{width:100%;padding-inline-end:48px}
 .acct-eye{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);border:0;background:none;font-size:18px;padding:6px 8px;cursor:pointer;opacity:.55}
@@ -2404,16 +2188,8 @@ html.tn-app .pf-x{position:absolute;top:12px;inset-inline-end:12px}
 html.tn-app .pf-sheet h3{font:400 22px var(--display);margin:0}
 html.tn-app .pf-sheet>p{font:600 13.5px/1.45 var(--body);color:var(--muted);margin:4px 0 10px}
 html.tn-app .pf-sheet .acct-f{display:flex;flex-direction:column;gap:10px}
-/* On the profile, messages show at the top so they never cover a sheet. */
+/* On the profile,messages show at the top so they never cover a sheet. */
 html.tn-app.pf-open .ttoast{bottom:auto;top:calc(14px + env(safe-area-inset-top));z-index:97}
-
-/* ---- Halal Lens (js/applens.js) ---- */
-html.tn-app .ln-card{display:flex;width:100%;align-items:center;gap:12px;margin-top:12px;border:0;border-radius:20px;padding:14px 16px;background:linear-gradient(135deg,#2E8B3E,#1F6B2C);color:#fff;text-align:start;cursor:pointer;box-shadow:0 10px 20px -12px rgba(46,139,62,.8)}
-html.tn-app .ln-cbig{font-size:30px;flex:none}
-html.tn-app .ln-card b{display:block;font:400 19px var(--display)}
-html.tn-app .ln-card small{display:block;font:700 12.5px/1.4 var(--body);opacity:.92}
-html.tn-app .ln-card i{font-style:normal;margin-inline-start:auto;font-weight:900}
-html[dir=rtl].tn-app .ln-card i{transform:scaleX(-1)}
 html.tn-app #lens:not([hidden]){position:fixed;inset:0;z-index:66;background:#1d1510;color:#fff}
 html.tn-app.ln-open body{overflow:hidden}
 html.tn-app .ln-top{position:absolute;top:calc(10px + env(safe-area-inset-top));left:14px;right:14px;display:flex;align-items:center;gap:10px;z-index:3}
@@ -2577,9 +2353,8 @@ html.tn-app .ax-card{position:relative;display:block;border:0;padding:0;border-r
 html.tn-app .ax-card.big{grid-column:1/-1;height:220px}
 html.tn-app .ax-card img{width:100%;height:100%;object-fit:cover;display:block}
 html.tn-app .ax-card:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 38%,rgba(20,10,5,.88))}
-html.tn-app .ax-no,html.tn-app .ax-hl{position:absolute;top:8px;z-index:1;font:800 10.5px var(--body);color:#fff;border-radius:99px;padding:2px 8px}
+html.tn-app .ax-no{position:absolute;top:8px;z-index:1;font:800 10.5px var(--body);color:#fff;border-radius:99px;padding:2px 8px}
 html.tn-app .ax-no{inset-inline-start:8px;background:#0006}
-html.tn-app .ax-hl{inset-inline-end:8px;background:#2E8B3E}
 html.tn-app .ax-t{position:absolute;left:10px;right:10px;bottom:9px;z-index:1;color:#fff}
 html.tn-app .ax-t b{display:block;font:400 18px/1.1 var(--display)}
 html.tn-app .ax-card.big .ax-t b{font-size:25px}
@@ -2596,7 +2371,7 @@ html.tn-app .ax-dots{display:flex;gap:3px;margin-top:5px}
 html.tn-app .ax-dots i{width:16px;height:6px;border-radius:9px;background:#EADFCF}
 html.tn-app .ax-dots i.f{background:var(--lantern)}
 
-/* ---- the crew, as a character select (js/appcrew.js) ---- */
+/* ---- the crew,as a character select (js/appcrew.js) ---- */
 #crewcs:not([hidden]){position:fixed;inset:0;z-index:66;display:flex;flex-direction:column;overflow:hidden auto;color:var(--ink);background:#C9562A}
 html.cs-open body{overflow:hidden}
 #crewcs .cs-bg{position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--c) 14%,#FFF1DC),color-mix(in srgb,var(--c) 52%,#F4C08A) 42%,color-mix(in srgb,var(--c) 70%,#4a1d0c) 100%);transition:background .4s}
@@ -2638,7 +2413,7 @@ html[dir=rtl] #crewcs .cs-bub{border-radius:16px 16px 4px 16px;font-family:var(-
 #crewcs .cs-dots button.on{width:22px;background:var(--c)}
 @media (prefers-reduced-motion:reduce){#crewcs .cs-ray,#crewcs .cs-hero{animation:none!important}}
 
-/* ---- Apps to download, as Apollo's phone (js/appapps.js) ---- */
+/* ---- Apps to download,as Apollo's phone (js/appapps.js) ---- */
 #aphome:not([hidden]){position:fixed;inset:0;z-index:66;overflow:auto;color:var(--ink);padding-bottom:calc(120px + env(safe-area-inset-bottom))}
 html.aph-open body{overflow:hidden}
 #aphome .ah-bg{position:fixed;inset:0;background:linear-gradient(170deg,#FFE3C2,#F9B48A 55%,#E9784E);z-index:-1}
@@ -2864,8 +2639,6 @@ html.lp-on body{background:var(--paper)}
 .lp-glow{position:absolute;right:-10%;top:-30%;width:70vw;max-width:1000px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#FFD9A8 0,#FBE7CC 38%,transparent 68%);pointer-events:none;animation:lpGlow 9s ease-in-out infinite alternate}
 @keyframes lpGlow{to{transform:translate(-4%,6%) scale(1.06)}}
 .lp-copy{position:relative;z-index:1}
-.lp-kick{display:inline-flex;align-items:center;gap:8px;font:800 13.5px var(--body);background:#fff;border-radius:99px;padding:7px 14px;box-shadow:0 2px 10px rgba(63,33,22,.06)}
-.lp-kick b{background:#E3F2DF;color:#2E8B3E;border-radius:99px;padding:2px 8px;font-size:11.5px}
 .lp-hero h1{font-size:clamp(44px,6vw,76px);line-height:1.02;margin:20px 0 0;letter-spacing:-.5px}
 .lp-hero h1 em{font-style:normal;color:var(--lantern)}
 .lp-w{display:inline-block;opacity:0;transform:translateY(.5em) rotate(4deg);animation:lpWord .7s cubic-bezier(.2,.9,.3,1.2) forwards;animation-delay:calc(var(--i)*70ms + 150ms)}
@@ -2875,7 +2648,6 @@ html.lp-on body{background:var(--paper)}
 @keyframes lpUp{to{opacity:1;transform:none}}
 .lp-lead{font:600 clamp(16px,1.4vw,19px)/1.6 var(--body);color:var(--ink2);margin:18px 0 0;max-width:560px}
 .lp-btns{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap;align-items:center}
-.lp-trust{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:24px;font:700 13.5px var(--body);color:var(--muted)}
 .lp-stage{position:relative;height:620px;perspective:1200px;z-index:1}
 .lp-tilt{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.8,.3,1);--px:0;--py:0}
 .lp-ph{position:absolute;border-radius:40px;border:9px solid #23140d;background:#23140d;box-shadow:0 30px 60px -20px rgba(63,33,22,.55);overflow:hidden}
@@ -2896,10 +2668,6 @@ html.lp-on body{background:var(--paper)}
 .lp-chip{position:absolute;z-index:3;background:#fff;border-radius:14px;padding:9px 13px;font:800 13px var(--body);box-shadow:0 12px 26px -10px rgba(63,33,22,.4);white-space:nowrap}
 .lp-chip.c1{left:4%;bottom:46px;animation:lpPop .5s cubic-bezier(.3,1.5,.5,1) 1.6s both,lpFloat 5s ease-in-out 2.2s infinite}
 .lp-chip.c2{right:0;top:58px;animation:lpPop .5s cubic-bezier(.3,1.5,.5,1) 1.9s both,lpFloat 5.6s ease-in-out 2.6s infinite}
-/* stats */
-.lp-stats{display:grid;grid-template-columns:repeat(5,1fr);margin:0 max(20px,calc((100vw - 1240px)/2));background:var(--ink);color:#fff;border-radius:28px;padding:24px 10px}
-.lp-stats div{text-align:center;border-inline-end:1px solid #ffffff22;padding:0 6px}.lp-stats div:last-child{border:0}
-.lp-stats b{display:block;font:400 clamp(28px,3vw,38px) var(--display);color:#FFC24A;font-variant-numeric:tabular-nums}.lp-stats span{font:700 13.5px var(--body);color:#e8d6c6}
 /* sections */
 .lp-sec{padding:90px max(20px,calc((100vw - 1240px)/2)) 0}
 .lp-k{display:block;font:800 13px var(--body);letter-spacing:.14em;color:var(--lantern)}
@@ -2964,7 +2732,6 @@ html[dir=rtl] .lp-bq,html[dir=rtl] .lp-hi,html[dir=rtl] .lp-bub{font-family:var(
 @media (max-width:620px){.lp-nav{gap:10px;padding:10px 14px}.lp-logo{font-size:19px}.lp-logo img{width:34px;height:34px}.lp-lang{padding:7px 10px}.lp-cta{padding:10px 15px;font-size:14px}
   .lp-stage{height:450px}.lp-ph.c{width:220px;margin-left:-110px}.lp-ph.l,.lp-ph.r{width:160px;top:80px}.lp-ph.l{left:-6%}.lp-ph.r{right:-6%}
   .lp-bub{max-width:260px;font-size:16px;left:0}.lp-chip{font-size:12px}.lp-chip.c2{top:auto;bottom:10px;right:4%}.lp-chip.c1{bottom:56px}
-  .lp-stats{grid-template-columns:repeat(3,1fr);row-gap:16px}.lp-stats div:nth-child(3){border:0}.lp-stats div:nth-child(n+4){grid-column:span 1}
 .lp-sec{padding-top:64px}.lp-b img{height:140px}.lp-final{margin-top:70px}}
 @media (prefers-reduced-motion:reduce){#landing *,#landing *:before{animation:none!important;transition:none!important}.lp-w,.lp-in,.lp-rv{opacity:1!important;transform:none!important}}
 
@@ -3008,7 +2775,7 @@ html[dir=rtl] .lp-pc small{font:700 12px/1.4 var(--body)}
 .lp-nav .lp-cta,.lp-logo{white-space:nowrap}
 @media (max-width:420px){.lp-nav .lp-logo{font-size:0;gap:0}.lp-nav{gap:8px}}
 
-/* ---- the privacy page (js/privacy.js): the app's own page, and #privacy on the website ---- */
+/* ---- the privacy page (js/privacy.js): the app's own page,and #privacy on the website ---- */
 html.tn-app #prview:not([hidden]){position:fixed;inset:0;z-index:66;overflow:auto;background:var(--paper);color:var(--ink);padding-bottom:calc(24px + env(safe-area-inset-bottom))}
 html.tn-app.pr-open body{overflow:hidden}
 #prview .pr-top{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 14px 8px;background:var(--paper)}
@@ -3043,11 +2810,10 @@ html[dir=rtl] .pr-a p{padding:0 44px 0 16px}
 .pr-q.open .pr-a p{padding-bottom:14px}
 .pr-del{width:100%;display:flex;align-items:center;gap:12px;margin-top:14px;border:2px dashed #E9B3A3;background:none;border-radius:16px;padding:12px 14px;cursor:pointer;color:#C2401C;text-align:start;font:inherit;font-size:18px}
 .pr-del b{display:block;font:800 14px var(--body)}.pr-del small{display:block;font:600 12px var(--body);color:var(--muted)}
-.pr-none,.pr-foot{font:600 12.5px/1.5 var(--body);color:var(--muted);margin:14px 4px 0;text-align:center}
 @media (prefers-reduced-motion:reduce){.pr-a,.pr-q button i{transition:none}}
 
-/* the same three pages on the website, on a big screen: kept to a phone-ish
-   column in the middle, with the page's own background around it */
+/* the same three pages on the website,on a big screen: kept to a phone-ish
+   column in the middle,with the page's own background around it */
 html:not(.tn-app) #aphome>*:not(.ah-bg):not(.ah-scrim):not(.ah-sscrim):not(.ah-dock),html:not(.tn-app) #trview>*:not(.tr-scrim){max-width:560px;margin-left:auto;margin-right:auto}
 html:not(.tn-app) #aphome .ah-dock{max-width:530px;margin:0 auto}
 html:not(.tn-app) #aphome .ah-sheet,html:not(.tn-app) #trview .tr-sheet{max-width:560px;margin:0 auto}
@@ -3057,7 +2823,7 @@ html:not(.tn-app) #crewcs .cs-panel{width:min(560px,calc(100% - 24px));margin-le
 #aphome .ah-gets{display:grid;gap:8px;margin-top:14px}#aphome .ah-gets .ah-get{margin:0}
 html:not(.tn-app) #crewcs .cs-top,html:not(.tn-app) #crewcs .cs-stage{width:min(760px,100%);margin-left:auto;margin-right:auto}
 
-/* ---- Ask Apollo: start screen, place cards, day plans (js/apollo.js) ---- */
+/* ---- Ask Apollo: start screen,place cards,day plans (js/apollo.js) ---- */
 .apo-new{margin-inline-end:2px}
 .ap-start{display:flex;flex-direction:column}
 .ap-ctx{display:flex;gap:6px;flex-wrap:wrap}.ap-ctx span{background:var(--sheet);border:1px solid var(--rule);border-radius:99px;padding:5px 10px;font:600 12px var(--body)}
@@ -3103,7 +2869,7 @@ html:not(.tn-app) #crewcs .cs-top,html:not(.tn-app) #crewcs .cs-stage{width:min(
 .ap-acts .ap-rq{flex-basis:100%;font:700 12px var(--body);color:var(--muted)}
 .ap-acts .ap-rx{padding-inline:10px}
 .ap-acts button[data-w]{border:1.5px solid #E6D6BF;border-radius:999px;padding:6px 12px;background:#FFF;color:#3B2A20;font-weight:700}
-/* Login, option C: Apollo says hi, then Google or email */
+/* Login,option C: Apollo says hi,then Google or email */
 .acct-hi{text-align:center}
 .acct-hi h2{padding-inline-end:0;margin-top:2px}
 .acct-hi>p{margin-bottom:14px}
@@ -3116,9 +2882,6 @@ html.tn-app .acct-hi .acct-cat{width:96px}
 .acct-hi .acct-small{margin-top:14px}
 .acct-danger .store svg{vertical-align:-4px;margin-inline-end:4px;background:#FFF;border-radius:50%;padding:2px}
 .pf-g{display:flex;align-items:center;gap:10px}.pf-g small{margin-inline-start:auto;color:var(--muted)}
-/* Prayer times & Qibla (js/appprayer.js) */
-html.tn-app .py-card-btn{display:flex;width:100%;align-items:center;gap:12px;margin-top:12px;border:0;border-radius:20px;padding:14px 16px;background:linear-gradient(135deg,#2E5E4E,#1F4237);color:#fff;text-align:start;cursor:pointer;box-shadow:0 10px 20px -12px rgba(31,66,55,.8);font:inherit}
-html.tn-app .py-card-btn .py-cbig{font-size:30px}html.tn-app .py-card-btn b{display:block;font:400 19px var(--display)}html.tn-app .py-card-btn small{display:block;font:700 12.5px/1.4 var(--body);opacity:.9}html.tn-app .py-card-btn>i{margin-inline-start:auto;font-style:normal;font-size:22px;opacity:.8}
 #prayview,#qiblaview{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
 #prayview[hidden],#qiblaview[hidden]{display:none}#qiblaview{z-index:61;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
 .py-top{display:flex;align-items:center;gap:10px;padding:12px 16px 8px}.py-top b{font:400 24px var(--display)}
@@ -3145,8 +2908,6 @@ html.tn-app .py-card-btn .py-cbig{font-size:30px}html.tn-app .py-card-btn b{disp
 .py-room b{display:block;font:700 14px var(--body)}.py-room small{display:block;font:500 12px var(--body);color:var(--muted)}.py-room em{margin-inline-start:auto;font:800 13px var(--body);font-style:normal;color:var(--shinkansen);white-space:nowrap}
 .py-more{display:block;width:100%;border:0;border-top:1px solid #F1E7D8;background:none;padding:10px 0;font:700 13px var(--body);color:var(--lantern);cursor:pointer}
 .py-none{font:600 13px var(--body);color:var(--muted);padding:12px 0}
-.py-set{padding:6px 16px}.py-set label{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;font:600 14px var(--body);border-bottom:1px solid #F1E7D8}.py-set label:last-child{border:0}
-.py-set select{border:1px solid var(--rule);border-radius:10px;background:#FFFBF2;padding:6px 8px;font:700 13px var(--body);color:var(--ink);max-width:60%}
 .py-foot{font:500 12px/1.5 var(--body);color:var(--muted);margin:10px 20px 0;text-align:center}
 .qb-wrap{position:relative;width:min(300px,78vw);aspect-ratio:1;margin:10px auto 0}
 .qb-dial{position:absolute;inset:0;border-radius:50%;border:4px solid var(--ink);background:radial-gradient(circle,#FFFDF7 60%,#F3E7D3 61%);transition:transform .15s linear}

@@ -10,7 +10,6 @@
 // Logged out, the button opens the login sheet and the chat follows.
 const APOLLO_API="https://ask-apollo.ziyadalruwashid.workers.dev/";
 
-const SUGGEST=["Halal ramen in Tokyo?","Plan a day in Kyoto for me","Best coffee near Shibuya?","Where can I pray in Osaka?"];
 // The conversation survives a reload or a trip to another page, but only for
 // this tab, and an empty or blocked sessionStorage just starts fresh.
 const CHAT_KEY="tabineko-chat";

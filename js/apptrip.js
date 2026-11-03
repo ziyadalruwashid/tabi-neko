@@ -508,7 +508,6 @@ window.tnToday=function(){
 // Open the trip on a given day (the home page's Today card).
 window.tnOpenDay=(a,b)=>{view="trip";tab="plan";appTrip();const x=allDays().find(z=>z.a===+a&&z.b===+b);
   setTimeout(()=>{const el=x&&document.getElementById("tvd-"+x.n);if(el)el.scrollIntoView({block:"start"})},30)};
-window.tnNewTrip=openNew;
 // The trip's days with their dates, stops and bookings, for the reminders
 // (js/appremind.js). Times are minutes after midnight in Japan.
 window.tnTripPlan=()=>!trip.start?[]:allDays().map(x=>{const tl=timeline(x.s,x.d);

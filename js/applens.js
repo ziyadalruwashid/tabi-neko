@@ -164,6 +164,5 @@ window.tnOpenLens=()=>open();
 // The phone's back button: the staff card, then a result, then the lens.
 window.tnLensBack=()=>{if(el.hidden)return false;if(phase==="ask"){phase=askFrom;draw();return true}if(phase==="result"){phase="cam";res=null;draw();return true}return false};
 // The More page's card.
-window.tnLensCard=()=>`<button type="button" class="ln-card"><span class="ln-cbig" aria-hidden="true">📸</span><span><b>${T("Halal Lens")}</b><small>${T("Snap a label or a menu. Apollo checks it for pork and alcohol.")}</small></span><i aria-hidden="true">›</i></button>`;
 if(typeof window.tnRenderMore==="function")tnRenderMore();
 })();
