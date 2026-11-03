@@ -26,6 +26,15 @@
     "LocalNotifications": {
       "smallIcon": "ic_stat_tabineko",
       "iconColor": "#F14E24"
+    },
+    "SocialLogin": {
+      "providers": {
+        "google": true,
+        "facebook": false,
+        "apple": true,
+        "twitter": false
+      },
+      "logLevel": 1
     }
   }
 }

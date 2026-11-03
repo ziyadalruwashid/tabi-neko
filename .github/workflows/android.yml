@@ -33,7 +33,24 @@ jobs:
         run: npm ci && npm run web && npx cap sync android
       - name: Build the APK
         working-directory: app/android
-        run: ./gradlew assembleDebug --no-daemon
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          TN_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          # Signed with the upload key when it's set up (a fixed SHA-1 for
+          # Google sign-in); otherwise with a throwaway debug key, as before.
+          if [ -n "$KS" ] && [ -n "$TN_KEYSTORE_PASSWORD" ]; then
+            export TN_KEYSTORE="$RUNNER_TEMP/upload.p12"
+            printf '%s' "$KS" | base64 -d > "$TN_KEYSTORE"
+            export TN_KEY_ALIAS="$(keytool -list -storetype pkcs12 -keystore "$TN_KEYSTORE" -storepass "$TN_KEYSTORE_PASSWORD" 2>/dev/null | awk -F, '/PrivateKeyEntry/{print $1; exit}')"
+          fi
+          ./gradlew assembleDebug --no-daemon
+          # The APK's SHA-1 is public (it's in every copy of the app); Google
+          # sign-in needs it registered in Firebase.
+          SIGNER="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)/apksigner"
+          SHA=$("$SIGNER" verify --print-certs app/build/outputs/apk/debug/app-debug.apk | awk -F': ' '/SHA-1 digest/{print toupper($2); exit}' | sed 's/../&:/g; s/:$//')
+          echo "APK signing SHA-1: $SHA" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "$TN_KEYSTORE" ]; then echo "(signed with the upload key)" >> "$GITHUB_STEP_SUMMARY"; rm -f "$TN_KEYSTORE"; else echo "(throwaway debug key: changes every build)" >> "$GITHUB_STEP_SUMMARY"; fi
       - uses: actions/upload-artifact@v4
         with:
           name: tabi-neko-debug-apk
