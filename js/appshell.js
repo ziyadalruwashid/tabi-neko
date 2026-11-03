@@ -566,7 +566,7 @@ if(typeof renderHoods==="function"){const _rh=renderHoods;renderHoods=function()
   document.querySelectorAll("#hgrid .hcard").forEach((c,i)=>c.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openArea(list[i])},true))};renderHoods()}
 
 // ---- More ----
-const MORE=[["Discover",[["🗣️","Show the staff","staff"],["🚆","Day trips","trips"],["📱","Apps to download","apps"]]],
+const MORE=[["Discover",[["📸","Halal Lens","lens"],["🕌","Prayer times & Qibla","prayer"],["🗣️","Show the staff","staff"],["🚆","Day trips","trips"],["📱","Apps to download","apps"]]],
   ["Settings",[["🔔","Reminders","remind"],["🌐","Language","lang"],["🔒","Privacy","privacy"],["🐾","Contributors","crew"]]]];
 window.tnRenderMore=()=>renderMore();
 function renderMore(){
@@ -576,19 +576,17 @@ function renderMore(){
     <button type="button" class="am-prof"><img src="${esc(me&&typeof buddyOf==="function"&&buddyOf(me)?buddyOf(me).img:"assets/cat.png")}" alt=""><div><b>${esc(me?myName():T("Your account"))}</b>
       <small>${esc(me?me.email:T("Log in or create a free account"))}</small></div><i aria-hidden="true">‹</i></button>
     ${typeof tnStampCard==="function"?tnStampCard():""}
-    ${typeof tnLensCard==="function"?tnLensCard():""}
-    ${typeof tnPrayCard==="function"?tnPrayCard():""}
     ${typeof isAdmin==="function"&&isAdmin()?`<div class="am-list am-dash"><button type="button" class="am-li" data-k="admin"><span aria-hidden="true">📊</span><b>${T("Dashboard")}</b>${window.tnScoutWaiting&&tnScoutWaiting()?`<small class="ad-badge">${tnScoutWaiting()}</small>`:""}<i aria-hidden="true">‹</i></button></div>`:""}
     ${MORE.map(([h,items])=>`<h2 class="am-h">${T(h)}</h2><div class="am-list">${items.map(([ic,l,k])=>`<button type="button" class="am-li" data-k="${k}"><span aria-hidden="true">${ic}</span><b>${T(l)}</b>
       ${k==="lang"?`<small>${isAR()?"العربية":"English"}</small>`:""}<i aria-hidden="true">‹</i></button>`).join("")}</div>`).join("")}
     <p class="am-foot">Tabi Neko · ${T("made in Riyadh")} 🐾</p>`;
   if(el.querySelector(".sb-card"))el.querySelector(".sb-card").onclick=()=>tnOpenStampBook();
-  if(el.querySelector(".ln-card"))el.querySelector(".ln-card").onclick=()=>tnOpenLens();
-  if(el.querySelector(".py-card-btn"))el.querySelector(".py-card-btn").onclick=()=>tnOpenPrayer();
   el.querySelector(".am-prof").onclick=()=>{if(me&&typeof tnOpenProfile==="function")return tnOpenProfile();if(typeof openAcct==="function")openAcct(me?"me":"login")};
   el.querySelectorAll(".am-li").forEach(b=>b.onclick=()=>{const k=b.dataset.k;
     if(k==="lang"){setLang(isAR()?"en":"ar");return}
     if(k==="remind"){if(typeof tnOpenReminders==="function")tnOpenReminders();return}
+    if(k==="lens"&&window.tnOpenLens){tnOpenLens();return}
+    if(k==="prayer"&&window.tnOpenPrayer){tnOpenPrayer();return}
     if(k==="staff"&&window.tnOpenStaff){tnOpenStaff();return}
     if(k==="crew"&&window.tnOpenCrew){tnOpenCrew();return}
     if(k==="privacy"&&window.tnOpenPrivacy){tnOpenPrivacy();return}
