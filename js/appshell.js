@@ -577,12 +577,14 @@ function renderMore(){
       <small>${esc(me?me.email:T("Log in or create a free account"))}</small></div><i aria-hidden="true">‹</i></button>
     ${typeof tnStampCard==="function"?tnStampCard():""}
     ${typeof tnLensCard==="function"?tnLensCard():""}
+    ${typeof tnPrayCard==="function"?tnPrayCard():""}
     ${typeof isAdmin==="function"&&isAdmin()?`<div class="am-list am-dash"><button type="button" class="am-li" data-k="admin"><span aria-hidden="true">📊</span><b>${T("Dashboard")}</b>${window.tnScoutWaiting&&tnScoutWaiting()?`<small class="ad-badge">${tnScoutWaiting()}</small>`:""}<i aria-hidden="true">‹</i></button></div>`:""}
     ${MORE.map(([h,items])=>`<h2 class="am-h">${T(h)}</h2><div class="am-list">${items.map(([ic,l,k])=>`<button type="button" class="am-li" data-k="${k}"><span aria-hidden="true">${ic}</span><b>${T(l)}</b>
       ${k==="lang"?`<small>${isAR()?"العربية":"English"}</small>`:""}<i aria-hidden="true">‹</i></button>`).join("")}</div>`).join("")}
     <p class="am-foot">Tabi Neko · ${T("made in Riyadh")} 🐾</p>`;
   if(el.querySelector(".sb-card"))el.querySelector(".sb-card").onclick=()=>tnOpenStampBook();
   if(el.querySelector(".ln-card"))el.querySelector(".ln-card").onclick=()=>tnOpenLens();
+  if(el.querySelector(".py-card-btn"))el.querySelector(".py-card-btn").onclick=()=>tnOpenPrayer();
   el.querySelector(".am-prof").onclick=()=>{if(me&&typeof tnOpenProfile==="function")return tnOpenProfile();if(typeof openAcct==="function")openAcct(me?"me":"login")};
   el.querySelectorAll(".am-li").forEach(b=>b.onclick=()=>{const k=b.dataset.k;
     if(k==="lang"){setLang(isAR()?"en":"ar");return}

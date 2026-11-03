@@ -14,7 +14,7 @@ const QS=[
   ["🗺️","Maps and hotel search","The map pictures come from OpenFreeMap. When you search for where you're staying, what you type goes to OpenStreetMap's free search to find it."],
   ["🔐","Where it's stored","Your account, trips and stamps are stored with Google Firebase, which runs the server for us. If you log in with Google, Google only tells us your name and email; we don't keep your Google photo. We don't sell any of it, share it or use it for ads."]
 ];
-const PHONE=[["📍","Your location (Near me, stamps)"],["📸","Halal Lens photos, read on the phone"],["🔔","Your reminders"],["🌐","Your language"]];
+const PHONE=[["📍","Your location (Near me, stamps, prayer times)"],["📸","Halal Lens photos, read on the phone"],["🔔","Your reminders"],["🌐","Your language"]];
 const ACCT=[["✉️","Email (password scrambled)"],["🐱","Your name and buddy"],["🗓️","Your trips"],["🐾","Your stamps"]];
 let openQ=0;
 function html(){
