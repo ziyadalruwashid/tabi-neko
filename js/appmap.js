@@ -84,7 +84,7 @@ function setRoute(){
 }
 const geo=()=>({type:"FeatureCollection",features:ROUTE()?[]:shown().map(p=>({type:"Feature",geometry:{type:"Point",coordinates:[p.lng,p.lat]},properties:{id:p.id,color:COL[p.cat]||INK}}))});
 function onLoad(){
-  ready=true;restyle();
+  ready=true;restyle();if(wideMap())setTimeout(()=>openList(true),0);
   document.documentElement.classList.add("gl-ok");
   gl.addSource("places",{type:"geojson",data:geo(),cluster:true,clusterRadius:46,clusterMaxZoom:15});
   gl.addLayer({id:"clu",type:"circle",source:"places",filter:["has","point_count"],
@@ -222,7 +222,10 @@ function locate(){
     gl.flyTo({center:[me.lng,me.lat],zoom:15,duration:900});
   },()=>toast(T("Couldn't find where you are.")),{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
 }
-function openList(o){listOpen=o;host.classList.toggle("listing",o);host.querySelector(".mp-sheet").setAttribute("aria-hidden",String(!o));if(o)list()}
+// On a tablet the list stays open beside the map (no sheet to close).
+const wideMap=()=>!!(window.tnWide&&tnWide());
+addEventListener("tnwide",()=>{if(ready)openList(wideMap())});
+function openList(o){if(!o&&wideMap()&&ready)o=true;listOpen=o;host.classList.toggle("listing",o);host.querySelector(".mp-sheet").setAttribute("aria-hidden",String(!o));if(o)list()}
 function list(){
   const ps=inView().slice(0,60),sh=host.querySelector(".mp-sheet");
   const from=me||(()=>{const c=gl.getCenter();return {lat:c.lat,lng:c.lng}})();

@@ -2950,3 +2950,101 @@ html.tn-app .acct-hi .acct-cat{width:96px}
 .ss-a.yes{background:#E6F2D6;color:#3F6E14}.ss-a.no{background:#FCE3DA;color:#B4361A}.ss-a.there{background:#EEF2FA;color:var(--shinkansen)}.ss-a.wait{background:#F6EEE2;color:var(--ink)}.ss-a.there b,.ss-a.wait b{font-size:17px}
 .ss-a.on{outline:3px solid currentColor;outline-offset:-3px}
 
+
+/* ===== Tablets: an iPad, an Android tablet, a foldable opened up =========
+   html.tn-wide (js/appshell.js) from 768 px wide. The bottom tabs become a
+   sidebar (a navigation rail with pills on Android), and big screens show
+   two panes. Phones are untouched. */
+html.tn-app #pview:not([hidden]){z-index:62} /* above Ask Apollo, on phones too */
+html.tn-app .tv-index,html.tn-app .am-empty,html.tn-app .ap-side{display:none}
+html.tn-wide{--rail:92px;--pane:min(620px,58vw)}
+html.tn-wide body{padding-bottom:0;padding-inline-start:var(--rail)}
+/* the sidebar */
+html.tn-wide #tabbar,html.tn-wide.chat-open #tabbar{display:flex;top:0;bottom:0;left:auto;right:auto;inset-inline-start:0;width:var(--rail);flex-direction:column;justify-content:flex-start;align-items:center;gap:8px;
+  padding:calc(18px + env(safe-area-inset-top)) 0 calc(16px + env(safe-area-inset-bottom));border-top:0;border-inline-end:1px solid var(--rule);background:var(--sheet)}
+html.tn-wide .tb{flex:none;width:76px;max-width:none;padding:10px 0 8px;border-radius:16px}
+html.tn-wide .tb.on{background:#FCE3DA}
+html.tn-wide .tb-apo{margin:0 0 4px;order:-1;padding-bottom:10px}
+html.tn-wide .tb-cat{width:54px;height:54px;border-width:3px}
+html.tn-wide .tb-cat img{width:48px;margin-top:10px}
+html.tn-wide .tb[data-n]:not([data-n="0"])::after{top:2px;inset-inline-end:10px}
+html.tn-wide.chat-open .tb.on{background:none;color:#A08B7C}
+html.tn-wide.chat-open .tb.on svg{fill-opacity:0}
+html.tn-wide.chat-open .tb-apo .tb-cat{box-shadow:0 0 0 4px #FCE3DA,0 4px 12px rgba(241,78,36,.35)}
+/* Android: Google's navigation rail, a pill behind the chosen icon */
+html.tn-wide.tn-android .tb.on{background:none;color:var(--ink)}
+html.tn-wide.tn-android .tb svg{box-sizing:content-box;padding:4px 18px;border-radius:16px}
+html.tn-wide.tn-android .tb.on svg{background:#FCE3DA;color:var(--lantern)}
+/* every full-screen page starts after the sidebar */
+html.tn-wide :is(#pview,#lview,#axview,#prayview,#qiblaview,#staffview,#staffshow,#prview,#rmview,#sbook,#trview,#aphome,#crewcs,#pfview,#lens,#sview,#amap):not([hidden]){left:auto;right:auto;inset-inline-end:0;inset-inline-start:var(--rail)}
+/* a place opens beside what you were looking at */
+html.tn-wide #pview:not([hidden]){inset-inline-start:auto;inset-inline-end:0;width:var(--pane);box-shadow:0 0 44px rgba(63,33,22,.2)}
+html.tn-wide.tn-place :is(#lview,#axview):not([hidden]){inset-inline-end:var(--pane)}
+/* sheets float in the middle instead of rising from the bottom */
+html.tn-wide .tpick{align-items:center;justify-content:center;padding:24px}
+html.tn-wide .tpick>.tpick-sheet{width:min(560px,100%);max-height:86vh;border-radius:26px!important}
+html.tn-wide #atsheet:not([hidden])>*{max-width:600px;margin-inline:auto}
+/* Explore: two columns */
+html.tn-wide #explore:not([hidden]){display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);column-gap:22px;align-items:start;max-width:1180px;margin-inline:auto;padding:8px 28px 34px}
+html.tn-wide #explore>*{grid-column:1/-1;min-width:0}
+html.tn-wide #explore>.hx-now{grid-column:1;grid-row:span 4}
+html.tn-wide #explore>:is(.hx-cta,.hx-h,.hx-moods,.hx-mwrap){grid-column:2}
+html.tn-wide #explore>.hx-h{margin-top:0}
+html.tn-wide #explore .ax-cities,html.tn-wide #explore .ax-hs{margin-inline:0;padding-inline:0}
+html.tn-wide #explore .hx-moods{flex-wrap:wrap;overflow:visible}
+/* the map: the list stays open on the side */
+html.tn-wide #amap:not([hidden]){bottom:0}
+html.tn-wide #amap .mp-top{inset-inline-end:412px}
+html.tn-wide #amap .mp-sheet{left:auto;right:auto;inset-inline-end:16px;top:calc(16px + env(safe-area-inset-top));bottom:16px;width:380px;height:auto;border-radius:24px;transform:none}
+html.tn-wide #amap .mp-grab,html.tn-wide #amap .mp-list{display:none}
+html.tn-wide #amap.listing .mp-fabs{display:flex}
+html.tn-wide #amap.listing .mp-peek{display:block}
+html.tn-wide #amap .mp-peek{inset-inline-end:412px;left:auto;inset-inline-start:0}
+html.tn-wide #amap.listing :is(.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right){display:block}
+/* My trip: the cover and a day index beside the schedule */
+html.tn-wide #tripbook{max-width:1180px;margin-inline:auto;padding-inline:24px}
+html.tn-wide #tripbook:not(.tv-on){max-width:760px}
+html.tn-wide #tripbook.tv-on{display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:24px;align-items:start;padding-top:calc(18px + env(safe-area-inset-top))}
+html.tn-wide #tripbook.tv-on>*{grid-column:2}
+html.tn-wide #tripbook.tv-on>.tv-aside{grid-column:1;grid-row:1/span 30;position:sticky;top:calc(16px + env(safe-area-inset-top))}
+html.tn-wide .tv-aside .at-cover{width:auto;margin:0;height:210px;border-radius:22px;overflow:hidden}
+html.tn-wide .tv-index{display:block;margin-top:14px}
+html.tn-wide .tv-index p{font:800 11px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 4px 8px}
+html.tn-wide .tv-index button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:var(--sheet);border-radius:14px;padding:10px 12px;margin-bottom:6px;text-align:start;font:inherit;color:var(--ink);cursor:pointer}
+html.tn-wide .tv-index button i{font:400 20px var(--display);font-style:normal;width:28px;text-align:center}
+html.tn-wide .tv-index button b{display:block;font:700 13px var(--body)}
+html.tn-wide .tv-index button small{display:block;font:500 11.5px var(--body);color:var(--muted)}
+html.tn-wide .tv-index button.on{background:#FCE3DA}html.tn-wide .tv-index button.on i{color:var(--lantern)}
+/* Ask Apollo: full height, past chats beside the chat */
+html.tn-wide #apollo:not([hidden]){display:grid;grid-template-columns:280px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;position:fixed;inset:0;inset-inline-start:var(--rail);
+  width:auto;height:auto;max-height:none;border:0;border-radius:0;box-shadow:none;bottom:0}
+html.tn-wide #apollo>:not(.ap-side){grid-column:2}
+html.tn-wide #apollo .ap-side{display:block;grid-column:1;grid-row:1/-1;overflow-y:auto;border-inline-end:1px solid var(--rule);padding:calc(18px + env(safe-area-inset-top)) 14px 18px;background:var(--paper)}
+html.tn-wide .ap-snew{width:100%;border:0;border-radius:14px;background:var(--lantern);color:#fff;padding:12px;font:700 14px var(--body);cursor:pointer}
+html.tn-wide .ap-side .ap-lab{margin:18px 4px 8px}
+html.tn-wide .ap-sitem{display:block;width:100%;border:0;background:none;border-radius:12px;padding:10px 12px;text-align:start;font:inherit;color:var(--ink);cursor:pointer}
+html.tn-wide .ap-sitem b{display:block;font:600 13.5px/1.35 var(--body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html.tn-wide .ap-sitem small{font:500 11.5px var(--body);color:var(--muted)}
+html.tn-wide .ap-sitem.on{background:var(--sheet)}
+html.tn-wide .ap-snone{font:500 13px var(--body);color:var(--muted);margin:4px}
+html.tn-wide #apollo .apolog,html.tn-wide #apollo .apoform,html.tn-wide #apollo .apohead{padding-inline:max(24px,calc((100% - 780px)/2))}
+html.tn-wide #apollo #apollonew{display:none}
+/* More: the menu stays beside the page it opened */
+html.tn-wide #menu{max-width:1180px;margin-inline:auto}
+html.tn-wide[data-tab=menu] #menu{max-width:340px;margin-inline:0;min-height:100vh;border-inline-end:1px solid var(--rule);padding-top:calc(14px + env(safe-area-inset-top))}
+html.tn-wide[data-tab=menu] :is(#prayview,#qiblaview,#staffview,#staffshow,#prview,#rmview,#sbook,#trview,#aphome,#crewcs,#pfview,#lens):not([hidden]){inset-inline-start:calc(var(--rail) + 340px)}
+html.tn-wide .am-li.on,html.tn-wide .am-prof.on{background:#FCE3DA}
+html.tn-wide[data-tab=menu] .am-empty{display:flex;position:fixed;top:0;bottom:0;inset-inline-start:calc(var(--rail) + 340px);inset-inline-end:0;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;color:var(--muted);pointer-events:none}
+html.tn-wide .am-empty img{width:120px;margin-bottom:6px}
+html.tn-wide .am-empty b{font:400 22px var(--display);color:var(--ink)}
+html.tn-wide .am-empty small{font:500 14px var(--body)}
+/* pages opened full width keep their text a readable width */
+html.tn-wide :is(#prayview .py-scroll,#staffview .py-scroll){padding-inline:max(0px,calc((100% - 760px)/2))}
+html.tn-wide #explore>.xs{width:auto;height:220px;margin:calc(8px + env(safe-area-inset-top)) 0 14px;border-radius:26px}
+html.tn-wide .tv-aside .at-ctext{inset-inline:16px;bottom:18px}
+html.tn-wide .tv-aside .at-ctext .at-title{font-size:22px}
+html.tn-wide .tv-aside .at-ctext p{font-size:13px}
+/* the phone's edge-to-edge trick (100vw) would reach under the sidebar */
+html.tn-wide :is(#explore,#menu){width:auto;box-sizing:border-box}
+html.tn-wide :is(.hx-moods,.at-ideas,.ar-miss,.tv-pills,#explore .ax-hs,#explore .ax-cities,#explore .xs-stories){margin-inline:0;padding-inline:0;scroll-padding-inline:0}
+html.tn-wide .tv-pills{padding-inline:2px}

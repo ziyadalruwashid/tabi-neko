@@ -267,6 +267,23 @@ function appTrip(){
   if(view==="trip"&&!hasContent(trip))view="list";
   box.classList.toggle("tv-on",view==="trip");box.classList.remove("at-onday");
   box.innerHTML=view==="trip"?tripHTML():listHTML();wire(box);
+  dayIndex(box);
+}
+// On a tablet, the schedule gets a day index beside it (css/tabi.css,
+// "Tablets"): tap a day to jump to it; the day in view is marked as you scroll.
+let dayObs=null;
+function dayIndex(box){
+  if(dayObs){dayObs.disconnect();dayObs=null}
+  const days=[...box.querySelectorAll(".tv-plan .tv-day")];if(!days.length)return;
+  const nav=document.createElement("nav");nav.className="tv-index";nav.setAttribute("aria-label",T("Your days"));
+  nav.innerHTML=`<p>${T("Your days")}</p>`+days.map(d=>{const b=d.querySelector(".tv-dh b"),sm=d.querySelector(".tv-dh small"),n=d.querySelectorAll(".at-stop").length;
+    return `<button type="button" data-to="${d.id}"><i>${esc((b&&b.textContent||"").replace(/\D+/g,""))}</i><span><b>${esc(sm&&sm.textContent||"")}</b><small>${esc(T(n===1?"1 place":"{n} places",{n}))}</small></span></button>`}).join("");
+  // The cover and the index sit together in one column on a tablet.
+  const hdr=box.querySelector(".tv-hdr"),aside=document.createElement("div");aside.className="tv-aside";
+  box.insertBefore(aside,hdr||box.firstChild);if(hdr)aside.appendChild(hdr);aside.appendChild(nav);
+  nav.querySelectorAll("button").forEach(b=>b.onclick=()=>{const d=document.getElementById(b.dataset.to);if(d)d.scrollIntoView({block:"start",behavior:"smooth"})});
+  if("IntersectionObserver" in window){dayObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)nav.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.to===e.target.id))}),{rootMargin:"-30% 0px -60% 0px"});
+    days.forEach(d=>dayObs.observe(d))}
 }
 
 // ---- the sheet: a new trip, adding to a day, and the booking forms ----

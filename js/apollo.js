@@ -120,7 +120,20 @@ function startScreen(){
     <div class="ap-qa">${cards.map(([ic,h,sm,q,bg])=>`<button type="button" class="ap-q" style="background:${bg}" data-q="${esc(q)}"><i>${ic}</i><span><b>${h}</b><small>${sm}</small></span></button>`).join("")}</div>
     ${rec.length?`<p class="ap-lab">${T("Recent")}</p>${rec.map(c=>`<button type="button" class="ap-rec" data-id="${c.id}"><span>💬</span><b dir="auto">${esc(c.title)}</b><small>${esc(new Date(c.at).toLocaleDateString(isAR()?"ar":"en-GB",{day:"numeric",month:"short"}))}</small></button>`).join("")}`:""}</div>`;
 }
+// On a tablet, past chats stay in a column beside the chat (CSS shows it
+// only from 768 px wide; on a phone they're on the start screen).
+function renderSide(){
+  const box=$("apollo");if(!box)return;let sd=$("apside");
+  if(!sd){sd=document.createElement("aside");sd.id="apside";sd.className="ap-side";box.prepend(sd)}
+  const list=past(),day=t=>new Date(t).toLocaleDateString(isAR()?"ar":"en-GB",{day:"numeric",month:"short"});
+  sd.innerHTML=`<button type="button" class="ap-snew">＋ ${T("New chat")}</button><p class="ap-lab">${T("Recent")}</p>`+
+    (list.length?list.map(c=>`<button type="button" class="ap-sitem${c.id===chatId?" on":""}" data-id="${esc(c.id)}"><b dir="auto">${esc(c.title||T("New chat"))}</b><small>${esc(day(c.at))}</small></button>`).join("")
+      :`<p class="ap-snone">${T("Your chats will show up here.")}</p>`);
+  sd.querySelector(".ap-snew").onclick=newChat;
+  sd.querySelectorAll(".ap-sitem").forEach(b=>b.onclick=()=>openPast(b.dataset.id));
+}
 function renderChat(){
+  renderSide();
   const log=$("apollolog");
   const nb=$("apollonew");if(nb)nb.hidden=!chat.length;
   let h="";
