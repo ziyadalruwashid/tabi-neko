@@ -14,6 +14,19 @@
 (function(){
 if(!IS_APP)return;
 
+// ---- tablets: an iPad, an Android tablet, a foldable opened up ----
+// From 768 px wide, html.tn-wide turns the bottom tabs into a sidebar (a
+// navigation rail on Android), and big screens show two panes: a place
+// opens beside the list or map, More keeps its menu beside the page, My
+// trip gets a day index, Ask Apollo its past chats. Turning the device or
+// folding the phone switches back and forth live (css/tabi.css, "Tablets").
+const WIDE=matchMedia("(min-width: 768px)");
+function setWide(){const H=document.documentElement,pl=window.Capacitor&&Capacitor.getPlatform?Capacitor.getPlatform():"";
+  H.classList.toggle("tn-wide",WIDE.matches);H.classList.toggle("tn-android",pl==="android");H.classList.toggle("tn-ios",pl==="ios")}
+setWide();
+try{WIDE.addEventListener("change",()=>{setWide();dispatchEvent(new Event("tnwide"))})}catch(e){WIDE.addListener(()=>{setWide();dispatchEvent(new Event("tnwide"))})}
+window.tnWide=()=>WIDE.matches;
+
 const SVG=(d,fill)=>`<svg viewBox="0 0 24 24" width="25" height="25" fill="${fill?"currentColor":"none"}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const I={
   explore:'<path d="M4 11.5 12 5l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/>',
@@ -61,7 +74,7 @@ if(location.hash==="#memories")try{history.replaceState(null,"","#explore")}catc
 function current(){const h=location.hash.slice(1);
   if(h==="explore"||h==="trip"||h==="menu")return h;if(h==="hoods")return "explore";if(SUB.includes(h))return "menu";
   return $("home").hidden?"explore":"map"}
-function syncTabs(){const c=current();bar.querySelectorAll(".tb").forEach(b=>b.classList.toggle("on",b.dataset.t===c))}
+function syncTabs(){const c=current();document.documentElement.dataset.tab=c;bar.querySelectorAll(".tb").forEach(b=>b.classList.toggle("on",b.dataset.t===c))}
 const _show=show;show=function(t,q){_show(t,q);syncTabs()};
 
 // ---- Explore ----
@@ -370,11 +383,11 @@ function renderPlace(){
 window.tnRenderPlace=()=>{if(pvId)renderPlace()};
 function openPlace(id,fromHistory){
   if(!placeById(id))return;
-  pvId=id;renderPlace();pv.hidden=false;document.documentElement.classList.add("pv-open");
+  pvId=id;renderPlace();pv.hidden=false;document.documentElement.classList.add("pv-open","tn-place");
   pv.querySelector(".pv-scroll").scrollTop=0;
   if(!fromHistory)history.pushState({tnPlace:id},"");
 }
-function closePlaceNow(){pv.hidden=true;pvId=null;if(lv.hidden&&axv.hidden)document.documentElement.classList.remove("pv-open")}
+function closePlaceNow(){pv.hidden=true;pvId=null;document.documentElement.classList.remove("tn-place");if(lv.hidden&&axv.hidden)document.documentElement.classList.remove("pv-open")}
 function closePlace(){if(history.state&&history.state.tnPlace)history.back();else closePlaceNow()}
 addEventListener("popstate",e=>{const st=e.state||{};
   if(st.tnPlace)openPlace(st.tnPlace,true);else closePlaceNow();
@@ -554,6 +567,9 @@ if(typeof renderHoods==="function"){const _rh=renderHoods;renderHoods=function()
 const MORE=[["Discover",[["📸","Halal Lens","lens"],["🕌","Prayer times & Qibla","prayer"],["🗣️","Show the staff","staff"],["🚆","Day trips","trips"],["📱","Apps to download","apps"]]],
   ["Settings",[["🔔","Reminders","remind"],["🌐","Language","lang"],["🔒","Privacy","privacy"],["🐾","Contributors","crew"]]]];
 window.tnRenderMore=()=>renderMore();
+// Back on More itself (no page open): no row is marked any more.
+addEventListener("popstate",()=>{if(Object.keys(history.state||{}).some(k=>/^tn[A-Z]/.test(k)))return;
+  const m=$("menu");if(m)m.querySelectorAll(".am-li.on,.am-prof.on").forEach(x=>x.classList.remove("on"))});
 function renderMore(){
   const el=$("menu");if(!el)return;
   const me=typeof auth!=="undefined"&&auth;
@@ -564,9 +580,14 @@ function renderMore(){
     ${typeof isAdmin==="function"&&isAdmin()?`<div class="am-list am-dash"><button type="button" class="am-li" data-k="admin"><span aria-hidden="true">📊</span><b>${T("Dashboard")}</b>${window.tnScoutWaiting&&tnScoutWaiting()?`<small class="ad-badge">${tnScoutWaiting()}</small>`:""}<i aria-hidden="true">‹</i></button></div>`:""}
     ${MORE.map(([h,items])=>`<h2 class="am-h">${T(h)}</h2><div class="am-list">${items.map(([ic,l,k])=>`<button type="button" class="am-li" data-k="${k}"><span aria-hidden="true">${ic}</span><b>${T(l)}</b>
       ${k==="lang"?`<small>${isAR()?"العربية":"English"}</small>`:""}<i aria-hidden="true">‹</i></button>`).join("")}</div>`).join("")}
-    <p class="am-foot">Tabi Neko · ${T("made in Riyadh")} 🐾</p>`;
+    <p class="am-foot">Tabi Neko · ${T("made in Riyadh")} 🐾</p>
+    <div class="am-empty" aria-hidden="true"><img src="${GI()}" alt=""><b>${T("Pick something on the left")}</b><small>${T("Prayer times, Halal Lens, day trips and more open here.")}</small></div>`;
   if(el.querySelector(".sb-card"))el.querySelector(".sb-card").onclick=()=>tnOpenStampBook();
   el.querySelector(".am-prof").onclick=()=>{if(me&&typeof tnOpenProfile==="function")return tnOpenProfile();if(typeof openAcct==="function")openAcct(me?"me":"login")};
+  // On a tablet the menu stays beside the page it opened: mark which one.
+  const mark=b=>{el.querySelectorAll(".am-li,.am-prof").forEach(x=>x.classList.toggle("on",x===b))};
+  el.querySelector(".am-prof").addEventListener("click",e=>mark(e.currentTarget),true);
+  el.querySelectorAll(".am-li").forEach(b=>b.addEventListener("click",()=>mark(b),true));
   el.querySelectorAll(".am-li").forEach(b=>b.onclick=()=>{const k=b.dataset.k;
     if(k==="lang"){setLang(isAR()?"en":"ar");return}
     if(k==="remind"){if(typeof tnOpenReminders==="function")tnOpenReminders();return}
