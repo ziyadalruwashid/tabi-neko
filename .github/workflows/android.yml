@@ -1,6 +1,6 @@
 # Builds the Android app (a debug APK to install and try) from app/.
 # Run it from the Actions tab ("Run workflow"), or it runs by itself when
-# the app or the site changes on main. The newest APK is always at one
+# the app or the site changes on main (not for new places alone). The newest APK is always at one
 # link that opens on a phone (GitHub's mobile site hides run artifacts):
 # https://github.com/ziyadalruwashid/tabi-neko/releases/download/android-latest/tabi-neko.apk
 name: Android app
@@ -9,7 +9,21 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [app/**, index.html, css/**, js/**, data/**, assets/**, .github/workflows/android.yml]
+    # Places, areas and day trips reach the app from the website by
+    # themselves (js/live.js), so changing only those doesn't need an APK.
+    paths:
+      - app/**
+      - index.html
+      - css/**
+      - js/**
+      - data/**
+      - '!data/places.js'
+      - '!data/hoods.js'
+      - '!data/trips.js'
+      - '!data/ar/content.js'
+      - '!data/scout.json'
+      - assets/**
+      - .github/workflows/android.yml
 
 jobs:
   apk:
