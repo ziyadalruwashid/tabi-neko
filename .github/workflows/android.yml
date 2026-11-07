@@ -56,6 +56,10 @@ jobs:
           if [ -n "$KS" ] && [ -n "$TN_KEYSTORE_PASSWORD" ]; then
             export TN_KEYSTORE="$RUNNER_TEMP/upload.p12"
             printf '%s' "$KS" | base64 -d > "$TN_KEYSTORE"
+            # Say plainly when the password secret doesn't open the key.
+            if ! keytool -list -storetype pkcs12 -keystore "$TN_KEYSTORE" -storepass "$TN_KEYSTORE_PASSWORD" >/dev/null 2>&1; then
+              echo "::error::ANDROID_KEYSTORE_PASSWORD doesn't open the key in ANDROID_KEYSTORE_BASE64. Update one of the two secrets."; exit 1
+            fi
             export TN_KEY_ALIAS="$(keytool -list -storetype pkcs12 -keystore "$TN_KEYSTORE" -storepass "$TN_KEYSTORE_PASSWORD" 2>/dev/null | awk -F, '/PrivateKeyEntry/{print $1; exit}')"
           fi
           ./gradlew assembleDebug --no-daemon
