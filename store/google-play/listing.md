@@ -23,13 +23,13 @@ Plan Japan day by day with Apollo the cat: 498 places, halal food and stamps
 
 **Full description** (under 4,000)
 ```
-Tabi Neko is a travel notebook for Japan, written by someone who walked it. Apollo the cat is your guide: he picks the places, plans your days and answers your questions, like a friend who has already been.
+Tabi Neko is a travel notebook for Japan, written by someone who walked it. Apollo the cat is your guide: he picks the places and answers your questions, like a friend who has already been.
 
 🗺️ 498 PLACES, ALL IN ONE MAP
 Tokyo, Kyoto, Osaka, Kobe, Nara, Kamakura and Ise. Coffee shops, ramen, temples, shrines, views, markets, vintage shops and hidden gems, each with a tip, a price and how long to spend there. See what's near you and what's open now.
 
 🗓️ PLAN YOUR TRIP DAY BY DAY
-Add places to your trip and drop them into days. Tell Apollo your cities, how many days and what you love, and he builds a full plan you can change. Your trip is saved to your account, so it's the same on every phone.
+Add places to your trip and drop them into days, with your flights and hotels in one place. Your trip is saved to your account, so it's the same on every phone.
 
 🐱 ASK APOLLO
 Ask anything about Japan: where to eat, how to get there, what to do on a rainy day. Apollo answers from his own notebook, shows the places as cards you can add to your trip, and can turn an answer into a day plan in one tap.
@@ -72,13 +72,13 @@ Pick your travel buddy: Apollo the cat, Kenbo the eagle or Fa the duck. Mata ne!
 
 **Full description** (under 4,000)
 ```
-تابي نيكو دفتر سفر لليابان، كتبه واحد مشى فيها بنفسه. القط أبولو هو دليلك: يختار لك الأماكن، ويرتّب أيامك، ويجاوب على أسئلتك، كأنه صديق سبقك هناك.
+تابي نيكو دفتر سفر لليابان، كتبه واحد مشى فيها بنفسه. القط أبولو هو دليلك: يختار لك الأماكن، ويجاوب على أسئلتك، كأنه صديق سبقك هناك.
 
 🗺️ 498 مكان في خريطة وحدة
 طوكيو، كيوتو، أوساكا، كوبي، نارا، كاماكورا وإيسه. كوفيهات، رامن، تمبلات، أضرحة، إطلالات، أسواق، محلات فنتج وأماكن مخفية، وكل مكان معه نصيحة وسعره وكم تحتاج وقت فيه. وتشوف إيش القريب منك وإيش المفتوح الحين.
 
 🗓️ رتّب رحلتك يوم بيوم
-أضف الأماكن لرحلتك ووزّعها على الأيام. أو قل لأبولو مدنك وكم يوم وإيش تحب، ويرتّب لك خطة كاملة تقدر تعدّلها. رحلتك تنحفظ في حسابك، فتلقاها نفسها في أي جوال.
+أضف الأماكن لرحلتك ووزّعها على الأيام، ومعها رحلات الطيران والفنادق في مكان واحد. رحلتك تنحفظ في حسابك، فتلقاها نفسها في أي جوال.
 
 🐱 اسأل أبولو
 اسأله أي شي عن اليابان: وين تاكل، كيف تروح، إيش تسوي لو جات مطر. أبولو يجاوبك من دفتره، ويعرض لك الأماكن كبطاقات تضيفها لرحلتك بضغطة، ويحوّل الجواب لخطة يوم كاملة.

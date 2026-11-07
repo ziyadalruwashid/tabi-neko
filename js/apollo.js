@@ -62,6 +62,8 @@ function renderApollo(){
   $("apollosub").textContent=T("your travel cat 🐾");
   $("apolloq").placeholder=T("Ask me anything about Japan…");
   $("apollosend").setAttribute("aria-label",T("Send"));
+  if(!$("apololeft")){const p=document.createElement("p");p.id="apololeft";p.className="apoleft";p.hidden=true;$("apolloform").before(p)}
+  renderLeft();
   if($("apollonew"))$("apollonew").setAttribute("aria-label",T("New chat"));
   renderChat();
 }
@@ -212,7 +214,18 @@ const SAY={
   slow:"You're asking faster than I can walk! Give me a minute, then try again.",
   error:"Something went wrong on my side. Try again in a moment.",
   login:"Log in again to keep chatting with me.",
+  daily:"I'm napping 😴 You've asked your 10 questions for today. Come back tomorrow and ask me anything!",
 };
+
+// The daily limit (10 questions a day per account, counted by the Worker,
+// starting again at midnight Japan time). The Worker says how many are left
+// after each answer; that number is kept here for the line above the box.
+const LEFT_KEY="tabineko-apollo-left";
+const jstDay=()=>Math.floor((Date.now()+9*3600*1000)/86400000);
+function leftToday(){try{const v=JSON.parse(localStorage.getItem(LEFT_KEY)||"null");return v&&v.day===jstDay()?v.left:null}catch(e){return null}}
+function setLeft(n){try{localStorage.setItem(LEFT_KEY,JSON.stringify({day:jstDay(),left:n}))}catch(e){}renderLeft()}
+function renderLeft(){const el=$("apololeft");if(!el)return;const n=leftToday();el.hidden=n===null;
+  if(n!==null)el.textContent=n?`🐾 ${T(n===1?"1 question left today":n===2?"2 questions left today":"{n} questions left today").replace("{n}",n)}`:`😴 ${T("No questions left today. Back tomorrow!")}`}
 
 async function send(text){
   text=(text||"").trim();
@@ -221,7 +234,8 @@ async function send(text){
   chat.push(q);chatBusy=true;saveChat();renderChat();
   $("apolloq").value="";fitInput();
   const fail=k=>{q.skip=true;chat.push({role:"assistant",text:T(SAY[k]),skip:true})};
-  if(!APOLLO_API){
+  if(APOLLO_API&&leftToday()===0){await new Promise(r=>setTimeout(r,400));fail("daily")}
+  else if(!APOLLO_API){
     await new Promise(r=>setTimeout(r,900));
     q.skip=true;
     chat.push({role:"assistant",text:T("I'm still learning to talk! My chat opens very soon. Until then, the map and the search box above have everything in my notebook."),skip:true});
@@ -232,7 +246,10 @@ async function send(text){
       const msgs=chatHistory(),x=context();
       if(msgs.length)msgs[msgs.length-1]={role:"user",content:`[${x.cityName}${x.day?`, trip day ${x.day}`:""}, ${String(x.hh).padStart(2,"0")}h Japan] ${msgs[msgs.length-1].content}\n(Day plan: lines "HH:MM - **Place** - note". End: "Next: q1 | q2 | q3", in my language.)`};
       const res=await fetch(APOLLO_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:msgs,idToken:await token()})});
-      if(!res.ok||!res.body)fail(res.status===429?"slow":res.status===401?"login":"error");
+      const lh=res.headers.get("X-Apollo-Left");if(lh!==null&&lh!=="")setLeft(+lh);
+      let why=res.status===429?"slow":res.status===401?"login":"error";
+      if(res.status===429)try{if((await res.clone().json()).error==="daily")why="daily"}catch(e){}
+      if(!res.ok||!res.body)fail(why);
       else{
         // The Worker streams plain text. Words appear as they arrive; a lone
         // "\0refusal" or "\0error" means no answer came, and is said kindly.

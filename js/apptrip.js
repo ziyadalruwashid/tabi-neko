@@ -172,7 +172,7 @@ function listHTML(){
   let h=`<header class="tv-lh"><h1>${T("My trips")}</h1><button type="button" class="tv-plus" aria-label="${esc(T("New trip"))}">${SVG(I.plus,24)}</button></header>`;
   if(!all.length)return h+`<div class="tv-empty"><img src="${GI()}" alt=""><h2>${T("No trips yet ✈️")}</h2><p>${T("Apollo's ready with his backpack! Make your first trip to Japan and he'll help with every day.")}</p>
       <button type="button" class="tv-big tv-new">${SVG(I.plus,20)} ${T("Make your first trip")}</button>
-      ${typeof openPlanner==="function"?`<button type="button" class="tv-ghost tplanb"><img src="${GI()}" alt=""><span><b>✨ ${T("Let Apollo plan it for you")}</b><small>${T("Tell him the cities and how long, he sorts everything in seconds")}</small></span></button>`:""}</div>
+      ${typeof openPlanner==="function"&&PLAN_ON?`<button type="button" class="tv-ghost tplanb"><img src="${GI()}" alt=""><span><b>✨ ${T("Let Apollo plan it for you")}</b><small>${T("Tell him the cities and how long, he sorts everything in seconds")}</small></span></button>`:""}</div>
     <div class="tv-how"><b>${T("How it works")}</b><ol><li>${T("Pick a name, dates and cities")}</li><li>${T("Add your flight and hotel")}</li><li>${T("Fill your days with places from the notebook 🐾")}</li></ol></div>`;
   const up=all.filter(t=>!isPast(t)),past=all.filter(isPast),show=seg==="past"?past:up;
   h+=`<div class="tv-seg" role="tablist"><button type="button" role="tab" data-seg="up" class="${seg==="up"?"on":""}">${T("Upcoming")}</button><button type="button" role="tab" data-seg="past" class="${seg==="past"?"on":""}">${T("Past")}</button></div>`;
@@ -251,10 +251,9 @@ function tripHTML(){
     // Places saved with ＋ wait at the top of the schedule until they're sorted into a day.
     if(t.ideas.length)h+=`<div class="tv-pad"><h2 class="at-h">${T("Saved places")} <i class="tv-n">${num(t.ideas.length)}</i></h2>${ideasRow(t)}</div>`;
     h+=`<div class="tv-pad tv-plan${compact?" compact":""}">${allDays().map(x=>dayHTML(x,used)).join("")}</div>`}
-  h+=`<div class="tv-pad"><h2 class="at-h">${T("Do more")}</h2><div class="at-acts">
-    ${typeof openPlanner==="function"?`<button type="button" class="tplanb at-act a1"><span>✨</span><b>${T("Let Apollo sort it")}</b><small>${T("From his notebook, with halal food")}</small></button>`:""}
-    ${tripCount(t)?`<button type="button" class="at-act a2" id="tpdf"><span>📘</span><b>${T("Trip PDF")}</b><small>${T("Every day, with map links")}</small></button>`:""}
-    </div>
+  const acts=(typeof openPlanner==="function"&&PLAN_ON?`<button type="button" class="tplanb at-act a1"><span>✨</span><b>${T("Let Apollo sort it")}</b><small>${T("From his notebook, with halal food")}</small></button>`:"")
+    +(tripCount(t)?`<button type="button" class="at-act a2" id="tpdf"><span>📘</span><b>${T("Trip PDF")}</b><small>${T("Every day, with map links")}</small></button>`:"");
+  h+=`<div class="tv-pad">${acts?`<h2 class="at-h">${T("Do more")}</h2><div class="at-acts">${acts}</div>`:""}
     ${typeof acctBar==="function"?`<div class="at-acct">${acctBar()}</div>`:""}
     <div class="at-foot"><button type="button" class="at-link tv-del">${T("Delete this trip")}</button></div></div>
     <button type="button" class="at-fab tv-fab">${SVG(I.plus,22)} <span>${T("Add new")}</span></button>`;

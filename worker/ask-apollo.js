@@ -56,6 +56,9 @@ const MAX_USER_CHARS = 600;   // per question, same as the box on the site
 const MAX_REPLY_CHARS = 4000; // per earlier answer sent back as history
 const MAX_OUTPUT = 1500;      // tokens per answer: a few short paragraphs
 const PER_IP = 20, WINDOW_MS = 10 * 60 * 1000; // 20 questions / 10 min / visitor
+const PER_DAY = 10;            // questions per account per day (Japan time); see dailyTurn
+const PLANS_ON = false;       // "Apollo, plan my trip" is switched off in the app
+const OWNER = "ngmNqVpxwkbL3SHdXJpmHkAoUO22"; // the site owner's account: no daily limit
 
 const PERSONA = `You are Apollo, the cat who narrates Tabi Neko, a travel notebook for Japan made in Riyadh. Most readers are Muslim travellers from Saudi Arabia and the Gulf planning a trip to Japan. You walked Japan yourself and you answer like a warm, practical friend who has been there. Most places in the notebook below are your own picks. Places marked "famous spot" are well-known sights added from travel guides that you haven't visited yourself: recommend them when they fit, but never say or hint that you went, and never make up memories of them.
 
@@ -131,7 +134,8 @@ function cleanMessages(body) {
 
 function cors(origin) {
   return { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Max-Age": "86400", "Vary": "Origin" };
+    "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Expose-Headers": "X-Apollo-Left",
+    "Access-Control-Max-Age": "86400", "Vary": "Origin" };
 }
 const fail = (status, error, headers) =>
   new Response(JSON.stringify({ error }), { status, headers: { ...headers, "Content-Type": "application/json" } });
@@ -152,10 +156,15 @@ export default {
     let body;
     try { body = JSON.parse((await request.text()).slice(0, 40000)); } catch { return fail(400, "bad json", h); }
     if (body && typeof body.resolve === "string") return resolveLink(body.resolve, h);
-    if (body && body.plan && typeof body.plan === "object") return planTrip(body.plan, body.idToken, env, h);
-    if (!(await chatUser(body && body.idToken))) return fail(401, "log in", h);
+    if (body && body.plan && typeof body.plan === "object") return PLANS_ON ? planTrip(body.plan, body.idToken, env, h) : fail(404, "off", h);
+    const uid = await chatUser(body && body.idToken);
+    if (!uid) return fail(401, "log in", h);
     const messages = cleanMessages(body);
     if (!messages) return fail(400, "bad messages", h);
+    // The daily limit, counted before Claude is asked.
+    const left = uid === OWNER ? null : await dailyTurn(uid, body.idToken);
+    if (left === -1) return fail(429, "daily", { ...h, "X-Apollo-Left": "0" });
+    if (left !== null) h["X-Apollo-Left"] = String(left);
 
     let book;
     try { book = await loadNotebook(); } catch { return fail(502, "notebook", h); }
@@ -243,6 +252,36 @@ async function chatUser(idToken) {
   }
   return uid;
 }
+// ---- the daily limit: PER_DAY questions per account ----
+// Kept in Firestore, usage/<account> = {day, n}, written with the person's own
+// login token. The rules (firebase/firestore.rules) only let n go up by one,
+// and only start again at 1 on a new day (Japan time), so nobody can reset
+// their own count. Returns how many questions are left after this one, -1
+// when today's are used up, or null when the count can't be kept (the rules
+// aren't published, or Firestore is down): then the question goes ahead.
+const FS_DOCS = "https://firestore.googleapis.com/v1/projects/tabi-neko-52eae/databases/(default)/documents";
+const jstDay = () => Math.floor((Date.now() + 9 * 3600 * 1000) / 86400000);
+async function dailyTurn(uid, idToken) {
+  const url = `${FS_DOCS}/usage/${uid}`, auth = { Authorization: "Bearer " + idToken };
+  try {
+    for (let i = 0; i < 3; i++) {
+      const r = await fetch(url, { headers: auth });
+      if (r.status !== 200 && r.status !== 404) { console.error("daily read", r.status); return null; }
+      const doc = r.status === 200 ? await r.json() : null, f = (doc && doc.fields) || {};
+      const today = jstDay(), same = doc && Number(f.day && f.day.integerValue) === today;
+      const n = same ? Number(f.n && f.n.integerValue) || 0 : 0;
+      if (n >= PER_DAY) return -1;
+      // Only if nobody changed it since it was read (two questions at once).
+      const pre = doc ? "currentDocument.updateTime=" + encodeURIComponent(doc.updateTime) : "currentDocument.exists=false";
+      const w = await fetch(`${url}?${pre}`, { method: "PATCH", headers: { ...auth, "Content-Type": "application/json" },
+        body: JSON.stringify({ fields: { day: { integerValue: String(today) }, n: { integerValue: String(n + 1) } } }) });
+      if (w.ok) return PER_DAY - n - 1;
+      if (w.status !== 400 && w.status !== 409) { console.error("daily write", w.status, (await w.text().catch(() => "")).slice(0, 300)); return null; }
+    }
+  } catch (e) { console.error("daily", String(e)); }
+  return null;
+}
+
 // Best effort, like the per-visitor limit: each Cloudflare location counts alone.
 const plansBy = new Map();
 function planLimited(uid) {
