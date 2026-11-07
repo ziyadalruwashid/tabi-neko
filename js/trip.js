@@ -241,12 +241,12 @@ function renderTrip(){
   if(!ro&&typeof acctBar==="function")h+=acctBar();
   h+=`<div class="ttop">
     <input class="tname-in" id="tripname" value="${esc(t.name)}" placeholder="${esc(T(ro?"My Japan trip":"Name your trip…"))}" maxlength="60"${ro?" readonly":""} aria-label="${esc(T("Trip name"))}">
-    ${ro||!(n||t.stays.length)?"":`<div class="tbtns">${typeof openPlanner==="function"?`<button type="button" class="store tplanb">✨ ${T("Plan with Apollo")}</button>`:""}${typeof openReady==="function"?`<button type="button" class="store treadyb">🗾 ${T("Ready plans")}</button>`:""}<button type="button" class="store" id="tshare">${T("Share")} ↗</button>${n?`<button type="button" class="store" id="tpdf">📘 ${T("Trip PDF")}</button>`:""}${typeof isShared==="function"&&isShared()&&tripOwner()!==me()?"":`<button type="button" class="tclear" id="tclear">${T("Start over")}</button>`}</div>`}
+    ${ro||!(n||t.stays.length)?"":`<div class="tbtns">${typeof openPlanner==="function"&&PLAN_ON?`<button type="button" class="store tplanb">✨ ${T("Plan with Apollo")}</button>`:""}${typeof openReady==="function"?`<button type="button" class="store treadyb">🗾 ${T("Ready plans")}</button>`:""}<button type="button" class="store" id="tshare">${T("Share")} ↗</button>${n?`<button type="button" class="store" id="tpdf">📘 ${T("Trip PDF")}</button>`:""}${typeof isShared==="function"&&isShared()&&tripOwner()!==me()?"":`<button type="button" class="tclear" id="tclear">${T("Start over")}</button>`}</div>`}
   </div>`;
   if(shareAsk&&!ro)h+=`<div class="tshareask"><p>${T("Include where you're staying? Anyone with the link will see it.")}</p>
     <button type="button" class="store" data-home="0">${T("Share without it")}</button><button type="button" class="store" data-home="1">${T("Include it")}</button></div>`;
   if(!t.stays.length&&!ro){
-    if(typeof openPlanner==="function")h+=`<button type="button" class="tmagic tplanb"><span class="tmagic-s" aria-hidden="true">✨</span><span><b>${T("Let Apollo plan it")}</b>
+    if(typeof openPlanner==="function"&&PLAN_ON)h+=`<button type="button" class="tmagic tplanb"><span class="tmagic-s" aria-hidden="true">✨</span><span><b>${T("Let Apollo plan it")}</b>
       <small>${T("Tell him where and for how long. He builds every day from his notebook, halal food included, in seconds.")}</small>
       ${typeof auth!=="undefined"&&FB_ON&&!auth?`<em class="tmagic-lock">🔒 ${T("Log in to use it. It's free.")}</em>`:""}</span><span class="tmagic-go" aria-hidden="true">→</span></button>`;
     if(typeof openReady==="function")h+=`<button type="button" class="tmagic tready treadyb"><span class="tmagic-s" aria-hidden="true">🗾</span><span><b>${T("Start from a ready plan")}</b>

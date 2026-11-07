@@ -6,6 +6,9 @@
 // The answer is checked before it touches your trip: only places that are
 // really in the notebook are kept, each one once, and each day is put in
 // walking order (from where you're staying, when you've set it).
+// Switched off at the owner's request: the "Let Apollo plan it" buttons are
+// hidden (and the Worker turns the request away). true brings it back.
+const PLAN_ON=false;
 const PLAN_PARTY=[["solo","Just me","🧳"],["couple","Couple","💑"],["family","Family with kids","👨‍👩‍👧"],["friends","Friends","👯"]];
 const PLAN_LOVES=[["food","Food","🍜"],["coffee","Coffee & sweets","☕"],["shrines","Temples & shrines","⛩️"],["views","Views","🌅"],
   ["shopping","Shopping","🛍️"],["anime","Anime & games","🎮"],["experiences","Experiences","🥋"],["gems","Hidden gems","💎"]];

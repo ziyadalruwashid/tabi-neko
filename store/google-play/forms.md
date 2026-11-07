@@ -31,8 +31,8 @@ Add one set of instructions:
 
 ```
 Exploring the map, places, day trips and apps works without an account.
-Logging in is needed to plan a trip, ask Apollo (the AI travel chat), use
-"Plan my trip" and collect stamps.
+Logging in is needed to plan a trip, ask Apollo (the AI travel chat, up to
+10 questions a day per account) and collect stamps.
 
 To log in: tap More (bottom right) → "Your account" at the top → Log in,
 and use the email and password above.
@@ -101,6 +101,7 @@ the AI chat; both are fine).
 | **App activity → Other user-generated content** (your trips, stamps, where you're staying, and reported Apollo answers) | Yes | No | No | Optional | App functionality |
 | **Messages → Other in-app messages** (questions to Apollo) | Yes | No | **Yes** (sent to write the answer, not stored) | Optional | App functionality |
 | **App activity → In-app search history** (the hotel search box) | Yes | No | **Yes** (sent to OpenStreetMap to find the place, not stored) | Optional | App functionality |
+| **App activity → App interactions** (how many Apollo questions you asked today, for the 10-a-day limit) | Yes | No | No | Optional | App functionality, Fraud prevention, security, and compliance |
 
 ### Do NOT tick these, and why
 
@@ -109,7 +110,7 @@ the AI chat; both are fine).
 | Location (approximate or precise) | Used only on the phone (distances, "near me", stamps). Google says data that never leaves the device isn't collected. |
 | Photos and videos | Halal Lens reads the photo on the phone; it's never uploaded. |
 | Device or other IDs | None are used. |
-| App interactions / analytics | Only one total per day (app opens, website visits) with nothing about the person: no ID, no cookie, no IP. That isn't user data. |
+| Analytics | Only one total per day (app opens, website visits) with nothing about the person: no ID, no cookie, no IP. That isn't user data. (App interactions is ticked above only for Apollo's daily question count.) |
 | Crash logs / diagnostics | None collected. |
 
 **"Shared" is No everywhere:** Firebase (Google) stores accounts and trips,

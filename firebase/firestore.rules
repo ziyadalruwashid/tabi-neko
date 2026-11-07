@@ -108,6 +108,25 @@ service cloud.firestore {
         && request.resource.data.data is string && request.resource.data.data.size() < 20000;
     }
 
+    // Ask Apollo's daily limit: usage/<id> = {day, n}, today's number of
+    // questions. The Apollo Worker writes it with the person's own login
+    // token before each question. n can only go up by one, and only starts
+    // again at 1 on a new day (Japan time), so nobody can reset their count.
+    match /usage/{uid} {
+      function today() { return math.floor(float(request.time.toMillis() + 32400000) / 86400000.0); }
+      function fresh() { return request.resource.data.day == today() && request.resource.data.n == 1; }
+      allow read: if admin() || (request.auth != null && me() == uid);
+      // Deleting your account clears it, but not on a day it was used.
+      allow delete: if request.auth != null && me() == uid && resource.data.day != today();
+      allow create: if request.auth != null && me() == uid
+        && request.resource.data.keys().hasOnly(['day', 'n']) && fresh();
+      allow update: if request.auth != null && me() == uid
+        && request.resource.data.keys().hasOnly(['day', 'n'])
+        && (resource.data.day == today()
+            ? request.resource.data.day == today() && request.resource.data.n == resource.data.n + 1
+            : fresh());
+    }
+
     match /users/{uid} {
       allow read: if admin() || (request.auth != null && me() == uid);
       allow delete: if request.auth != null && me() == uid;

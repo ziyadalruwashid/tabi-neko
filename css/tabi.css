@@ -1001,6 +1001,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
 .chip{appearance:none;cursor:pointer;font:500 13.5px var(--body);color:var(--ink);background:var(--sheet);border:1.5px dashed var(--muted);border-radius:999px;padding:5px 12px 6px;text-align:start}
 .chip:hover{border-style:solid;border-color:var(--ink);background:var(--paper)}
+.apoleft{margin:0;padding:6px 14px 0;font-size:12.5px;color:var(--muted);text-align:center}
 .apoform{display:flex;align-items:flex-end;gap:8px;padding:10px 10px 12px;border-top:1.5px dashed var(--rule)}
 .apoform textarea{flex:1;resize:none;overflow-y:hidden;font:inherit;font-size:16px;line-height:1.4;color:var(--ink);background:var(--paper);border:1.5px solid var(--rule);border-radius:12px;padding:9px 12px;max-height:132px}
 .apoform textarea:focus{outline:none;border-color:var(--ink)}
