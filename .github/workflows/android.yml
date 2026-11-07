@@ -66,8 +66,8 @@ jobs:
           # The APK's SHA-1 is public (it's in every copy of the app); Google
           # sign-in needs it registered in Firebase.
           SIGNER="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)/apksigner"
-          SHA=$("$SIGNER" verify --print-certs app/build/outputs/apk/debug/app-debug.apk | awk -F': ' '/SHA-1 digest/{print toupper($2); exit}' | sed 's/../&:/g; s/:$//')
-          SHA256=$("$SIGNER" verify --print-certs app/build/outputs/apk/debug/app-debug.apk | awk -F': ' '/SHA-256 digest/{print toupper($2); exit}' | sed 's/../&:/g; s/:$//')
+          SHA=$("$SIGNER" verify --print-certs app/build/outputs/apk/debug/app-debug.apk | awk '/SHA-1 digest/{print toupper($NF); exit}' | sed 's/../&:/g; s/:$//')
+          SHA256=$("$SIGNER" verify --print-certs app/build/outputs/apk/debug/app-debug.apk | awk '/SHA-256 digest/{print toupper($NF); exit}' | sed 's/../&:/g; s/:$//')
           echo "APK signing SHA-1: $SHA" | tee -a "$GITHUB_STEP_SUMMARY"
           echo "APK signing SHA-256: $SHA256" | tee -a "$GITHUB_STEP_SUMMARY"
           if [ -n "$TN_KEYSTORE" ]; then echo "(signed with the upload key)" | tee -a "$GITHUB_STEP_SUMMARY"; rm -f "$TN_KEYSTORE"; else echo "(throwaway debug key: changes every build)" | tee -a "$GITHUB_STEP_SUMMARY"; fi
