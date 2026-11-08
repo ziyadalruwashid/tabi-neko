@@ -30,6 +30,8 @@ For each id in `add` that is still in `scout.json` → `pending`:
    shape as the others:
    `city, n, jp, cat, tier, area, lat, lng, t, cost, dur, cap, tip`, plus:
    - `"src":""` on every scout place (marks it as from the general list).
+   - `"added":"YYYY-MM-DD"`, the day of this run. Places added in the last 30
+     days show in the "Apollo found new spots" banner on Explore.
    - `"gem":true` when `kind` is `weird` (hidden gem badge).
    - `"halal":true` + `"hl":"halal"` / `"certified"` / `"friendly"` only when
      sources say so. Gonpachi-style "only one course is halal" is `friendly`.
