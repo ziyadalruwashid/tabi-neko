@@ -1295,16 +1295,6 @@ html.tn-app .xs-st b{display:block;font:700 13.5px var(--body);margin-top:5px;wh
 html.tn-app .xs-ring{display:block;width:68px;height:68px;border-radius:50%;padding:3px;box-sizing:border-box;background:conic-gradient(var(--c),#FFD13B,var(--c))}
 html.tn-app .xs-ring span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:var(--sheet);border:3px solid var(--paper);box-sizing:border-box}
 html.tn-app .xs-ring img{width:38px;height:38px;object-fit:contain}
-html.tn-app .xs-pick{position:relative;display:flex;width:100%;gap:14px;align-items:center;margin-top:22px;background:#FFF6D8;border:0;border-radius:24px;padding:16px;text-align:start;color:var(--ink)}
-html.tn-app .xs-tape{position:absolute;top:-10px;left:50%;width:90px;height:22px;margin-left:-45px;background:rgba(255,143,163,.6);transform:rotate(-3deg)}
-html.tn-app .xs-pola{position:relative;flex:none;background:#fff;padding:6px 6px 28px;width:118px;transform:rotate(-5deg);box-shadow:0 6px 14px rgba(63,33,22,.2)}
-html.tn-app .xs-pola img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
-html.tn-app .xs-pola small{position:absolute;bottom:5px;left:4px;right:4px;text-align:center;font:400 13px/1.2 var(--hand);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-html.tn-app .xs-pt{min-width:0}
-html.tn-app .xs-pt small{display:block;color:var(--lantern);font:800 14px var(--body)}
-html.tn-app .xs-pt b{display:block;font:900 19px/1.2 var(--body);margin:3px 0}
-html.tn-app .xs-pt i{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font:400 15px/1.5 var(--hand);font-style:normal;color:#5a3a2a}
-html.tn-app .xs-pt em{display:block;margin-top:6px;font:800 15px var(--body);font-style:normal;color:var(--lantern)}
 
 html.tn-app .xs-h{font:400 23px var(--display);margin:26px 0 10px}
 html.tn-app .xs-moods{display:flex;flex-wrap:wrap;gap:8px}
@@ -1318,7 +1308,7 @@ html.tn-app .xs-sp{display:flex;gap:10px}
 html.tn-app .xs-sp span{flex:1;min-width:0;background:rgba(255,255,255,.15);border-radius:16px;padding:6px}
 html.tn-app .xs-sp img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px}
 html.tn-app .xs-sp b{display:block;font:800 12px var(--body);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-[dir=rtl].tn-app .xs-sp b,[dir=rtl].tn-app .xs-pt b{direction:ltr;text-align:right}
+[dir=rtl].tn-app .xs-sp b{direction:ltr;text-align:right}
 html.tn-app .ax-grid{display:none}
 /* a list page (story, mood, season) */
 #lview{display:none}

@@ -826,7 +826,6 @@ AR.ui={
 "Views":"إطلالات",
 "Coffee":"قهوة",
 "Photo spots":"أماكن للتصوير",
-"Apollo's pick for today 🐾":"اختيار أبولو اليوم 🐾",
 "See the place":"شوف المكان",
 "What's your mood today?":"إيش مزاجك اليوم؟",
 "Hungry":"جوعان",
