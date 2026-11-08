@@ -3083,3 +3083,23 @@ html.tn-app .nw-av i.art img{width:74%;height:74%;object-fit:contain}
 html.tn-app .nw-av em{font-style:normal;margin-inline-start:20px;font:800 14.5px var(--body);color:var(--lantern)}
 html.tn-app .nw-ch{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 html.tn-app .nw-ch span{font:700 12.5px var(--body);background:rgba(255,255,255,.75);padding:6px 10px;border-radius:999px}
+
+/* Explore: Areas to explore. One big area that suits this hour (or the
+   chosen vibe), four smaller ones two per row, and a button for all. */
+html.tn-app .ar-vibes{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:2px 0 14px;margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%);scroll-padding-inline:14px}
+html.tn-app .ar-vibes::-webkit-scrollbar{display:none}
+html.tn-app .ar-vibes button{flex:none;padding:8px 13px;border:0;border-radius:999px;background:var(--sheet);box-shadow:0 1px 0 var(--rule);font:700 13.5px var(--body);color:var(--ink);cursor:pointer}
+html.tn-app .ar-vibes button.on{background:var(--ink);color:#fff}
+html.tn-app .xs-areas .xs-area{display:block;width:100%;cursor:pointer}
+html.tn-app .xs-areas .ar-big{height:210px;border-radius:24px}
+html.tn-app .ar-big .ar-tag{position:absolute;top:12px;inset-inline-start:12px;z-index:1;font:800 12px var(--body);font-style:normal;background:rgba(255,255,255,.92);color:var(--lantern);padding:5px 10px;border-radius:999px}
+html.tn-app .ar-big b{font-size:28px}
+html.tn-app .ar-big small{font-size:13.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+html.tn-app .ar-big small.ar-facts{font:800 11.5px var(--body);letter-spacing:.06em;text-transform:uppercase;color:#FFD3C2;opacity:1}
+html.tn-app .ar-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+html.tn-app .ar-grid .xs-area{height:118px;border-radius:20px;box-shadow:0 4px 12px rgba(63,33,22,.14)}
+html.tn-app .ar-grid .xs-area span{left:11px;right:10px;bottom:9px}
+html.tn-app .ar-grid .xs-area b{font-size:17px}
+html.tn-app .ar-grid .xs-area small{font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.tn-app .ar-allb{display:block;width:100%;margin-top:12px;padding:13px;border:0;border-radius:16px;background:var(--sheet);box-shadow:0 1px 0 var(--rule);font:800 14.5px var(--body);color:var(--lantern);cursor:pointer}
+html.tn-wide .ar-vibes{margin-inline:0;padding-inline:0}
