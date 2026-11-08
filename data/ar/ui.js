@@ -691,7 +691,6 @@ AR.ui={
 "Open your day":"افتح يومك",
 "What's your mood?":"إيش مزاجك؟",
 "Start your trip":"ابدأ رحلتك",
-"Pick your cities and fill your days from the notebook.":"اختر مدنك وعبّ أيامك من الدفتر.",
 "Change city":"غيّر المدينة",
 "Where to explore?":"وين تبي تستكشف؟",
 "Best right now":"الأنسب الحين",
