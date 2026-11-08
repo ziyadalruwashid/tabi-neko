@@ -290,11 +290,11 @@ function todayCard(){
     <button type="button" class="hx-open" data-s="${t.a}" data-d="${t.b}">${esc(T("Open your day"))} ${isAR()?"←":"→"}</button></section>`}
 // "What's your mood?": Apollo's stickers in a row; tap one and its top three
 // places show right under it, each with ＋ for the trip, and "All N" for the list.
-const MOOD=[["halal","Halal","ramen.png","#E8F3E3","#2E8B3E",()=>halalHere()],["views","Views","fuji.png","#E3EEF8","#1D52A0",()=>pickNear(inCity().filter(p=>p.cat==="views"))],
+const MOOD=[["views","Views","fuji.png","#E3EEF8","#1D52A0",()=>pickNear(inCity().filter(p=>p.cat==="views"))],
   ["coffee","Coffee & sweets","coffee.png","#F6EBDD","#9A6233",()=>pickNear(inCity().filter(p=>p.cat==="coffee"))],["shrine","Temples","torii.png","#FBE5DE","#E0402A",()=>pickNear(inCity().filter(p=>p.cat==="shrine"))],
   ["gems","Hidden","c-gem.png","#FFF3CC","#B8860B",()=>pickNear(inCity().filter(p=>p.gem))],["shop","Shopping","c-shop.png","#FCE4EC","#C2185B",()=>pickNear(inCity().filter(p=>p.cat==="shop"))],
   ["nature","Nature","c-nature.png","#E6F1DE","#4F7A1E",()=>pickNear(inCity().filter(p=>p.cat==="nature"))],["experience","Experiences","c-experience.png","#EEE6F6","#7B5EA7",()=>pickNear(inCity().filter(p=>p.cat==="experience"))]];
-let moodSel="halal";
+let moodSel="views";
 function moodRes(){
   const m=MOOD.find(x=>x[0]===moodSel)||MOOD[0],ps=m[5](),h=window.tnMe||(near&&nearKind==="me"?near:null);
   return `<div class="hx-mres" style="--bg:${m[3]};--c:${m[4]}">${ps.slice(0,3).map(p=>{const k=PKEY(p),on=inTrip(k);
@@ -306,7 +306,11 @@ function moodRes(){
 function moodPicker(){
   const ms=MOOD.filter(x=>x[5]().length);if(!ms.some(x=>x[0]===moodSel))moodSel=(ms[0]||MOOD[0])[0];
   return `<h2 class="hx-h">${T("What's your mood?")}</h2><div class="hx-moods" role="tablist">${ms.map(x=>`<button type="button" role="tab" class="hx-mood${x[0]===moodSel?" on":""}" data-m="${x[0]}" aria-selected="${x[0]===moodSel}" style="--bg:${x[3]};--c:${x[4]}">
-    <span><img src="assets/${x[2]}" alt=""></span><b>${esc(T(x[1]))}</b></button>`).join("")}</div><div class="hx-mwrap">${moodRes()}</div>`}
+    <span><img src="assets/${x[2]}" alt=""></span><b>${esc(T(x[1]))}</b></button>`).join("")}</div><div class="hx-mwrap">${moodRes()}</div>${restCard()}`}
+// Restaurants: a card under the moods that opens the Restaurants page
+// (js/apprest.js), with how many there are in the city and how many halal.
+function restCard(){const ps=inCity().filter(p=>p.cat==="food");if(!ps.length)return "";const h=ps.filter(p=>p.halal).length;
+  return `<button type="button" class="hx-rest"><span class="hx-re" aria-hidden="true">🍜</span><span><b>${T("Restaurants")}</b><small>${esc(T("{n} in {c}",{n:axNum(ps.length),c:cityOf(exploreCity)}))}${h?" · "+esc(T("{n} halal",{n:axNum(h)})):""}</small></span><i>${isAR()?"←":"→"}</i></button>`}
 function wireMood(el){
   const w=el.querySelector(".hx-mwrap");if(!w)return;
   const wireRes=()=>{
@@ -342,7 +346,7 @@ function openCityPicker(){
     <div class="cp-list">${rows}</div></div>`;
   el.querySelector(".cp-x").onclick=closeCityPicker;
   el.querySelectorAll(".cp-row").forEach(b=>b.onclick=()=>{const c=b.dataset.c;closeCityPicker();
-    if(c!==exploreCity){exploreCity=c;city=c;store.set("tabineko-city",c);renderExplore()}});
+    if(c!==exploreCity){exploreCity=c;city=c;store.set("tabineko-city",c);renderExplore();dispatchEvent(new Event("tncity"))}});
   el.hidden=false;document.documentElement.classList.add("tpick-open");
   const on=el.querySelector(".cp-row.on");if(on)on.focus({preventScroll:true});
 }
@@ -393,6 +397,7 @@ function renderExplore(){
   el.querySelectorAll(".hx-next[data-id]").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
   wireMood(el);
   wireAreas(el);
+  const rc=el.querySelector(".hx-rest");if(rc)rc.onclick=()=>{if(window.tnOpenRest)tnOpenRest()};
   weather();
   el.querySelector(".xs-city").onclick=openCityPicker;
   el.querySelector(".xs-search").onclick=()=>{city=exploreCity;store.set("tabineko-city",city);if(window.openSearch)openSearch("")};
@@ -404,7 +409,8 @@ function renderExplore(){
 window.tnRenderExplore=renderExplore;
 // For Ask Apollo's start screen: the city you're exploring and its weather.
 window.tnChatCtx=()=>({city:exploreCity,wx:WX[exploreCity]||null,icon:wxIcon});
-window.tnExploreCity=c=>{if(!CITIES[c])return;exploreCity=c;city=c;store.set("tabineko-city",c);renderExplore()};
+window.tnExploreCity=c=>{if(!CITIES[c])return;exploreCity=c;city=c;store.set("tabineko-city",c);renderExplore();dispatchEvent(new Event("tncity"))};
+window.tnOpenCityPicker=()=>openCityPicker();
 // The clock in the header ticks with Japan's time, and the sky changes with it.
 let lastPeriod=period(jst().h);
 setInterval(()=>{if($("explore").hidden)return;const k=period(jst().h);
@@ -626,7 +632,7 @@ if(typeof renderHoods==="function"){const _rh=renderHoods;renderHoods=function()
   document.querySelectorAll("#hgrid .hcard").forEach((c,i)=>c.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openArea(list[i])},true))};renderHoods()}
 
 // ---- More ----
-const MORE=[["Discover",[["📸","Halal Lens","lens"],["🕌","Prayer times & Qibla","prayer"],["🗣️","Show the staff","staff"],["🚆","Day trips","trips"],["📱","Apps to download","apps"]]],
+const MORE=[["Discover",[["🍜","Restaurants","rest"],["📸","Halal Lens","lens"],["🕌","Prayer times & Qibla","prayer"],["🗣️","Show the staff","staff"],["🚆","Day trips","trips"],["📱","Apps to download","apps"]]],
   ["Settings",[["🔔","Reminders","remind"],["🌐","Language","lang"],["🔒","Privacy","privacy"],["🐾","Contributors","crew"]]]];
 window.tnRenderMore=()=>renderMore();
 // Back on More itself (no page open): no row is marked any more.
@@ -656,6 +662,7 @@ function renderMore(){
     if(k==="lens"&&window.tnOpenLens){tnOpenLens();return}
     if(k==="prayer"&&window.tnOpenPrayer){tnOpenPrayer();return}
     if(k==="staff"&&window.tnOpenStaff){tnOpenStaff();return}
+    if(k==="rest"&&window.tnOpenRest){tnOpenRest();return}
     if(k==="crew"&&window.tnOpenCrew){tnOpenCrew();return}
     if(k==="privacy"&&window.tnOpenPrivacy){tnOpenPrivacy();return}
     if(k==="apps"&&window.tnOpenApps){tnOpenApps();return}
