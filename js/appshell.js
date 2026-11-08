@@ -205,9 +205,41 @@ const MONTHS_AR=["يناير","فبراير","مارس","أبريل","مايو",
 const MONTHS_EN=["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 // The city's neighbourhoods, from the Areas page, as wide photo cards.
-function areasRow(){const hs=HOODS.filter(h=>h.city===exploreCity&&h.photo);if(!hs.length)return "";
-  return `<section class="ax-row"><header><h2>${T("Areas to explore 🏘️")}</h2><button type="button" class="ax-all xs-areas-all">${T("See all")}</button></header><div class="ax-hs">${hs.map(h=>`<button type="button" class="xs-area" data-h="${esc(h.n)}">
-    <img src="${h.photo}" alt="" loading="lazy" style="object-position:${h.pos||"50% 50%"}"><span><b>${esc(D(h,"n"))}</b><small>${esc(D(h,"vibe"))}</small></span></button>`).join("")}</div></section>`}
+// Areas to explore: the area that suits this hour best, big, then four more,
+// two per row, and a button for all of them. Vibe chips (night, food,
+// shopping, calm, culture) re-sort them by the area's own scores.
+const AREA_VIBES=[["","✨","Best now"],["night","🌃","Night"],["food","🍜","Food"],["shop","🛍️","Shopping"],["calm","🍃","Calm"],["culture","⛩️","Culture"]];
+const AREA_TAG={"":"Best right now",night:"Best at night",food:"Best for food",shop:"Best for shopping",calm:"The calmest",culture:"Best for culture"};
+let areaVibe="";
+// How well an area's "best time" fits this hour in Japan.
+const AREA_WORDS={morning:/morning|opening|slot|early/,afternoon:/afternoon|weekday|weekend|rainy|lazy|day/,sunset:/sunset|blue hour|late afternoon|evening/,night:/dark|night|evening|blue hour/};
+function areaFit(h,k){const st=h.stats||{},best=String(h.best||"").toLowerCase();
+  const base={morning:(st.calm||0)+(st.culture||0),afternoon:(st.shop||0)+(st.food||0),sunset:(st.night||0)+(st.calm||0),night:2*(st.night||0)}[k]||0;
+  return (AREA_WORDS[k].test(best)?10:0)+base}
+function areasRow(){
+  const ps=P.filter(p=>p.city===exploreCity),k=period(jst().h);
+  const hs=HOODS.filter(h=>h.city===exploreCity&&h.photo).map(h=>{const mine=ps.filter(p=>p.area===h.area);
+    return {h,n:mine.length,hl:mine.filter(p=>p.halal).length}});
+  if(!hs.length)return "";
+  const score=x=>areaVibe?((x.h.stats||{})[areaVibe]||0)*100+x.n:areaFit(x.h,k)*100+x.n;
+  hs.sort((a,b)=>score(b)-score(a));
+  const [top,...rest]=hs,ic=areaVibe?AREA_VIBES.find(v=>v[0]===areaVibe)[1]:{morning:"☀️",afternoon:"🌤️",sunset:"🌇",night:"🌙"}[k];
+  const {h}=jst(),hr=isAR()?`${h%12||12} ${h<4?"الليل":h<11?"الصبح":h<14?"الظهر":h<17?"العصر":h<19?"المغرب":"الليل"}`:`${h%12||12} ${h<12?"am":"pm"}`;
+  const cap=t=>t?t[0].toUpperCase()+t.slice(1):"",facts=x=>[T(x.n===1?"1 place":"{n} places",{n:axNum(x.n)}),x.hl?T("{n} halal",{n:axNum(x.hl)}):""].filter(Boolean).join(" · ");
+  return `<section class="ax-row xs-areas"><header><h2>${T("Areas to explore 🏘️")}</h2></header>
+    <p class="ax-sub">${esc(areaVibe?T("Sorted by what each area is best at"):T("Picked for {t} in {c}",{t:hr,c:cityOf(exploreCity)}))}</p>
+    <div class="ar-vibes" role="tablist">${AREA_VIBES.map(([v,e,l])=>`<button type="button" role="tab" data-v="${v}" class="${v===areaVibe?"on":""}" aria-selected="${v===areaVibe}">${e} ${T(l)}</button>`).join("")}</div>
+    <button type="button" class="xs-area ar-big" data-h="${esc(top.h.n)}"><img src="${top.h.photo}" alt="" loading="lazy" style="object-position:${top.h.pos||"50% 50%"}">
+      <i class="ar-tag">${ic} ${T(AREA_TAG[areaVibe])}</i>
+      <span><small class="ar-facts">${esc(facts(top))}</small><b>${esc(D(top.h,"n"))}</b><small>${esc(cap(D(top.h,"tip")||D(top.h,"vibe")))}</small></span></button>
+    ${rest.length?`<div class="ar-grid">${rest.slice(0,4).map(x=>`<button type="button" class="xs-area" data-h="${esc(x.h.n)}"><img src="${x.h.photo}" alt="" loading="lazy" style="object-position:${x.h.pos||"50% 50%"}">
+      <span><b>${esc(D(x.h,"n"))}</b><small>${esc(cap(D(x.h,"vibe")))}</small></span></button>`).join("")}</div>`:""}
+    ${hs.length>1?`<button type="button" class="ar-allb xs-areas-all">${T(hs.length===1?"See the area":"See all {n} areas",{n:axNum(hs.length)})} ${isAR()?"←":"→"}</button>`:""}</section>`}
+function wireAreas(el){
+  el.querySelectorAll(".xs-area").forEach(b=>b.onclick=()=>openArea(HOODS.find(x=>x.city===exploreCity&&x.n===b.dataset.h)));
+  el.querySelectorAll(".xs-areas-all").forEach(b=>b.onclick=()=>openAreas(exploreCity));
+  el.querySelectorAll(".ar-vibes button").forEach(b=>b.onclick=()=>{areaVibe=b.dataset.v;const sec=el.querySelector(".xs-areas");if(!sec)return;
+    const sc=sec.querySelector(".ar-vibes").scrollLeft;sec.outerHTML=areasRow();const n=el.querySelector(".xs-areas");n.querySelector(".ar-vibes").scrollLeft=sc;wireAreas(n.parentNode)})}
 // The weather now in the city, from Open-Meteo (free, no key). No answer, no chip.
 const WX={};
 const wxIcon=c=>c===0?"☀️":c<=2?"🌤️":c===3?"☁️":c<=48?"🌫️":c<=67||c>=80&&c<=82?"🌧️":c<=77||c===85||c===86?"🌨️":c>=95?"⛈️":"🌦️";
@@ -372,14 +404,13 @@ function renderExplore(){
   el.querySelectorAll(".hx-open").forEach(b=>b.onclick=()=>{go("trip");if(window.tnOpenDay)tnOpenDay(+b.dataset.s,+b.dataset.d)});
   el.querySelectorAll(".hx-next[data-id]").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
   wireMood(el);
-  el.querySelectorAll(".xs-area").forEach(b=>b.onclick=()=>openArea(HOODS.find(x=>x.city===exploreCity&&x.n===b.dataset.h)));
+  wireAreas(el);
   weather();
   el.querySelector(".xs-city").onclick=openCityPicker;
   el.querySelector(".xs-search").onclick=()=>{city=exploreCity;store.set("tabineko-city",city);if(window.openSearch)openSearch("")};
   if(el.querySelector(".xs-pick"))el.querySelector(".xs-pick").onclick=()=>openPlace(pick.id);
   const nw=el.querySelector(".nw-card");if(nw)nw.onclick=()=>openList(T("New on Tabi Neko 🆕"),cityOf(exploreCity),fresh());
   el.querySelectorAll(".hx-sall").forEach(b=>b.onclick=()=>{const se=season();openList(T(se.t),cityOf(exploreCity),se.ps)});
-  el.querySelectorAll(".xs-areas-all").forEach(b=>b.onclick=()=>openAreas(exploreCity));
   el.querySelectorAll(".ax-all[data-list]").forEach(b=>b.onclick=()=>{const k2=b.dataset.list,L={halal:["Halal food 🍜",halalHere()],gems:["Hidden gems ⭐",photoFirst(inCity().filter(p=>p.gem))],new:["New on Tabi Neko 🆕",fresh()]}[k2];
     openList(T(L[0]),cityOf(exploreCity),L[1])});
 }
