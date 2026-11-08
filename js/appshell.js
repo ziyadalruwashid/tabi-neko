@@ -351,21 +351,20 @@ function closeCityPicker(){const el=$("citypick");if(el)el.hidden=true;document.
 
 // New in the city: places Apollo added in the last 30 days (their "added"
 // date; the scout sets it), newest first.
-const NEW_DAYS=30,CAT_E={food:"🍜",coffee:"☕",shrine:"⛩️",views:"🌅",nature:"🌳",streets:"🏮",shop:"🛍️",experience:"🎟️"};
+const NEW_DAYS=30;
 const fresh=()=>{const cut=new Date(Date.now()-NEW_DAYS*864e5).toISOString().slice(0,10);
   return P.map((p,i)=>[p,i]).filter(([p])=>p.city===exploreCity&&p.added&&p.added>=cut)
     .sort((a,b)=>a[0].added===b[0].added?b[1]-a[1]:a[0].added<b[0].added?1:-1).map(x=>x[0])};
-// "Apollo found 6 new spots": one banner with their little pictures and kinds;
+// "Apollo found 6 new spots": one banner with their little pictures;
 // tap it for the list. Nothing new in the city, no banner.
 function newCard(){
   const ps=fresh();if(!ps.length)return "";
-  const n=ps.length,cats={};ps.forEach(p=>cats[p.cat]=(cats[p.cat]||0)+1);
+  const n=ps.length;
   const caps=ps.slice(0,3).map(p=>D(p,"cap")).filter(Boolean);if(caps[0])caps[0]=caps[0][0].toUpperCase()+caps[0].slice(1);
   return `<button type="button" class="nw-card"><small class="nw-k">🆕 ${esc(T("New in {c}",{c:cityOf(exploreCity)}))}</small>
     <b class="nw-t">${esc(n===1?T("Apollo found a new spot"):n===2?T("Apollo found 2 new spots"):T(n<=10?"Apollo found {n} new spots":"Apollo found {n} new places",{n:axNum(n)}))}</b>
     ${caps.length?`<span class="nw-p">${esc(caps.join(isAR()?"، ":", "))}${n>caps.length?"…":""}</span>`:""}
-    <span class="nw-av">${ps.slice(0,4).map(p=>`<i class="${p.photo?"":"art"}"><img src="${esc(p.photo||CATS[p.cat].img)}" alt="" loading="lazy"></i>`).join("")}<em>${T("See them")} ${isAR()?"←":"→"}</em></span>
-    <span class="nw-ch">${Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([c,k])=>`<span>${CAT_E[c]||""} ${esc(axNum(k))} ${esc(D(CATS[c],"n"))}</span>`).join("")}</span></button>`}
+    <span class="nw-av">${ps.slice(0,4).map(p=>`<i class="${p.photo?"":"art"}"><img src="${esc(p.photo||CATS[p.cat].img)}" alt="" loading="lazy"></i>`).join("")}<em>${T("See them")} ${isAR()?"←":"→"}</em></span></button>`}
 let autoCity=false,lastToday="";
 function renderExplore(){
   // On the trip, Explore starts in the city you're in today (once; your own pick wins after that).
@@ -382,7 +381,7 @@ function renderExplore(){
         <button type="button" class="xs-city" aria-haspopup="dialog" aria-label="${esc(T("Change city"))}"><span class="xs-pin" aria-hidden="true">📍</span><bdi>${esc(cityOf(exploreCity))}</bdi><span class="xs-chev" aria-hidden="true">⌄</span></button></div>
         <button type="button" class="xs-cat" aria-label="${esc(T("More"))}"><img src="${GI()}" alt=""></button></div></div>
     <button type="button" class="ax-search xs-search">${SVG(I.search)}<span>${T("Search places, areas, food…")}</span></button>
-    ${(()=>{const td=todayCard();lastToday=td;if(td)return td;const tt=tripTop();return tt?tt+nowCard(k):nowCard(k)+(trip.stays.length||trip.ideas.length?"":`<button type="button" class="hx-cta"><span>✈️</span><span><b>${T("Start your trip")}</b><small>${T("Pick your cities and fill your days from the notebook.")}</small></span><i>${isAR()?"←":"→"}</i></button>`)})()}
+    ${(()=>{const td=todayCard();lastToday=td;if(td)return td;const tt=tripTop();return tt?tt+nowCard(k):nowCard(k)+(trip.stays.length||trip.ideas.length?"":`<button type="button" class="hx-cta"><span>✈️</span><span><b>${T("Start your trip")}</b></span><i>${isAR()?"←":"→"}</i></button>`)})()}
     ${moodPicker()}
     ${newCard()}
     ${row("Hidden gems ⭐",T("Even locals don't know these"),photoFirst(inCity().filter(p=>p.gem)),"gems")}
