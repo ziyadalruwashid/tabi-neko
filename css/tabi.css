@@ -1103,12 +1103,8 @@ html.tn-app #explore,html.tn-app #menu{padding:4px 18px 24px}
 html.tn-app .ax-h{display:flex;justify-content:space-between;align-items:center;margin:6px 0 14px}
 html.tn-app .ax-h small{color:var(--muted);font:600 15px var(--body)}
 html.tn-app .ax-h h1{font:400 30px/1.1 var(--display);margin:2px 0 0}
-html.tn-app .ax-cities,html.tn-app .ax-hs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-inline:-18px;padding-inline:18px;scroll-snap-type:x mandatory}
-html.tn-app .ax-cities::-webkit-scrollbar,html.tn-app .ax-hs::-webkit-scrollbar{display:none}
-html.tn-app .ax-city{flex:none;padding:7px 15px;border-radius:999px;background:var(--sheet);border:1.5px solid var(--rule);font:800 15px var(--body);color:var(--ink)}
-html.tn-app .ax-city small{color:var(--muted);font-weight:600}
-html.tn-app .ax-city.on{background:var(--ink);border-color:var(--ink);color:#fff}
-html.tn-app .ax-city.on small{color:var(--yuzu)}
+html.tn-app .ax-hs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-inline:-18px;padding-inline:18px;scroll-snap-type:x mandatory}
+html.tn-app .ax-hs::-webkit-scrollbar{display:none}
 html.tn-app .ax-search{display:flex;width:100%;gap:10px;align-items:center;margin:12px 0 0;background:var(--sheet);border:0;border-radius:16px;padding:12px 14px;
   color:var(--muted);font:500 15px var(--body);box-shadow:0 2px 0 var(--rule);text-align:start}
 html.tn-app .ax-row{margin-top:20px}
@@ -1193,8 +1189,6 @@ html.tn-app #explore,html.tn-app #menu{padding:4px 20px 28px}
 html.tn-app .ax-h small{font-size:17px}
 html.tn-app .ax-h h1{font-size:31px}
 html.tn-app .ax-search{margin:0;padding:15px 16px;border-radius:18px;font-size:17px}
-html.tn-app .ax-cities{margin-top:14px;margin-inline:-20px;padding-inline:20px}
-html.tn-app .ax-city{padding:9px 18px;font-size:17px}
 html.tn-app .ax-hs{margin-inline:-20px;padding-inline:20px}
 html.tn-app .ax-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 6px;margin-top:22px}
 html.tn-app .ax-row{margin-top:24px}
@@ -1339,7 +1333,7 @@ html.tn-app .lv-none{grid-column:1/-1;text-align:center;color:var(--muted);paddi
 /* ---- app home v2.1: edge to edge,trip card,tip,areas,weather ---- */
 html.tn-app #explore{padding-inline:4px}
 html.tn-app .xs{width:100vw;margin-inline:calc(50% - 50vw)}
-html.tn-app #explore .ax-hs,html.tn-app #explore .ax-cities,html.tn-app #explore .xs-stories{margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%)}
+html.tn-app #explore .ax-hs,html.tn-app #explore .xs-stories{margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%)}
 html.tn-app .xs-hi>div{max-width:calc(100% - 86px)}
 html.tn-app .xs-hi small{max-width:100%;overflow:hidden;text-overflow:ellipsis}
 html.tn-app .xs-hint{margin:6px 2px 0;font:700 14px/1.3 var(--body);color:#2A1A12;opacity:.85}
@@ -1635,7 +1629,7 @@ html.tn-app .lr-t b{direction:ltr;unicode-bidi:plaintext}
 
 /* Explore runs edge to edge like More: the same 14px sides for its cards. */
 html.tn-app #explore{width:100vw;margin-inline:calc(50% - 50vw);padding-inline:14px;box-sizing:border-box}
-html.tn-app #explore .ax-hs,html.tn-app #explore .ax-cities,html.tn-app #explore .xs-stories{scroll-padding-inline:14px}
+html.tn-app #explore .ax-hs,html.tn-app #explore .xs-stories{scroll-padding-inline:14px}
 
 /* ---- Explore v3: right now,your trip,today,the mood grid (js/appshell.js) ---- */
 html.tn-app .hx-now,html.tn-app .hx-today{background:var(--sheet);border-radius:22px;padding:14px;margin-top:14px;box-shadow:0 4px 16px rgba(63,33,22,.06)}
@@ -2991,7 +2985,7 @@ html.tn-wide #explore>*{grid-column:1/-1;min-width:0}
 html.tn-wide #explore>.hx-now{grid-column:1;grid-row:span 4}
 html.tn-wide #explore>:is(.hx-cta,.hx-h,.hx-moods,.hx-mwrap){grid-column:2}
 html.tn-wide #explore>.hx-h{margin-top:0}
-html.tn-wide #explore .ax-cities,html.tn-wide #explore .ax-hs{margin-inline:0;padding-inline:0}
+html.tn-wide #explore .ax-hs{margin-inline:0;padding-inline:0}
 html.tn-wide #explore .hx-moods{flex-wrap:wrap;overflow:visible}
 /* the map: the list stays open on the side */
 html.tn-wide #amap:not([hidden]){bottom:0}
@@ -3047,5 +3041,30 @@ html.tn-wide .tv-aside .at-ctext .at-title{font-size:22px}
 html.tn-wide .tv-aside .at-ctext p{font-size:13px}
 /* the phone's edge-to-edge trick (100vw) would reach under the sidebar */
 html.tn-wide :is(#explore,#menu){width:auto;box-sizing:border-box}
-html.tn-wide :is(.hx-moods,.at-ideas,.ar-miss,.tv-pills,#explore .ax-hs,#explore .ax-cities,#explore .xs-stories){margin-inline:0;padding-inline:0;scroll-padding-inline:0}
+html.tn-wide :is(.hx-moods,.at-ideas,.ar-miss,.tv-pills,#explore .ax-hs,#explore .xs-stories){margin-inline:0;padding-inline:0;scroll-padding-inline:0}
 html.tn-wide .tv-pills{padding-inline:2px}
+
+/* Explore: the city you're exploring, as a glass pill in the header, and the
+   sheet that picks it (all six cities, the same list for everyone). */
+html.tn-app .xs-city{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:6px 12px 6px 6px;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.65);color:#2A1A12;font:800 15px var(--body);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 6px 16px rgba(40,20,10,.12)}
+html.tn-app .xs-night .xs-city{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.28);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+html.tn-app .xs-pin{width:22px;height:22px;border-radius:50%;background:var(--lantern);display:grid;place-items:center;font-size:11px}
+html.tn-app .xs-chev{font-size:13px;opacity:.75;margin-top:-4px}
+html.tn-app .xs-city:active{transform:scale(.97)}
+html.tn-app .cp-sheet{width:calc(100% - 16px);margin:0 8px calc(8px + env(safe-area-inset-bottom));border-radius:30px}
+html.tn-app .cp-x{width:32px;height:32px;border:0;border-radius:50%;background:#EFE5D6!important;color:var(--muted)!important;font-size:14px;display:grid;place-items:center}
+html.tn-app .cp-list{overflow-y:auto;padding:4px 14px 16px;display:flex;flex-direction:column;gap:8px}
+html.tn-app .cp-row{display:flex;align-items:center;gap:12px;width:100%;padding:8px 12px 8px 8px;border:0;border-radius:20px;cursor:pointer;
+  background:var(--sheet);color:var(--ink);font:inherit;text-align:start;box-shadow:0 2px 10px rgba(63,33,22,.05);transition:transform .12s}
+html.tn-app .cp-row:active{transform:scale(.985)}
+html.tn-app .cp-row.on{box-shadow:0 0 0 2px var(--lantern),0 6px 16px rgba(241,78,36,.15)}
+html.tn-app .cp-row img,html.tn-app .cp-row>i{flex:none;width:56px;height:56px;border-radius:15px;object-fit:cover;background:var(--rule)}
+html.tn-app .cp-t{flex:1;min-width:0}
+html.tn-app .cp-t b{display:block;font:800 16.5px var(--body)}
+html.tn-app .cp-t small{display:block;font:500 13px/1.35 var(--body);color:var(--muted)}
+html.tn-app .cp-t small.cp-n{font-weight:700;font-size:12px;margin-top:1px}
+html.tn-app .cp-r{flex:none;display:flex;align-items:center;gap:8px}
+html.tn-app .cp-day{font:700 11px var(--body);padding:4px 9px;border-radius:999px;background:#EDF4E2;color:#557A2A;white-space:nowrap}
+html.tn-app .cp-ck{width:24px;height:24px;border-radius:50%;background:var(--lantern);color:#fff;display:grid;place-items:center;font:800 13px var(--body)}
