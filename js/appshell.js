@@ -206,11 +206,7 @@ const MONTHS_EN=["January","February","March","April","May","June","July","Augus
 
 // The city's neighbourhoods, from the Areas page, as wide photo cards.
 // Areas to explore: the area that suits this hour best, big, then four more,
-// two per row, and a button for all of them. Vibe chips (night, food,
-// shopping, calm, culture) re-sort them by the area's own scores.
-const AREA_VIBES=[["","✨","Best now"],["night","🌃","Night"],["food","🍜","Food"],["shop","🛍️","Shopping"],["calm","🍃","Calm"],["culture","⛩️","Culture"]];
-const AREA_TAG={"":"Best right now",night:"Best at night",food:"Best for food",shop:"Best for shopping",calm:"The calmest",culture:"Best for culture"};
-let areaVibe="";
+// two per row, and a button for all of them.
 // How well an area's "best time" fits this hour in Japan.
 const AREA_WORDS={morning:/morning|opening|slot|early/,afternoon:/afternoon|weekday|weekend|rainy|lazy|day/,sunset:/sunset|blue hour|late afternoon|evening/,night:/dark|night|evening|blue hour/};
 function areaFit(h,k){const st=h.stats||{},best=String(h.best||"").toLowerCase();
@@ -221,25 +217,23 @@ function areasRow(){
   const hs=HOODS.filter(h=>h.city===exploreCity&&h.photo).map(h=>{const mine=ps.filter(p=>p.area===h.area);
     return {h,n:mine.length,hl:mine.filter(p=>p.halal).length}});
   if(!hs.length)return "";
-  const score=x=>areaVibe?((x.h.stats||{})[areaVibe]||0)*100+x.n:areaFit(x.h,k)*100+x.n;
+  const score=x=>areaFit(x.h,k)*100+x.n;
   hs.sort((a,b)=>score(b)-score(a));
-  const [top,...rest]=hs,ic=areaVibe?AREA_VIBES.find(v=>v[0]===areaVibe)[1]:{morning:"☀️",afternoon:"🌤️",sunset:"🌇",night:"🌙"}[k];
+  const [top,...rest]=hs,ic={morning:"☀️",afternoon:"🌤️",sunset:"🌇",night:"🌙"}[k];
   const {h}=jst(),hr=isAR()?`${h%12||12} ${h<4?"الليل":h<11?"الصبح":h<14?"الظهر":h<17?"العصر":h<19?"المغرب":"الليل"}`:`${h%12||12} ${h<12?"am":"pm"}`;
-  const cap=t=>t?t[0].toUpperCase()+t.slice(1):"",facts=x=>[T(x.n===1?"1 place":"{n} places",{n:axNum(x.n)}),x.hl?T("{n} halal",{n:axNum(x.hl)}):""].filter(Boolean).join(" · ");
+  const cap=t=>t?t[0].toUpperCase()+t.slice(1):"";
   return `<section class="ax-row xs-areas"><header><h2>${T("Areas to explore 🏘️")}</h2></header>
-    <p class="ax-sub">${esc(areaVibe?T("Sorted by what each area is best at"):T("Picked for {t} in {c}",{t:hr,c:cityOf(exploreCity)}))}</p>
-    <div class="ar-vibes" role="tablist">${AREA_VIBES.map(([v,e,l])=>`<button type="button" role="tab" data-v="${v}" class="${v===areaVibe?"on":""}" aria-selected="${v===areaVibe}">${e} ${T(l)}</button>`).join("")}</div>
+    <p class="ax-sub">${esc(T("Picked for {t} in {c}",{t:hr,c:cityOf(exploreCity)}))}</p>
     <button type="button" class="xs-area ar-big" data-h="${esc(top.h.n)}"><img src="${top.h.photo}" alt="" loading="lazy" style="object-position:${top.h.pos||"50% 50%"}">
-      <i class="ar-tag">${ic} ${T(AREA_TAG[areaVibe])}</i>
-      <span><small class="ar-facts">${esc(facts(top))}</small><b>${esc(D(top.h,"n"))}</b><small>${esc(cap(D(top.h,"tip")||D(top.h,"vibe")))}</small></span></button>
+      <i class="ar-tag">${ic} ${T("Best right now")}</i>
+      <span><b>${esc(D(top.h,"n"))}</b><small>${esc(cap(D(top.h,"tip")||D(top.h,"vibe")))}</small></span></button>
     ${rest.length?`<div class="ar-grid">${rest.slice(0,4).map(x=>`<button type="button" class="xs-area" data-h="${esc(x.h.n)}"><img src="${x.h.photo}" alt="" loading="lazy" style="object-position:${x.h.pos||"50% 50%"}">
       <span><b>${esc(D(x.h,"n"))}</b><small>${esc(cap(D(x.h,"vibe")))}</small></span></button>`).join("")}</div>`:""}
-    ${hs.length>1?`<button type="button" class="ar-allb xs-areas-all">${T(hs.length===1?"See the area":"See all {n} areas",{n:axNum(hs.length)})} ${isAR()?"←":"→"}</button>`:""}</section>`}
+    ${hs.length>1?`<button type="button" class="ar-allb xs-areas-all">${T("See all areas")} ${isAR()?"←":"→"}</button>`:""}</section>`}
 function wireAreas(el){
   el.querySelectorAll(".xs-area").forEach(b=>b.onclick=()=>openArea(HOODS.find(x=>x.city===exploreCity&&x.n===b.dataset.h)));
   el.querySelectorAll(".xs-areas-all").forEach(b=>b.onclick=()=>openAreas(exploreCity));
-  el.querySelectorAll(".ar-vibes button").forEach(b=>b.onclick=()=>{areaVibe=b.dataset.v;const sec=el.querySelector(".xs-areas");if(!sec)return;
-    const sc=sec.querySelector(".ar-vibes").scrollLeft;sec.outerHTML=areasRow();const n=el.querySelector(".xs-areas");n.querySelector(".ar-vibes").scrollLeft=sc;wireAreas(n.parentNode)})}
+}
 // The weather now in the city, from Open-Meteo (free, no key). No answer, no chip.
 const WX={};
 const wxIcon=c=>c===0?"☀️":c<=2?"🌤️":c===3?"☁️":c<=48?"🌫️":c<=67||c>=80&&c<=82?"🌧️":c<=77||c===85||c===86?"🌨️":c>=95?"⛈️":"🌦️";
