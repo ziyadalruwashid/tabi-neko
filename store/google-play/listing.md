@@ -133,7 +133,7 @@ The seven screenshots, in order:
 1. Explore: *Japan, picked by a cat who has been there*
 2. My trip: *Plan your trip day by day*
 3. Ask Apollo: *Ask Apollo, get a whole day plan*
-4. A place: *498 places, each with a tip*
+4. A place: *500+ places, each with a tip*
 5. Halal Lens: *Halal Lens reads labels for you*
 6. Stamp book: *Collect stamps all across Japan*
 7. Day trips: *Day trips by how far the train is*
