@@ -290,34 +290,36 @@ function todayCard(){
     <button type="button" class="hx-open" data-s="${t.a}" data-d="${t.b}">${esc(T("Open your day"))} ${isAR()?"←":"→"}</button></section>`}
 // "What's your mood?": Apollo's stickers in a row; tap one and its top three
 // places show right under it, each with ＋ for the trip, and "All N" for the list.
-const MOOD=[["views","Views","fuji.png","#E3EEF8","#1D52A0",()=>pickNear(inCity().filter(p=>p.cat==="views"))],
+const MOOD=[["rest","Restaurants","ramen.png","#FFE9D6","#D9531E",()=>pickNear(inCity().filter(p=>p.cat==="food"))],
+  ["views","Views","fuji.png","#E3EEF8","#1D52A0",()=>pickNear(inCity().filter(p=>p.cat==="views"))],
   ["coffee","Coffee & sweets","coffee.png","#F6EBDD","#9A6233",()=>pickNear(inCity().filter(p=>p.cat==="coffee"))],["shrine","Temples","torii.png","#FBE5DE","#E0402A",()=>pickNear(inCity().filter(p=>p.cat==="shrine"))],
   ["gems","Hidden","c-gem.png","#FFF3CC","#B8860B",()=>pickNear(inCity().filter(p=>p.gem))],["shop","Shopping","c-shop.png","#FCE4EC","#C2185B",()=>pickNear(inCity().filter(p=>p.cat==="shop"))],
   ["nature","Nature","c-nature.png","#E6F1DE","#4F7A1E",()=>pickNear(inCity().filter(p=>p.cat==="nature"))],["experience","Experiences","c-experience.png","#EEE6F6","#7B5EA7",()=>pickNear(inCity().filter(p=>p.cat==="experience"))]];
-let moodSel="views";
+let moodSel="rest";
 function moodRes(){
   const m=MOOD.find(x=>x[0]===moodSel)||MOOD[0],ps=m[5](),h=window.tnMe||(near&&nearKind==="me"?near:null);
   return `<div class="hx-mres" style="--bg:${m[3]};--c:${m[4]}">${ps.slice(0,3).map(p=>{const k=PKEY(p),on=inTrip(k);
     return `<div class="hx-mr"><button type="button" class="hx-mgo" data-id="${p.id}"><span class="hx-mi${p.photo?"":" art"}" style="--c2:var(--${p.cat})"><img src="${p.photo||CATS[p.cat].img}" alt="" loading="lazy"></span>
-      <span class="hx-mt"><b><bdi>${esc(p.n)}</bdi></b><small>${esc(AREA(p.area))}${h?" · "+esc(shortKm(KM(h,p))):""}${p.halal&&m[0]!=="halal"?" · "+esc(T("halal ✓")):""}</small></span></button>
+      <span class="hx-mt"><b><bdi>${esc(p.n)}</bdi></b><small>${esc(AREA(p.area))}${h?" · "+esc(shortKm(KM(h,p))):""}${m[0]==="rest"?"":p.halal?" · "+esc(T("halal ✓")):""}</small>${m[0]==="rest"?restBadge(p):""}</span></button>
       <button type="button" class="hx-madd${on?" on":""}" data-k="${esc(k)}" aria-pressed="${on}" aria-label="${esc(T("＋ Add to my trip"))}">${on?"✓":"＋"}</button></div>`}).join("")
     ||`<p class="hx-mnone">${esc(T("Nothing here yet in this city. Try another city."))}</p>`}
-    ${ps.length>3?`<button type="button" class="hx-mall">${esc(T("All {n} {x}",{n:ps.length,x:T(m[1])}))} ${isAR()?"←":"→"}</button>`:""}</div>`}
+    ${ps.length>3?`<button type="button" class="hx-mall">${esc(T("All {n} {x}",{n:axNum(ps.length),x:T(m[1])}))} ${isAR()?"←":"→"}</button>`:""}</div>`}
 function moodPicker(){
   const ms=MOOD.filter(x=>x[5]().length);if(!ms.some(x=>x[0]===moodSel))moodSel=(ms[0]||MOOD[0])[0];
   return `<h2 class="hx-h">${T("What's your mood?")}</h2><div class="hx-moods" role="tablist">${ms.map(x=>`<button type="button" role="tab" class="hx-mood${x[0]===moodSel?" on":""}" data-m="${x[0]}" aria-selected="${x[0]===moodSel}" style="--bg:${x[3]};--c:${x[4]}">
-    <span><img src="assets/${x[2]}" alt=""></span><b>${esc(T(x[1]))}</b></button>`).join("")}</div><div class="hx-mwrap">${moodRes()}</div>${restCard()}`}
+    <span><img src="assets/${x[2]}" alt=""></span><b>${esc(T(x[1]))}</b></button>`).join("")}</div><div class="hx-mwrap">${moodRes()}</div>`}
 // Restaurants: a card under the moods that opens the Restaurants page
 // (js/apprest.js), with how many there are in the city and how many halal.
-function restCard(){const ps=inCity().filter(p=>p.cat==="food");if(!ps.length)return "";const h=ps.filter(p=>p.halal).length;
-  return `<button type="button" class="hx-rest"><span class="hx-re" aria-hidden="true">🍜</span><span><b>${T("Restaurants")}</b><small>${esc(T("{n} in {c}",{n:axNum(ps.length),c:cityOf(exploreCity)}))}${h?" · "+esc(T("{n} halal",{n:axNum(h)})):""}</small></span><i>${isAR()?"←":"→"}</i></button>`}
+// Restaurants (the first mood): each one says plainly whether it's halal.
+function restBadge(p){const b=p.halal?(p.hl==="certified"?["c","✅ Halal certified"]:p.hl==="friendly"?["f","🟡 Muslim-friendly"]:["h","🟢 Halal"]):["n","Not halal"];
+  return `<span class="hx-mbd"><i class="rs-bd ${b[0]}">${T(b[1])}</i></span>`}
 function wireMood(el){
   const w=el.querySelector(".hx-mwrap");if(!w)return;
   const wireRes=()=>{
     w.querySelectorAll(".hx-mgo").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
     w.querySelectorAll(".hx-madd").forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(inTrip(k))removeKey(k);else{trip.ideas.push(k);toast(T("Added to your trip ✓"))}
       saveTrip();const on=inTrip(k);b.classList.toggle("on",on);b.textContent=on?"✓":"＋";b.setAttribute("aria-pressed",String(on))});
-    const all=w.querySelector(".hx-mall");if(all)all.onclick=()=>{const m=MOOD.find(x=>x[0]===moodSel);openList(T(m[1]),cityOf(exploreCity),m[5]())}};
+    const all=w.querySelector(".hx-mall");if(all)all.onclick=()=>{if(moodSel==="rest"&&window.tnOpenRest)return tnOpenRest();const m=MOOD.find(x=>x[0]===moodSel);openList(T(m[1]),cityOf(exploreCity),m[5]())}};
   el.querySelectorAll(".hx-mood").forEach(b=>b.onclick=()=>{moodSel=b.dataset.m;
     el.querySelectorAll(".hx-mood").forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-selected",String(on))});
     w.innerHTML=moodRes();wireRes()});
@@ -397,7 +399,6 @@ function renderExplore(){
   el.querySelectorAll(".hx-next[data-id]").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
   wireMood(el);
   wireAreas(el);
-  const rc=el.querySelector(".hx-rest");if(rc)rc.onclick=()=>{if(window.tnOpenRest)tnOpenRest()};
   weather();
   el.querySelector(".xs-city").onclick=openCityPicker;
   el.querySelector(".xs-search").onclick=()=>{city=exploreCity;store.set("tabineko-city",city);if(window.openSearch)openSearch("")};

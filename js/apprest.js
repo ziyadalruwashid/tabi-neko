@@ -1,5 +1,5 @@
 // Restaurants (the app only): every restaurant in the city you're
-// exploring, opened from the card under the moods on Explore and from
+// exploring, opened from the Restaurants mood on Explore ("All 63") and from
 // More → Discover.
 //
 // - "Halal only" is off by default. Off, every restaurant shows, each with

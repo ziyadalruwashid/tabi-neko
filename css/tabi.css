@@ -3087,17 +3087,13 @@ html.tn-app .ar-grid .xs-area small{font-size:11.5px;white-space:nowrap;overflow
 html.tn-app .ar-allb{display:block;width:100%;margin-top:12px;padding:13px;border:0;border-radius:16px;background:var(--sheet);box-shadow:0 1px 0 var(--rule);font:800 14.5px var(--body);color:var(--lantern);cursor:pointer}
 
 /* Explore, shorter: the season line on one line with smaller photos, a
-   slim "Start your trip", mood results as cards you swipe sideways,
+   slim "Start your trip", mood results in a short list,
    smaller hidden-gem cards and area tiles. */
 html.tn-app .hx-season>p{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 html.tn-app .hx-nowc .pimg{aspect-ratio:4/3}
 html.tn-app .hx-cta{padding-block:10px}
-html.tn-app .hx-mres{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;align-items:center;padding:8px;scroll-snap-type:x mandatory}
-html.tn-app .hx-mres::-webkit-scrollbar{display:none}
-html.tn-app .hx-mr{flex:none;width:250px;margin:0;scroll-snap-align:start}
 html.tn-app .hx-mi{width:46px;height:46px}
 html.tn-app .hx-mt b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;font-size:14px;line-height:1.25}
-html.tn-app .hx-mall{flex:none;width:auto;white-space:nowrap;padding:6px 12px}
 html.tn-app .nw-p{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 html.tn-app .nw-av{margin-top:10px}
 html.tn-app .nw-av i{width:38px;height:38px}
@@ -3105,15 +3101,9 @@ html.tn-app #explore .ax-row:not(.xs-areas) .pc{width:150px}
 html.tn-app .xs-areas .ar-big{height:170px}
 html.tn-app .ar-grid .xs-area{height:96px}
 
-/* Restaurants (js/apprest.js): the card under the moods on Explore, and
+/* Restaurants (js/apprest.js): the halal badge in the Restaurants mood, and
    the page with the "Halal only" switch, the kind chips and the list. */
-html.tn-app .hx-rest{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:14px 16px;border:0;border-radius:22px;cursor:pointer;text-align:start;color:var(--ink);
-  background:linear-gradient(135deg,#FFE9D6,#FFF5DB);box-shadow:0 4px 14px rgba(241,78,36,.08);font:inherit}
-html.tn-app .hx-rest:active{transform:scale(.99)}
-html.tn-app .hx-re{font-size:32px;line-height:1}
-html.tn-app .hx-rest b{display:block;font:400 21px/1.1 var(--display)}
-html.tn-app .hx-rest small{display:block;margin-top:3px;font:600 13px var(--body);color:var(--muted)}
-html.tn-app .hx-rest>i{margin-inline-start:auto;font-style:normal;font:800 18px var(--body);color:var(--lantern)}
+html.tn-app .hx-mbd{display:block;margin-top:3px}
 #restview{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
 #restview[hidden]{display:none}
 #restview .py-top{position:relative}
