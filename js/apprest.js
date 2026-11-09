@@ -1,6 +1,5 @@
 // Restaurants (the app only): every restaurant in the city you're
-// exploring, opened from the Restaurants mood on Explore ("All 63") and from
-// More → Discover.
+// exploring, opened from the Restaurants mood on Explore ("All 63").
 //
 // - "Halal only" is off by default. Off, every restaurant shows, each with
 //   a clear badge: ✅ Halal certified, 🟢 Halal, 🟡 Muslim-friendly, or

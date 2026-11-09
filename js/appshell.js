@@ -633,7 +633,7 @@ if(typeof renderHoods==="function"){const _rh=renderHoods;renderHoods=function()
   document.querySelectorAll("#hgrid .hcard").forEach((c,i)=>c.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openArea(list[i])},true))};renderHoods()}
 
 // ---- More ----
-const MORE=[["Discover",[["🍜","Restaurants","rest"],["📸","Halal Lens","lens"],["🕌","Prayer times & Qibla","prayer"],["🗣️","Show the staff","staff"],["🚆","Day trips","trips"],["📱","Apps to download","apps"]]],
+const MORE=[["Discover",[["📸","Halal Lens","lens"],["🕌","Prayer times & Qibla","prayer"],["🗣️","Show the staff","staff"],["🚆","Day trips","trips"],["📱","Apps to download","apps"]]],
   ["Settings",[["🔔","Reminders","remind"],["🌐","Language","lang"],["🔒","Privacy","privacy"],["🐾","Contributors","crew"]]]];
 window.tnRenderMore=()=>renderMore();
 // Back on More itself (no page open): no row is marked any more.
@@ -663,7 +663,6 @@ function renderMore(){
     if(k==="lens"&&window.tnOpenLens){tnOpenLens();return}
     if(k==="prayer"&&window.tnOpenPrayer){tnOpenPrayer();return}
     if(k==="staff"&&window.tnOpenStaff){tnOpenStaff();return}
-    if(k==="rest"&&window.tnOpenRest){tnOpenRest();return}
     if(k==="crew"&&window.tnOpenCrew){tnOpenCrew();return}
     if(k==="privacy"&&window.tnOpenPrivacy){tnOpenPrivacy();return}
     if(k==="apps"&&window.tnOpenApps){tnOpenApps();return}
