@@ -1,6 +1,6 @@
 {
   "note": "Apollo Scout. Written by the weekly scout task, read by the admin dashboard. pending = waiting for Ziyad's ✓/✗ (stored in Firestore scout/picks); done = ids already added or skipped, never suggested again.",
-  "run": "2026-11-03",
+  "run": "2026-11-06",
   "pending": [],
-  "done": ["shinjuku-tei-kiyomizu","halra-asakusa","gonpachi-asakusa","donut-boy-kyoto","sega-store-osaka","pringles-store-osaka","minatoya-ghost-candy","meguro-parasite-museum","intermediatheque","kyoto-kaleidoscope","pigment-tokyo","alice-on-wednesday","benitsuru-asakusa","hiiragi-ginza","latte-shimokitazawa","starbucks-kikunotani","tofrom-yaesu","jojo-world-osaka","super-potato-osaka","10yen-vending-osaka","nara-prison-museum","tokyo-sewerage-museum-rainbow","tetsujin-28-kobe","rikuro-grand-front","halal-ramen-japan-kyoto","dji-hasselblad-omotesando","famima-park-azabudai"]
+  "done": ["shinjuku-tei-kiyomizu","halra-asakusa","gonpachi-asakusa","donut-boy-kyoto","sega-store-osaka","pringles-store-osaka","minatoya-ghost-candy","meguro-parasite-museum","intermediatheque","kyoto-kaleidoscope","pigment-tokyo","alice-on-wednesday","benitsuru-asakusa","hiiragi-ginza","latte-shimokitazawa","starbucks-kikunotani","tofrom-yaesu","jojo-world-osaka","super-potato-osaka","10yen-vending-osaka","nara-prison-museum","tokyo-sewerage-museum-rainbow","tetsujin-28-kobe","rikuro-grand-front","halal-ramen-japan-kyoto","dji-hasselblad-omotesando","famima-park-azabudai","morioka-shoten-ginza","small-worlds-ariake","mon-takanawa","starbucks-yanaka-gotenzaka","1819-osaka-halal","kuzuharaoka-shrine"]
 }

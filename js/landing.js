@@ -23,7 +23,7 @@ const n=v=>isAR()?iso(String(v)):String(v);
 const android=/Android/i.test(navigator.userAgent);
 
 const FEATS=[
-  ["trip","🗓️","A trip that plans itself","Pick your cities and dates. Apollo fills each day with places worth the trip, in an order that makes sense, and counts down to the flight."],
+  ["trip","🗓️","Your trip, day by day","Pick your cities and dates, then drop places from Apollo's notebook into each day, in an order that makes sense. It counts down to the flight with you."],
   ["trips","🚆","How far?","Every day trip on one map, by how long the train takes: Fuji, Nara, Kamakura and more, with the ticket price and when to leave."],
   ["stamps","🐾","Apollo's stamp book","Stand at Senso-ji, Fushimi Inari or Osaka Castle and collect its stamp. Your book fills up as you go."],
   ["home","☀️","What's good right now","Opens on your city: what's in season, what's near you, and the moods for today, from temples to late-night eats."],
@@ -66,7 +66,7 @@ function draw(){
   <section class="lp-hero"><div class="lp-glow" aria-hidden="true"></div>
     <div class="lp-copy">
       <h1>${words(T("Japan, planned by a cat"))} <em>${words(T("who's been."),"hl")}</em></h1>
-      <p class="lp-lead lp-in" style="--d:6">${T("Tabi Neko is Apollo's travel notebook in your pocket: {n} places he checked himself, a trip planner that fills your days, and stamps to collect as you go.",{n:n(P.length)})}</p>
+      <p class="lp-lead lp-in" style="--d:6">${T("Tabi Neko is Apollo's travel notebook in your pocket: {n} places he checked himself, a trip planner for every day, and stamps to collect as you go.",{n:n(P.length)})}</p>
       <div class="lp-btns lp-in" style="--d:7">${storeBtn()}${iosBtn}${NOTEBOOK?`<a class="lp-cta ghost lp-nb" href="#map">${T("Explore the notebook")} <i>${isAR()?"←":"→"}</i></a>`:""}</div>
     </div>
     <div class="lp-stage" aria-hidden="true"><div class="lp-tilt">

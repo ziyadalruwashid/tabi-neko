@@ -199,17 +199,39 @@ function season(){const mo=jst().mo;
   const hit=p=>S[3].test(`${p.n} ${p.t||""} ${p.tip||""}`),score=p=>(hit(p)?4:0)+(p.tier==="must"?2:0)+(p.gem?1:0);
   const ps=inCity().filter(p=>p.photo&&(hit(p)||S[2].includes(p.cat))).sort((x,y)=>score(y)-score(x));
   return {t:S[0],s:S[1],ps,hit,icon:[...S[0]].pop()}}
-// The "New on Tabi Neko" row on Explore. Hidden for now; set to true to bring it back.
-const SHOW_NEW=false;
-// Apollo's pick of the day: the same all day, a new one tomorrow.
-function dailyPick(){const a=inCity().filter(p=>p.photo&&(p.gem||p.tier==="must"));if(!a.length)return null;return a[jst().day%a.length]}
 const MONTHS_AR=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
 const MONTHS_EN=["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 // The city's neighbourhoods, from the Areas page, as wide photo cards.
-function areasRow(){const hs=HOODS.filter(h=>h.city===exploreCity&&h.photo);if(!hs.length)return "";
-  return `<section class="ax-row"><header><h2>${T("Areas to explore 🏘️")}</h2><button type="button" class="ax-all xs-areas-all">${T("See all")}</button></header><div class="ax-hs">${hs.map(h=>`<button type="button" class="xs-area" data-h="${esc(h.n)}">
-    <img src="${h.photo}" alt="" loading="lazy" style="object-position:${h.pos||"50% 50%"}"><span><b>${esc(D(h,"n"))}</b><small>${esc(D(h,"vibe"))}</small></span></button>`).join("")}</div></section>`}
+// Areas to explore: the area that suits this hour best, big, then four more,
+// two per row, and a button for all of them.
+// How well an area's "best time" fits this hour in Japan.
+const AREA_WORDS={morning:/morning|opening|slot|early/,afternoon:/afternoon|weekday|weekend|rainy|lazy|day/,sunset:/sunset|blue hour|late afternoon|evening/,night:/dark|night|evening|blue hour/};
+function areaFit(h,k){const st=h.stats||{},best=String(h.best||"").toLowerCase();
+  const base={morning:(st.calm||0)+(st.culture||0),afternoon:(st.shop||0)+(st.food||0),sunset:(st.night||0)+(st.calm||0),night:2*(st.night||0)}[k]||0;
+  return (AREA_WORDS[k].test(best)?10:0)+base}
+function areasRow(){
+  const ps=P.filter(p=>p.city===exploreCity),k=period(jst().h);
+  const hs=HOODS.filter(h=>h.city===exploreCity&&h.photo).map(h=>{const mine=ps.filter(p=>p.area===h.area);
+    return {h,n:mine.length,hl:mine.filter(p=>p.halal).length}});
+  if(!hs.length)return "";
+  const score=x=>areaFit(x.h,k)*100+x.n;
+  hs.sort((a,b)=>score(b)-score(a));
+  const [top,...rest]=hs,ic={morning:"☀️",afternoon:"🌤️",sunset:"🌇",night:"🌙"}[k];
+  const {h}=jst(),hr=isAR()?`${h%12||12} ${h<4?"الليل":h<11?"الصبح":h<14?"الظهر":h<17?"العصر":h<19?"المغرب":"الليل"}`:`${h%12||12} ${h<12?"am":"pm"}`;
+  const cap=t=>t?t[0].toUpperCase()+t.slice(1):"";
+  return `<section class="ax-row xs-areas"><header><h2>${T("Areas to explore 🏘️")}</h2></header>
+    <p class="ax-sub">${esc(T("Picked for {t} in {c}",{t:hr,c:cityOf(exploreCity)}))}</p>
+    <button type="button" class="xs-area ar-big" data-h="${esc(top.h.n)}"><img src="${top.h.photo}" alt="" loading="lazy" style="object-position:${top.h.pos||"50% 50%"}">
+      <i class="ar-tag">${ic} ${T("Best right now")}</i>
+      <span><b>${esc(D(top.h,"n"))}</b><small>${esc(cap(D(top.h,"tip")||D(top.h,"vibe")))}</small></span></button>
+    ${rest.length?`<div class="ar-grid">${rest.slice(0,4).map(x=>`<button type="button" class="xs-area" data-h="${esc(x.h.n)}"><img src="${x.h.photo}" alt="" loading="lazy" style="object-position:${x.h.pos||"50% 50%"}">
+      <span><b>${esc(D(x.h,"n"))}</b><small>${esc(cap(D(x.h,"vibe")))}</small></span></button>`).join("")}</div>`:""}
+    ${hs.length>1?`<button type="button" class="ar-allb xs-areas-all">${T("See all areas")} ${isAR()?"←":"→"}</button>`:""}</section>`}
+function wireAreas(el){
+  el.querySelectorAll(".xs-area").forEach(b=>b.onclick=()=>openArea(HOODS.find(x=>x.city===exploreCity&&x.n===b.dataset.h)));
+  el.querySelectorAll(".xs-areas-all").forEach(b=>b.onclick=()=>openAreas(exploreCity));
+}
 // The weather now in the city, from Open-Meteo (free, no key). No answer, no chip.
 const WX={};
 const wxIcon=c=>c===0?"☀️":c<=2?"🌤️":c===3?"☁️":c<=48?"🌫️":c<=67||c>=80&&c<=82?"🌧️":c<=77||c===85||c===86?"🌨️":c>=95?"⛈️":"🌦️";
@@ -268,59 +290,106 @@ function todayCard(){
     <button type="button" class="hx-open" data-s="${t.a}" data-d="${t.b}">${esc(T("Open your day"))} ${isAR()?"←":"→"}</button></section>`}
 // "What's your mood?": Apollo's stickers in a row; tap one and its top three
 // places show right under it, each with ＋ for the trip, and "All N" for the list.
-const MOOD=[["halal","Halal","ramen.png","#E8F3E3","#2E8B3E",()=>halalHere()],["views","Views","fuji.png","#E3EEF8","#1D52A0",()=>pickNear(inCity().filter(p=>p.cat==="views"))],
+const MOOD=[["rest","Restaurants","ramen.png","#FFE9D6","#D9531E",()=>pickNear(inCity().filter(p=>p.cat==="food"))],
+  ["views","Views","fuji.png","#E3EEF8","#1D52A0",()=>pickNear(inCity().filter(p=>p.cat==="views"))],
   ["coffee","Coffee & sweets","coffee.png","#F6EBDD","#9A6233",()=>pickNear(inCity().filter(p=>p.cat==="coffee"))],["shrine","Temples","torii.png","#FBE5DE","#E0402A",()=>pickNear(inCity().filter(p=>p.cat==="shrine"))],
   ["gems","Hidden","c-gem.png","#FFF3CC","#B8860B",()=>pickNear(inCity().filter(p=>p.gem))],["shop","Shopping","c-shop.png","#FCE4EC","#C2185B",()=>pickNear(inCity().filter(p=>p.cat==="shop"))],
   ["nature","Nature","c-nature.png","#E6F1DE","#4F7A1E",()=>pickNear(inCity().filter(p=>p.cat==="nature"))],["experience","Experiences","c-experience.png","#EEE6F6","#7B5EA7",()=>pickNear(inCity().filter(p=>p.cat==="experience"))]];
-let moodSel="halal";
+let moodSel="rest";
 function moodRes(){
   const m=MOOD.find(x=>x[0]===moodSel)||MOOD[0],ps=m[5](),h=window.tnMe||(near&&nearKind==="me"?near:null);
   return `<div class="hx-mres" style="--bg:${m[3]};--c:${m[4]}">${ps.slice(0,3).map(p=>{const k=PKEY(p),on=inTrip(k);
     return `<div class="hx-mr"><button type="button" class="hx-mgo" data-id="${p.id}"><span class="hx-mi${p.photo?"":" art"}" style="--c2:var(--${p.cat})"><img src="${p.photo||CATS[p.cat].img}" alt="" loading="lazy"></span>
-      <span class="hx-mt"><b><bdi>${esc(p.n)}</bdi></b><small>${esc(AREA(p.area))}${h?" · "+esc(shortKm(KM(h,p))):""}${p.halal&&m[0]!=="halal"?" · "+esc(T("halal ✓")):""}</small></span></button>
+      <span class="hx-mt"><b><bdi>${esc(p.n)}</bdi></b><small>${esc(AREA(p.area))}${h?" · "+esc(shortKm(KM(h,p))):""}${m[0]==="rest"?"":p.halal?" · "+esc(T("halal ✓")):""}</small>${m[0]==="rest"?restBadge(p):""}</span></button>
       <button type="button" class="hx-madd${on?" on":""}" data-k="${esc(k)}" aria-pressed="${on}" aria-label="${esc(T("＋ Add to my trip"))}">${on?"✓":"＋"}</button></div>`}).join("")
     ||`<p class="hx-mnone">${esc(T("Nothing here yet in this city. Try another city."))}</p>`}
-    ${ps.length>3?`<button type="button" class="hx-mall">${esc(T("All {n} {x}",{n:ps.length,x:T(m[1])}))} ${isAR()?"←":"→"}</button>`:""}</div>`}
+    ${ps.length>3?`<button type="button" class="hx-mall">${esc(T("All {n} {x}",{n:axNum(ps.length),x:T(m[1])}))} ${isAR()?"←":"→"}</button>`:""}</div>`}
 function moodPicker(){
   const ms=MOOD.filter(x=>x[5]().length);if(!ms.some(x=>x[0]===moodSel))moodSel=(ms[0]||MOOD[0])[0];
   return `<h2 class="hx-h">${T("What's your mood?")}</h2><div class="hx-moods" role="tablist">${ms.map(x=>`<button type="button" role="tab" class="hx-mood${x[0]===moodSel?" on":""}" data-m="${x[0]}" aria-selected="${x[0]===moodSel}" style="--bg:${x[3]};--c:${x[4]}">
     <span><img src="assets/${x[2]}" alt=""></span><b>${esc(T(x[1]))}</b></button>`).join("")}</div><div class="hx-mwrap">${moodRes()}</div>`}
+// Restaurants: a card under the moods that opens the Restaurants page
+// (js/apprest.js), with how many there are in the city and how many halal.
+// Restaurants (the first mood): each one says plainly whether it's halal.
+function restBadge(p){const b=p.halal?(p.hl==="certified"?["c","✅ Halal certified"]:p.hl==="friendly"?["f","🟡 Muslim-friendly"]:["h","🟢 Halal"]):["n","Not halal"];
+  return `<span class="hx-mbd"><i class="rs-bd ${b[0]}">${T(b[1])}</i></span>`}
 function wireMood(el){
   const w=el.querySelector(".hx-mwrap");if(!w)return;
   const wireRes=()=>{
     w.querySelectorAll(".hx-mgo").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
     w.querySelectorAll(".hx-madd").forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(inTrip(k))removeKey(k);else{trip.ideas.push(k);toast(T("Added to your trip ✓"))}
       saveTrip();const on=inTrip(k);b.classList.toggle("on",on);b.textContent=on?"✓":"＋";b.setAttribute("aria-pressed",String(on))});
-    const all=w.querySelector(".hx-mall");if(all)all.onclick=()=>{const m=MOOD.find(x=>x[0]===moodSel);openList(T(m[1]),cityOf(exploreCity),m[5]())}};
+    const all=w.querySelector(".hx-mall");if(all)all.onclick=()=>{if(moodSel==="rest"&&window.tnOpenRest)return tnOpenRest();const m=MOOD.find(x=>x[0]===moodSel);openList(T(m[1]),cityOf(exploreCity),m[5]())}};
   el.querySelectorAll(".hx-mood").forEach(b=>b.onclick=()=>{moodSel=b.dataset.m;
     el.querySelectorAll(".hx-mood").forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-selected",String(on))});
     w.innerHTML=moodRes();wireRes()});
   wireRes();
 }
-// The newest places in the city: data/places.js grows by appending a line.
-const fresh=()=>P.filter(p=>p.city===exploreCity&&p.photo).slice(-12).reverse();
+// Picking the city to explore: the pill in the header opens a sheet with
+// all six cities, each with a photo, what it's like, and how many places
+// and halal spots it has. The same list for everyone.
+const CITY_PICK=[["tokyo","Senso-ji","Big city, anime and old Asakusa"],["kyoto","Fushimi Inari Taisha","Temples, torii and quiet lanes"],
+  ["osaka","Dotonbori","Street food and neon"],["nara","Nara Park","Deer and big temples",1],["kobe","Kobe Harborland","Harbour and Kobe beef"],
+  ["kamakura","Shichirigahama","Beach, hills and Enoshima",1]];
+function openCityPicker(){
+  let el=$("citypick");
+  if(!el){el=document.createElement("div");el.id="citypick";el.className="tpick";el.hidden=true;document.body.appendChild(el);
+    el.addEventListener("click",e=>{if(e.target===el)closeCityPicker()});
+    el.addEventListener("keydown",e=>{if(e.key==="Escape")closeCityPicker()})}
+  const rows=CITY_PICK.filter(([c])=>CITIES[c]&&TRIP_CITIES.includes(c)).map(([c,lm,line,day])=>{
+    const ps=P.filter(p=>p.city===c),hl=ps.filter(p=>p.halal).length,
+      ph=(P.find(p=>p.city===c&&p.n===lm&&p.photo)||ps.find(p=>p.photo)||{}).photo||"",on=c===exploreCity;
+    const n=T(ps.length===1?"1 place":"{n} places",{n:axNum(ps.length)})+(hl?" · "+T("{n} halal",{n:axNum(hl)}):"");
+    return `<button type="button" class="cp-row${on?" on":""}" data-c="${c}" aria-pressed="${on}">${ph?`<img src="${esc(ph)}" alt="" loading="lazy">`:"<i></i>"}
+      <span class="cp-t"><b>${esc(cityOf(c))}</b><small>${esc(T(line))}</small><small class="cp-n">${esc(n)}</small></span>
+      <span class="cp-r">${day?`<span class="cp-day">${T("Day trip")}</span>`:""}${on?`<span class="cp-ck" aria-hidden="true">✓</span>`:""}</span></button>`}).join("");
+  el.innerHTML=`<div class="tpick-sheet cp-sheet" role="dialog" aria-modal="true" aria-labelledby="cp-h">
+    <header><h2 id="cp-h">${T("Where to explore?")}</h2><button type="button" class="tpick-x cp-x" aria-label="${esc(T("Close"))}">✕</button></header>
+    <div class="cp-list">${rows}</div></div>`;
+  el.querySelector(".cp-x").onclick=closeCityPicker;
+  el.querySelectorAll(".cp-row").forEach(b=>b.onclick=()=>{const c=b.dataset.c;closeCityPicker();
+    if(c!==exploreCity){exploreCity=c;city=c;store.set("tabineko-city",c);renderExplore();dispatchEvent(new Event("tncity"))}});
+  el.hidden=false;document.documentElement.classList.add("tpick-open");
+  const on=el.querySelector(".cp-row.on");if(on)on.focus({preventScroll:true});
+}
+function closeCityPicker(){const el=$("citypick");if(el)el.hidden=true;document.documentElement.classList.remove("tpick-open");
+  const b=$("explore")&&$("explore").querySelector(".xs-city");if(b)b.focus({preventScroll:true})}
+
+// New in the city: places Apollo added in the last 30 days (their "added"
+// date; the scout sets it), newest first.
+const NEW_DAYS=30;
+const fresh=()=>{const cut=new Date(Date.now()-NEW_DAYS*864e5).toISOString().slice(0,10);
+  return P.map((p,i)=>[p,i]).filter(([p])=>p.city===exploreCity&&p.added&&p.added>=cut)
+    .sort((a,b)=>a[0].added===b[0].added?b[1]-a[1]:a[0].added<b[0].added?1:-1).map(x=>x[0])};
+// "Apollo found 6 new spots": one banner with their little pictures;
+// tap it for the list. Nothing new in the city, no banner.
+function newCard(){
+  const ps=fresh();if(!ps.length)return "";
+  const n=ps.length;
+  const caps=ps.slice(0,3).map(p=>D(p,"cap")).filter(Boolean);if(caps[0])caps[0]=caps[0][0].toUpperCase()+caps[0].slice(1);
+  return `<button type="button" class="nw-card"><small class="nw-k">🆕 ${esc(T("New in {c}",{c:cityOf(exploreCity)}))}</small>
+    <b class="nw-t">${esc(n===1?T("Apollo found a new spot"):n===2?T("Apollo found 2 new spots"):T(n<=10?"Apollo found {n} new spots":"Apollo found {n} new places",{n:axNum(n)}))}</b>
+    ${caps.length?`<span class="nw-p">${esc(caps.join(isAR()?"، ":", "))}${n>caps.length?"…":""}</span>`:""}
+    <span class="nw-av">${ps.slice(0,4).map(p=>`<i class="${p.photo?"":"art"}"><img src="${esc(p.photo||CATS[p.cat].img)}" alt="" loading="lazy"></i>`).join("")}<em>${T("See them")} ${isAR()?"←":"→"}</em></span></button>`}
 let autoCity=false,lastToday="";
 function renderExplore(){
   // On the trip, Explore starts in the city you're in today (once; your own pick wins after that).
   if(!autoCity&&window.tnToday){autoCity=true;const t=tnToday();if(t&&t.s.city!==exploreCity&&TRIP_CITIES.includes(t.s.city)){exploreCity=t.s.city;city=exploreCity}}
   const el=$("explore");if(!el)return;
   const who=typeof myName==="function"?myName():"";
-  const cities=["tokyo","kyoto","osaka","nara","kobe","kamakura"].filter(c=>TRIP_CITIES.includes(c)),k=period(jst().h),P0=PERIODS[k];
+  const k=period(jst().h),P0=PERIODS[k];
   // After 11pm the sky stays night, but the words stop sending you out.
   const late=jst().h>=23||jst().h<5,G=late?{greet:"Late night",hint:"Japan is asleep, a good time to plan"}:P0;
-  const pick=dailyPick();
   const row=(t,s,ps,key)=>ps.length?`<section class="ax-row"><header><h2>${T(t)}</h2>${key?`<button type="button" class="ax-all" data-list="${key}">${T("See all")}</button>`:""}</header>
     ${s?`<p class="ax-sub">${esc(s)}</p>`:""}<div class="ax-hs">${ps.slice(0,12).map(pcard).join("")}</div></section>`:"";
   el.innerHTML=`<div class="xs xs-${k}">${scene(k,exploreCity)}
-      <div class="xs-hi"><div><b>${esc(who?T(G.greet+", {n}!",{n:who}):T(G.greet+"!"))} ${{morning:"☀️",afternoon:"🌤️",sunset:"🌇",night:"🌙"}[k]}</b><small><span class="xs-time">${esc(jstText())}</span><span class="xs-wx"></span></small><p class="xs-hint">${esc(T(G.hint))}</p></div>
+      <div class="xs-hi"><div><b>${esc(who?T(G.greet+", {n}!",{n:who}):T(G.greet+"!"))} ${{morning:"☀️",afternoon:"🌤️",sunset:"🌇",night:"🌙"}[k]}</b><small><span class="xs-time">${esc(jstText())}</span><span class="xs-wx"></span></small><p class="xs-hint">${esc(T(G.hint))}</p>
+        <button type="button" class="xs-city" aria-haspopup="dialog" aria-label="${esc(T("Change city"))}"><span class="xs-pin" aria-hidden="true">📍</span><bdi>${esc(cityOf(exploreCity))}</bdi><span class="xs-chev" aria-hidden="true">⌄</span></button></div>
         <button type="button" class="xs-cat" aria-label="${esc(T("More"))}"><img src="${GI()}" alt=""></button></div></div>
     <button type="button" class="ax-search xs-search">${SVG(I.search)}<span>${T("Search places, areas, food…")}</span></button>
-    <div class="ax-cities" role="tablist">${cities.map(c=>`<button type="button" role="tab" class="ax-city${c===exploreCity?" on":""}" data-c="${c}" aria-selected="${c===exploreCity}">${esc(cityOf(c))}</button>`).join("")}</div>
-    ${(()=>{const td=todayCard();lastToday=td;if(td)return td;const tt=tripTop();return tt?tt+nowCard(k):nowCard(k)+(trip.stays.length||trip.ideas.length?"":`<button type="button" class="hx-cta"><span>✈️</span><span><b>${T("Start your trip with Apollo")}</b><small>${T("Pick your cities and he sorts your days.")}</small></span><i>${isAR()?"←":"→"}</i></button>`)})()}
+    ${(()=>{const td=todayCard();lastToday=td;if(td)return td;const tt=tripTop();return tt?tt+nowCard(k):nowCard(k)+(trip.stays.length||trip.ideas.length?"":`<button type="button" class="hx-cta"><span>✈️</span><span><b>${T("Start your trip")}</b></span><i>${isAR()?"←":"→"}</i></button>`)})()}
     ${moodPicker()}
-    ${pick?`<button type="button" class="xs-pick" data-id="${pick.id}"><span class="xs-tape"></span><span class="xs-pola"><img src="${pick.photo}" alt=""><small>${esc(D(pick,"cap"))}</small></span>
-      <span class="xs-pt"><small>${T("Apollo's pick for today 🐾")}</small><b><bdi>${esc(pick.n)}</bdi></b><i>${esc((D(pick,"tip")||"").split(/(?<=[.!؟?])\s/)[0])}</i><em>${T("See the place")} ${isAR()?"←":"→"}</em></span></button>`:""}
-    ${SHOW_NEW?row("New on Tabi Neko 🆕",T("Apollo just added these"),fresh(),"new"):""}
+    ${newCard()}
     ${row("Hidden gems ⭐",T("Even locals don't know these"),photoFirst(inCity().filter(p=>p.gem)),"gems")}
     ${areasRow()}`;
   wireCards(el);
@@ -329,20 +398,20 @@ function renderExplore(){
   el.querySelectorAll(".hx-open").forEach(b=>b.onclick=()=>{go("trip");if(window.tnOpenDay)tnOpenDay(+b.dataset.s,+b.dataset.d)});
   el.querySelectorAll(".hx-next[data-id]").forEach(b=>b.onclick=()=>openPlace(b.dataset.id));
   wireMood(el);
-  el.querySelectorAll(".xs-area").forEach(b=>b.onclick=()=>openArea(HOODS.find(x=>x.city===exploreCity&&x.n===b.dataset.h)));
+  wireAreas(el);
   weather();
-  el.querySelectorAll(".ax-city").forEach(b=>b.onclick=()=>{exploreCity=b.dataset.c;city=exploreCity;store.set("tabineko-city",city);renderExplore()});
+  el.querySelector(".xs-city").onclick=openCityPicker;
   el.querySelector(".xs-search").onclick=()=>{city=exploreCity;store.set("tabineko-city",city);if(window.openSearch)openSearch("")};
-  if(el.querySelector(".xs-pick"))el.querySelector(".xs-pick").onclick=()=>openPlace(pick.id);
+  const nw=el.querySelector(".nw-card");if(nw)nw.onclick=()=>openList(T("New on Tabi Neko 🆕"),cityOf(exploreCity),fresh());
   el.querySelectorAll(".hx-sall").forEach(b=>b.onclick=()=>{const se=season();openList(T(se.t),cityOf(exploreCity),se.ps)});
-  el.querySelectorAll(".xs-areas-all").forEach(b=>b.onclick=()=>openAreas(exploreCity));
   el.querySelectorAll(".ax-all[data-list]").forEach(b=>b.onclick=()=>{const k2=b.dataset.list,L={halal:["Halal food 🍜",halalHere()],gems:["Hidden gems ⭐",photoFirst(inCity().filter(p=>p.gem))],new:["New on Tabi Neko 🆕",fresh()]}[k2];
     openList(T(L[0]),cityOf(exploreCity),L[1])});
 }
 window.tnRenderExplore=renderExplore;
 // For Ask Apollo's start screen: the city you're exploring and its weather.
 window.tnChatCtx=()=>({city:exploreCity,wx:WX[exploreCity]||null,icon:wxIcon});
-window.tnExploreCity=c=>{if(!CITIES[c])return;exploreCity=c;city=c;store.set("tabineko-city",c);renderExplore()};
+window.tnExploreCity=c=>{if(!CITIES[c])return;exploreCity=c;city=c;store.set("tabineko-city",c);renderExplore();dispatchEvent(new Event("tncity"))};
+window.tnOpenCityPicker=()=>openCityPicker();
 // The clock in the header ticks with Japan's time, and the sky changes with it.
 let lastPeriod=period(jst().h);
 setInterval(()=>{if($("explore").hidden)return;const k=period(jst().h);

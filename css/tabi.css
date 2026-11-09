@@ -1001,6 +1001,7 @@ html.picking .mapsheet{outline:3px dashed var(--lantern);outline-offset:4px}
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
 .chip{appearance:none;cursor:pointer;font:500 13.5px var(--body);color:var(--ink);background:var(--sheet);border:1.5px dashed var(--muted);border-radius:999px;padding:5px 12px 6px;text-align:start}
 .chip:hover{border-style:solid;border-color:var(--ink);background:var(--paper)}
+.apoleft{margin:0;padding:6px 14px 0;font-size:12.5px;color:var(--muted);text-align:center}
 .apoform{display:flex;align-items:flex-end;gap:8px;padding:10px 10px 12px;border-top:1.5px dashed var(--rule)}
 .apoform textarea{flex:1;resize:none;overflow-y:hidden;font:inherit;font-size:16px;line-height:1.4;color:var(--ink);background:var(--paper);border:1.5px solid var(--rule);border-radius:12px;padding:9px 12px;max-height:132px}
 .apoform textarea:focus{outline:none;border-color:var(--ink)}
@@ -1102,12 +1103,8 @@ html.tn-app #explore,html.tn-app #menu{padding:4px 18px 24px}
 html.tn-app .ax-h{display:flex;justify-content:space-between;align-items:center;margin:6px 0 14px}
 html.tn-app .ax-h small{color:var(--muted);font:600 15px var(--body)}
 html.tn-app .ax-h h1{font:400 30px/1.1 var(--display);margin:2px 0 0}
-html.tn-app .ax-cities,html.tn-app .ax-hs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-inline:-18px;padding-inline:18px;scroll-snap-type:x mandatory}
-html.tn-app .ax-cities::-webkit-scrollbar,html.tn-app .ax-hs::-webkit-scrollbar{display:none}
-html.tn-app .ax-city{flex:none;padding:7px 15px;border-radius:999px;background:var(--sheet);border:1.5px solid var(--rule);font:800 15px var(--body);color:var(--ink)}
-html.tn-app .ax-city small{color:var(--muted);font-weight:600}
-html.tn-app .ax-city.on{background:var(--ink);border-color:var(--ink);color:#fff}
-html.tn-app .ax-city.on small{color:var(--yuzu)}
+html.tn-app .ax-hs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-inline:-18px;padding-inline:18px;scroll-snap-type:x mandatory}
+html.tn-app .ax-hs::-webkit-scrollbar{display:none}
 html.tn-app .ax-search{display:flex;width:100%;gap:10px;align-items:center;margin:12px 0 0;background:var(--sheet);border:0;border-radius:16px;padding:12px 14px;
   color:var(--muted);font:500 15px var(--body);box-shadow:0 2px 0 var(--rule);text-align:start}
 html.tn-app .ax-row{margin-top:20px}
@@ -1192,8 +1189,6 @@ html.tn-app #explore,html.tn-app #menu{padding:4px 20px 28px}
 html.tn-app .ax-h small{font-size:17px}
 html.tn-app .ax-h h1{font-size:31px}
 html.tn-app .ax-search{margin:0;padding:15px 16px;border-radius:18px;font-size:17px}
-html.tn-app .ax-cities{margin-top:14px;margin-inline:-20px;padding-inline:20px}
-html.tn-app .ax-city{padding:9px 18px;font-size:17px}
 html.tn-app .ax-hs{margin-inline:-20px;padding-inline:20px}
 html.tn-app .ax-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 6px;margin-top:22px}
 html.tn-app .ax-row{margin-top:24px}
@@ -1300,16 +1295,6 @@ html.tn-app .xs-st b{display:block;font:700 13.5px var(--body);margin-top:5px;wh
 html.tn-app .xs-ring{display:block;width:68px;height:68px;border-radius:50%;padding:3px;box-sizing:border-box;background:conic-gradient(var(--c),#FFD13B,var(--c))}
 html.tn-app .xs-ring span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:var(--sheet);border:3px solid var(--paper);box-sizing:border-box}
 html.tn-app .xs-ring img{width:38px;height:38px;object-fit:contain}
-html.tn-app .xs-pick{position:relative;display:flex;width:100%;gap:14px;align-items:center;margin-top:22px;background:#FFF6D8;border:0;border-radius:24px;padding:16px;text-align:start;color:var(--ink)}
-html.tn-app .xs-tape{position:absolute;top:-10px;left:50%;width:90px;height:22px;margin-left:-45px;background:rgba(255,143,163,.6);transform:rotate(-3deg)}
-html.tn-app .xs-pola{position:relative;flex:none;background:#fff;padding:6px 6px 28px;width:118px;transform:rotate(-5deg);box-shadow:0 6px 14px rgba(63,33,22,.2)}
-html.tn-app .xs-pola img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
-html.tn-app .xs-pola small{position:absolute;bottom:5px;left:4px;right:4px;text-align:center;font:400 13px/1.2 var(--hand);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-html.tn-app .xs-pt{min-width:0}
-html.tn-app .xs-pt small{display:block;color:var(--lantern);font:800 14px var(--body)}
-html.tn-app .xs-pt b{display:block;font:900 19px/1.2 var(--body);margin:3px 0}
-html.tn-app .xs-pt i{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font:400 15px/1.5 var(--hand);font-style:normal;color:#5a3a2a}
-html.tn-app .xs-pt em{display:block;margin-top:6px;font:800 15px var(--body);font-style:normal;color:var(--lantern)}
 
 html.tn-app .xs-h{font:400 23px var(--display);margin:26px 0 10px}
 html.tn-app .xs-moods{display:flex;flex-wrap:wrap;gap:8px}
@@ -1323,7 +1308,7 @@ html.tn-app .xs-sp{display:flex;gap:10px}
 html.tn-app .xs-sp span{flex:1;min-width:0;background:rgba(255,255,255,.15);border-radius:16px;padding:6px}
 html.tn-app .xs-sp img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px}
 html.tn-app .xs-sp b{display:block;font:800 12px var(--body);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-[dir=rtl].tn-app .xs-sp b,[dir=rtl].tn-app .xs-pt b{direction:ltr;text-align:right}
+[dir=rtl].tn-app .xs-sp b{direction:ltr;text-align:right}
 html.tn-app .ax-grid{display:none}
 /* a list page (story, mood, season) */
 #lview{display:none}
@@ -1338,7 +1323,7 @@ html.tn-app .lv-none{grid-column:1/-1;text-align:center;color:var(--muted);paddi
 /* ---- app home v2.1: edge to edge,trip card,tip,areas,weather ---- */
 html.tn-app #explore{padding-inline:4px}
 html.tn-app .xs{width:100vw;margin-inline:calc(50% - 50vw)}
-html.tn-app #explore .ax-hs,html.tn-app #explore .ax-cities,html.tn-app #explore .xs-stories{margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%)}
+html.tn-app #explore .ax-hs,html.tn-app #explore .xs-stories{margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%)}
 html.tn-app .xs-hi>div{max-width:calc(100% - 86px)}
 html.tn-app .xs-hi small{max-width:100%;overflow:hidden;text-overflow:ellipsis}
 html.tn-app .xs-hint{margin:6px 2px 0;font:700 14px/1.3 var(--body);color:#2A1A12;opacity:.85}
@@ -1634,7 +1619,7 @@ html.tn-app .lr-t b{direction:ltr;unicode-bidi:plaintext}
 
 /* Explore runs edge to edge like More: the same 14px sides for its cards. */
 html.tn-app #explore{width:100vw;margin-inline:calc(50% - 50vw);padding-inline:14px;box-sizing:border-box}
-html.tn-app #explore .ax-hs,html.tn-app #explore .ax-cities,html.tn-app #explore .xs-stories{scroll-padding-inline:14px}
+html.tn-app #explore .ax-hs,html.tn-app #explore .xs-stories{scroll-padding-inline:14px}
 
 /* ---- Explore v3: right now,your trip,today,the mood grid (js/appshell.js) ---- */
 html.tn-app .hx-now,html.tn-app .hx-today{background:var(--sheet);border-radius:22px;padding:14px;margin-top:14px;box-shadow:0 4px 16px rgba(63,33,22,.06)}
@@ -2976,7 +2961,7 @@ html.tn-wide.tn-android .tb.on{background:none;color:var(--ink)}
 html.tn-wide.tn-android .tb svg{box-sizing:content-box;padding:4px 18px;border-radius:16px}
 html.tn-wide.tn-android .tb.on svg{background:#FCE3DA;color:var(--lantern)}
 /* every full-screen page starts after the sidebar */
-html.tn-wide :is(#pview,#lview,#axview,#prayview,#qiblaview,#staffview,#staffshow,#prview,#rmview,#sbook,#trview,#aphome,#crewcs,#pfview,#lens,#sview,#amap):not([hidden]){left:auto;right:auto;inset-inline-end:0;inset-inline-start:var(--rail)}
+html.tn-wide :is(#pview,#lview,#axview,#prayview,#qiblaview,#staffview,#restview,#staffshow,#prview,#rmview,#sbook,#trview,#aphome,#crewcs,#pfview,#lens,#sview,#amap):not([hidden]){left:auto;right:auto;inset-inline-end:0;inset-inline-start:var(--rail)}
 /* a place opens beside what you were looking at */
 html.tn-wide #pview:not([hidden]){inset-inline-start:auto;inset-inline-end:0;width:var(--pane);box-shadow:0 0 44px rgba(63,33,22,.2)}
 html.tn-wide.tn-place :is(#lview,#axview):not([hidden]){inset-inline-end:var(--pane)}
@@ -2990,7 +2975,7 @@ html.tn-wide #explore>*{grid-column:1/-1;min-width:0}
 html.tn-wide #explore>.hx-now{grid-column:1;grid-row:span 4}
 html.tn-wide #explore>:is(.hx-cta,.hx-h,.hx-moods,.hx-mwrap){grid-column:2}
 html.tn-wide #explore>.hx-h{margin-top:0}
-html.tn-wide #explore .ax-cities,html.tn-wide #explore .ax-hs{margin-inline:0;padding-inline:0}
+html.tn-wide #explore .ax-hs{margin-inline:0;padding-inline:0}
 html.tn-wide #explore .hx-moods{flex-wrap:wrap;overflow:visible}
 /* the map: the list stays open on the side */
 html.tn-wide #amap:not([hidden]){bottom:0}
@@ -3032,19 +3017,122 @@ html.tn-wide #apollo #apollonew{display:none}
 /* More: the menu stays beside the page it opened */
 html.tn-wide #menu{max-width:1180px;margin-inline:auto}
 html.tn-wide[data-tab=menu] #menu{max-width:340px;margin-inline:0;min-height:100vh;border-inline-end:1px solid var(--rule);padding-top:calc(14px + env(safe-area-inset-top))}
-html.tn-wide[data-tab=menu] :is(#prayview,#qiblaview,#staffview,#staffshow,#prview,#rmview,#sbook,#trview,#aphome,#crewcs,#pfview,#lens):not([hidden]){inset-inline-start:calc(var(--rail) + 340px)}
+html.tn-wide[data-tab=menu] :is(#prayview,#qiblaview,#staffview,#restview,#staffshow,#prview,#rmview,#sbook,#trview,#aphome,#crewcs,#pfview,#lens):not([hidden]){inset-inline-start:calc(var(--rail) + 340px)}
 html.tn-wide .am-li.on,html.tn-wide .am-prof.on{background:#FCE3DA}
 html.tn-wide[data-tab=menu] .am-empty{display:flex;position:fixed;top:0;bottom:0;inset-inline-start:calc(var(--rail) + 340px);inset-inline-end:0;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;color:var(--muted);pointer-events:none}
 html.tn-wide .am-empty img{width:120px;margin-bottom:6px}
 html.tn-wide .am-empty b{font:400 22px var(--display);color:var(--ink)}
 html.tn-wide .am-empty small{font:500 14px var(--body)}
 /* pages opened full width keep their text a readable width */
-html.tn-wide :is(#prayview .py-scroll,#staffview .py-scroll){padding-inline:max(0px,calc((100% - 760px)/2))}
+html.tn-wide :is(#prayview .py-scroll,#staffview .py-scroll,#restview .py-scroll){padding-inline:max(0px,calc((100% - 760px)/2))}
 html.tn-wide #explore>.xs{width:auto;height:220px;margin:calc(8px + env(safe-area-inset-top)) 0 14px;border-radius:26px}
 html.tn-wide .tv-aside .at-ctext{inset-inline:16px;bottom:18px}
 html.tn-wide .tv-aside .at-ctext .at-title{font-size:22px}
 html.tn-wide .tv-aside .at-ctext p{font-size:13px}
 /* the phone's edge-to-edge trick (100vw) would reach under the sidebar */
 html.tn-wide :is(#explore,#menu){width:auto;box-sizing:border-box}
-html.tn-wide :is(.hx-moods,.at-ideas,.ar-miss,.tv-pills,#explore .ax-hs,#explore .ax-cities,#explore .xs-stories){margin-inline:0;padding-inline:0;scroll-padding-inline:0}
+html.tn-wide :is(.hx-moods,.at-ideas,.ar-miss,.tv-pills,#explore .ax-hs,#explore .xs-stories){margin-inline:0;padding-inline:0;scroll-padding-inline:0}
 html.tn-wide .tv-pills{padding-inline:2px}
+
+/* Explore: the city you're exploring, as a glass pill in the header, and the
+   sheet that picks it (all six cities, the same list for everyone). */
+html.tn-app .xs-city{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:6px 12px 6px 6px;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.65);color:#2A1A12;font:800 15px var(--body);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 6px 16px rgba(40,20,10,.12)}
+html.tn-app .xs-night .xs-city{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.28);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+html.tn-app .xs-pin{width:22px;height:22px;border-radius:50%;background:var(--lantern);display:grid;place-items:center;font-size:11px}
+html.tn-app .xs-chev{font-size:13px;opacity:.75;margin-top:-4px}
+html.tn-app .xs-city:active{transform:scale(.97)}
+html.tn-app .cp-sheet{width:calc(100% - 16px);margin:0 8px calc(8px + env(safe-area-inset-bottom));border-radius:30px}
+html.tn-app .cp-x{width:32px;height:32px;border:0;border-radius:50%;background:#EFE5D6!important;color:var(--muted)!important;font-size:14px;display:grid;place-items:center}
+html.tn-app .cp-list{overflow-y:auto;padding:4px 14px 16px;display:flex;flex-direction:column;gap:8px}
+html.tn-app .cp-row{display:flex;align-items:center;gap:12px;width:100%;padding:8px 12px 8px 8px;border:0;border-radius:20px;cursor:pointer;
+  background:var(--sheet);color:var(--ink);font:inherit;text-align:start;box-shadow:0 2px 10px rgba(63,33,22,.05);transition:transform .12s}
+html.tn-app .cp-row:active{transform:scale(.985)}
+html.tn-app .cp-row.on{box-shadow:0 0 0 2px var(--lantern),0 6px 16px rgba(241,78,36,.15)}
+html.tn-app .cp-row img,html.tn-app .cp-row>i{flex:none;width:56px;height:56px;border-radius:15px;object-fit:cover;background:var(--rule)}
+html.tn-app .cp-t{flex:1;min-width:0}
+html.tn-app .cp-t b{display:block;font:800 16.5px var(--body)}
+html.tn-app .cp-t small{display:block;font:500 13px/1.35 var(--body);color:var(--muted)}
+html.tn-app .cp-t small.cp-n{font-weight:700;font-size:12px;margin-top:1px}
+html.tn-app .cp-r{flex:none;display:flex;align-items:center;gap:8px}
+html.tn-app .cp-day{font:700 11px var(--body);padding:4px 9px;border-radius:999px;background:#EDF4E2;color:#557A2A;white-space:nowrap}
+html.tn-app .cp-ck{width:24px;height:24px;border-radius:50%;background:var(--lantern);color:#fff;display:grid;place-items:center;font:800 13px var(--body)}
+
+/* Explore: "Apollo found 6 new spots", the places added in the last 30 days. */
+html.tn-app .nw-card{display:block;width:100%;margin-top:22px;padding:18px;border:0;border-radius:26px;cursor:pointer;text-align:start;color:var(--ink);
+  background:linear-gradient(135deg,#FFE3D6,#FFF3D1);box-shadow:0 4px 16px rgba(241,78,36,.08);font:inherit}
+html.tn-app .nw-card:active{transform:scale(.99)}
+html.tn-app .nw-k{display:block;font:800 11.5px var(--body);letter-spacing:.07em;text-transform:uppercase;color:var(--lantern)}
+html.tn-app .nw-t{display:block;font:400 24px/1.12 var(--display);margin:6px 0 4px}
+html.tn-app .nw-p{display:block;font:500 13.5px/1.4 var(--body);color:var(--muted)}
+html.tn-app .nw-av{display:flex;align-items:center;margin-top:14px}
+html.tn-app .nw-av i{flex:none;width:46px;height:46px;border-radius:50%;overflow:hidden;border:3px solid #FFF3E6;background:#fff;margin-inline-end:-10px;display:grid;place-items:center}
+html.tn-app .nw-av i img{width:100%;height:100%;object-fit:cover}
+html.tn-app .nw-av i.art img{width:74%;height:74%;object-fit:contain}
+html.tn-app .nw-av em{font-style:normal;margin-inline-start:20px;font:800 14.5px var(--body);color:var(--lantern)}
+
+/* Explore: Areas to explore. One big area that suits this hour, four
+   smaller ones two per row, and a button for all. */
+html.tn-app .xs-areas .xs-area{display:block;width:100%;cursor:pointer}
+html.tn-app .xs-areas .ar-big{height:210px;border-radius:24px}
+html.tn-app .ar-big .ar-tag{position:absolute;top:12px;inset-inline-start:12px;z-index:1;font:800 12px var(--body);font-style:normal;background:rgba(255,255,255,.92);color:var(--lantern);padding:5px 10px;border-radius:999px}
+html.tn-app .ar-big b{font-size:28px}
+html.tn-app .ar-big small{font-size:13.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+html.tn-app .ar-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+html.tn-app .ar-grid .xs-area{height:118px;border-radius:20px;box-shadow:0 4px 12px rgba(63,33,22,.14)}
+html.tn-app .ar-grid .xs-area span{left:11px;right:10px;bottom:9px}
+html.tn-app .ar-grid .xs-area b{font-size:17px}
+html.tn-app .ar-grid .xs-area small{font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.tn-app .ar-allb{display:block;width:100%;margin-top:12px;padding:13px;border:0;border-radius:16px;background:var(--sheet);box-shadow:0 1px 0 var(--rule);font:800 14.5px var(--body);color:var(--lantern);cursor:pointer}
+
+/* Explore, shorter: the season line on one line with smaller photos, a
+   slim "Start your trip", mood results in a short list,
+   smaller hidden-gem cards and area tiles. */
+html.tn-app .hx-season>p{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+html.tn-app .hx-nowc .pimg{aspect-ratio:4/3}
+html.tn-app .hx-cta{padding-block:10px}
+html.tn-app .hx-mi{width:46px;height:46px}
+html.tn-app .hx-mt b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;font-size:14px;line-height:1.25}
+html.tn-app .nw-p{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+html.tn-app .nw-av{margin-top:10px}
+html.tn-app .nw-av i{width:38px;height:38px}
+html.tn-app #explore .ax-row:not(.xs-areas) .pc{width:150px}
+html.tn-app .xs-areas .ar-big{height:170px}
+html.tn-app .ar-grid .xs-area{height:96px}
+
+/* Restaurants (js/apprest.js): the halal badge in the Restaurants mood, and
+   the page with the "Halal only" switch, the kind chips and the list. */
+html.tn-app .hx-mbd{display:block;margin-top:3px}
+#restview{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+#restview[hidden]{display:none}
+#restview .py-top{position:relative}
+.rs-city{margin-inline-start:auto;border:0;cursor:pointer;background:var(--sheet);border-radius:999px;padding:8px 12px;font:800 13px var(--body);color:var(--ink);box-shadow:0 2px 8px rgba(63,33,22,.08)}
+.rs-cnt{margin:-4px 0 0;padding-inline:64px 16px;font:500 13px var(--body);color:var(--muted)}
+#restview .py-scroll{padding-inline:16px;padding-top:10px}
+.rs-sw{display:flex;align-items:center;gap:12px;width:100%;margin:4px 0 12px;padding:12px 14px;border:0;border-radius:18px;cursor:pointer;text-align:start;color:var(--ink);
+  background:var(--sheet);box-shadow:0 2px 10px rgba(63,33,22,.05);font:inherit}
+.rs-e{font-size:24px}
+.rs-sw b{display:block;font:800 15.5px var(--body)}.rs-sw small{display:block;font:500 12.5px var(--body);color:var(--muted)}
+.rs-tg{position:relative;flex:none;margin-inline-start:auto;width:50px;height:30px;border-radius:999px;background:#DCCDB8;transition:background .15s}
+.rs-tg::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:inset-inline-start .15s}
+.rs-tg.on{background:#2E8B3E}.rs-tg.on::after{inset-inline-start:23px}
+.rs-chips{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 12px;padding:2px 16px}
+.rs-chips::-webkit-scrollbar{display:none}
+.rs-chips button{flex:none;border:0;cursor:pointer;padding:7px 12px;border-radius:999px;background:var(--sheet);box-shadow:0 1px 0 var(--rule);font:700 13px var(--body);color:var(--ink)}
+.rs-chips button.on{background:var(--ink);color:#fff}
+.rs-lv button.on{background:#2E8B3E}
+.rs-row{display:flex;align-items:center;gap:10px;background:var(--sheet);border-radius:18px;padding:8px;margin-bottom:8px;box-shadow:0 2px 8px rgba(63,33,22,.05)}
+.rs-go{flex:1;min-width:0;display:flex;gap:12px;align-items:center;border:0;background:none;padding:0;cursor:pointer;text-align:start;color:var(--ink);font:inherit}
+.rs-t{flex:none;width:62px;height:62px;border-radius:14px;overflow:hidden;background:color-mix(in srgb,var(--c2) 18%,#fff)}
+.rs-t img{width:100%;height:100%;object-fit:cover;display:block}.rs-t.art img{object-fit:contain;padding:8px}
+.rs-tx{min-width:0}
+.rs-tx b{display:block;font:800 15px var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext;text-align:start}
+.rs-tx small{display:block;margin:2px 0 5px;font:500 12px var(--body);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-bl{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rs-bd{font:800 11px var(--body);font-style:normal;padding:3px 8px;border-radius:999px}
+.rs-bd.c{background:#DFF1DC;color:#1F7A2F}.rs-bd.h{background:#E9F5E1;color:#3E7D2A}.rs-bd.f{background:#FFF1CC;color:#9A6A00}.rs-bd.n{background:#EFE5D6;color:#8C6F60}
+.rs-bl em{font:600 11px var(--body);font-style:normal;color:var(--muted)}
+.rs-add{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:none;cursor:pointer;font:800 16px var(--body);color:var(--ink)}
+.rs-add.on{background:var(--ink);color:#fff}
+.rs-none{padding:30px 10px;text-align:center;color:var(--muted)}

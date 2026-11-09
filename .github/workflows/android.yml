@@ -1,6 +1,6 @@
 # Builds the Android app (a debug APK to install and try) from app/.
 # Run it from the Actions tab ("Run workflow"), or it runs by itself when
-# the app or the site changes on main. The newest APK is always at one
+# the app or the site changes on main (not for new places alone). The newest APK is always at one
 # link that opens on a phone (GitHub's mobile site hides run artifacts):
 # https://github.com/ziyadalruwashid/tabi-neko/releases/download/android-latest/tabi-neko.apk
 name: Android app
@@ -9,7 +9,21 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [app/**, index.html, css/**, js/**, data/**, assets/**, .github/workflows/android.yml]
+    # Places, areas and day trips reach the app from the website by
+    # themselves (js/live.js), so changing only those doesn't need an APK.
+    paths:
+      - app/**
+      - index.html
+      - css/**
+      - js/**
+      - data/**
+      - '!data/places.js'
+      - '!data/hoods.js'
+      - '!data/trips.js'
+      - '!data/ar/content.js'
+      - '!data/scout.json'
+      - assets/**
+      - .github/workflows/android.yml
 
 jobs:
   apk:
@@ -42,15 +56,21 @@ jobs:
           if [ -n "$KS" ] && [ -n "$TN_KEYSTORE_PASSWORD" ]; then
             export TN_KEYSTORE="$RUNNER_TEMP/upload.p12"
             printf '%s' "$KS" | base64 -d > "$TN_KEYSTORE"
+            # Say plainly when the password secret doesn't open the key.
+            if ! keytool -list -storetype pkcs12 -keystore "$TN_KEYSTORE" -storepass "$TN_KEYSTORE_PASSWORD" >/dev/null 2>&1; then
+              echo "::error::ANDROID_KEYSTORE_PASSWORD doesn't open the key in ANDROID_KEYSTORE_BASE64. Update one of the two secrets."; exit 1
+            fi
             export TN_KEY_ALIAS="$(keytool -list -storetype pkcs12 -keystore "$TN_KEYSTORE" -storepass "$TN_KEYSTORE_PASSWORD" 2>/dev/null | awk -F, '/PrivateKeyEntry/{print $1; exit}')"
           fi
           ./gradlew assembleDebug --no-daemon
           # The APK's SHA-1 is public (it's in every copy of the app); Google
           # sign-in needs it registered in Firebase.
           SIGNER="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)/apksigner"
-          SHA=$("$SIGNER" verify --print-certs app/build/outputs/apk/debug/app-debug.apk | awk -F': ' '/SHA-1 digest/{print toupper($2); exit}' | sed 's/../&:/g; s/:$//')
-          echo "APK signing SHA-1: $SHA" >> "$GITHUB_STEP_SUMMARY"
-          if [ -n "$TN_KEYSTORE" ]; then echo "(signed with the upload key)" >> "$GITHUB_STEP_SUMMARY"; rm -f "$TN_KEYSTORE"; else echo "(throwaway debug key: changes every build)" >> "$GITHUB_STEP_SUMMARY"; fi
+          SHA=$("$SIGNER" verify --print-certs app/build/outputs/apk/debug/app-debug.apk | awk '/SHA-1 digest/{print toupper($NF); exit}' | sed 's/../&:/g; s/:$//')
+          SHA256=$("$SIGNER" verify --print-certs app/build/outputs/apk/debug/app-debug.apk | awk '/SHA-256 digest/{print toupper($NF); exit}' | sed 's/../&:/g; s/:$//')
+          echo "APK signing SHA-1: $SHA" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "APK signing SHA-256: $SHA256" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ -n "$TN_KEYSTORE" ]; then echo "(signed with the upload key)" | tee -a "$GITHUB_STEP_SUMMARY"; rm -f "$TN_KEYSTORE"; else echo "(throwaway debug key: changes every build)" | tee -a "$GITHUB_STEP_SUMMARY"; fi
       - uses: actions/upload-artifact@v4
         with:
           name: tabi-neko-debug-apk

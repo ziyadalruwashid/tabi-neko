@@ -557,6 +557,9 @@ async function deleteAccount(pw){
     if(tripOwner()!==me())try{await fsCommit([{update:{name:`${FS_PATH}/trips/${tripOwner()}`,fields:{}},updateMask:{fieldPaths:["emails."+KEYP(me())]},
       updateTransforms:[{fieldPath:"members",removeAllFromArray:{values:[S(me())]}}],currentDocument:{exists:true}}])}catch(e){}
     for(const p of ["trips/"+me(),"users/"+me(),"stamps/"+me()])try{await call(`${FS}/${p}`,{method:"DELETE",token:auth.token})}catch(e){if(!(e&&e.status===404))throw e}
+    // Ask Apollo's question count: the rules keep today's (so it can't be
+    // reset), so this only clears an older one.
+    try{await call(`${FS}/usage/${me()}`,{method:"DELETE",token:auth.token})}catch(e){}
     await ID("delete",{idToken:auth.token});
     loggedOut(false);closeAcct();toast(T("Your account is deleted."));
   }catch(e){const c=e&&e.code;say(c==="CREDENTIAL_TOO_OLD_LOGIN_AGAIN"?T("For your safety, log out and log in again, then delete."):WRONG.includes(c)?T("That password isn't right."):failMsg(e))}
