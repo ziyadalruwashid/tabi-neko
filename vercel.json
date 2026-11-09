@@ -1,12 +1,38 @@
 {
   "redirects": [
-    { "source": "/privacy", "destination": "/?privacy#privacy", "permanent": false },
-    { "source": "/delete-account", "destination": "/?delete#privacy", "permanent": false }
+    {
+      "source": "/privacy",
+      "destination": "/?privacy#privacy",
+      "permanent": false
+    },
+    {
+      "source": "/delete-account",
+      "destination": "/?delete#privacy",
+      "permanent": false
+    }
   ],
   "headers": [
     {
       "source": "/data/(.*)",
-      "headers": [{ "key": "Access-Control-Allow-Origin", "value": "*" }]
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(photos|hoods|album)/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=2592000"
+        }
+      ]
     }
   ]
 }

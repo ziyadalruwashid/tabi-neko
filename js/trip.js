@@ -74,7 +74,7 @@ function cleanTrip(t){
 let trip=freshTrip();
 try{const s=store.get(TRIP_KEY);if(s)trip=cleanTrip(JSON.parse(s))}catch(e){}
 let shared=null; // a trip opened from someone's link, shown read-only until saved
-const saveTrip=()=>{store.set(TRIP_KEY,JSON.stringify(trip));tripBadge();homeBtn();if(typeof syncSoon==="function")syncSoon()};
+const saveTrip=()=>{store.set(TRIP_KEY,JSON.stringify(trip));tripBadge();homeBtn();if(typeof syncSoon==="function")syncSoon();if(window.tnSavePics)tnSavePics()};
 const allIds=t=>[...t.ideas,...t.stays.flatMap(s=>s.days.flatMap(d=>d.ids))];
 const inTrip=k=>allIds(trip).includes(k);
 const tripCount=t=>allIds(t).length;
