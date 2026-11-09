@@ -16,16 +16,16 @@ brackets.
 Tabi Neko: Japan Notebook
 ```
 
-**Short description** (76 of 80)
+**Short description** (77 of 80)
 ```
-Plan Japan day by day with Apollo the cat: 498 places, halal food and stamps
+Plan Japan day by day with Apollo the cat: 500+ places, halal food and stamps
 ```
 
 **Full description** (under 4,000)
 ```
 Tabi Neko is a travel notebook for Japan, written by someone who walked it. Apollo the cat is your guide: he picks the places and answers your questions, like a friend who has already been.
 
-🗺️ 498 PLACES, ALL IN ONE MAP
+🗺️ 500+ PLACES, ALL IN ONE MAP
 Tokyo, Kyoto, Osaka, Kobe, Nara, Kamakura and Ise. Coffee shops, ramen, temples, shrines, views, markets, vintage shops and hidden gems, each with a tip, a price and how long to spend there. See what's near you and what's open now.
 
 🗓️ PLAN YOUR TRIP DAY BY DAY
@@ -65,16 +65,16 @@ Pick your travel buddy: Apollo the cat, Kenbo the eagle or Fa the duck. Mata ne!
 تابي نيكو: دفتر رحلتك لليابان
 ```
 
-**Short description** (68 of 80)
+**Short description** (76 of 80)
 ```
-رتّب رحلتك لليابان يوم بيوم مع القط أبولو: 498 مكان، أكل حلال وأختام
+رتّب رحلتك لليابان يوم بيوم مع القط أبولو: أكثر من 500 مكان، أكل حلال وأختام
 ```
 
 **Full description** (under 4,000)
 ```
 تابي نيكو دفتر سفر لليابان، كتبه واحد مشى فيها بنفسه. القط أبولو هو دليلك: يختار لك الأماكن، ويجاوب على أسئلتك، كأنه صديق سبقك هناك.
 
-🗺️ 498 مكان في خريطة وحدة
+🗺️ أكثر من 500 مكان في خريطة وحدة
 طوكيو، كيوتو، أوساكا، كوبي، نارا، كاماكورا وإيسه. كوفيهات، رامن، تمبلات، أضرحة، إطلالات، أسواق، محلات فنتج وأماكن مخفية، وكل مكان معه نصيحة وسعره وكم تحتاج وقت فيه. وتشوف إيش القريب منك وإيش المفتوح الحين.
 
 🗓️ رتّب رحلتك يوم بيوم
