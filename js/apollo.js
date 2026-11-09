@@ -91,7 +91,7 @@ const placeOf=s=>{const m=(s||"").match(/\*\*(.+?)\*\*/);return m&&PLACE_BY_NAME
 const apKey=p=>typeof PKEY==="function"?PKEY(p):p.city+"|"+p.n;
 function placeCards(ps){if(!ps.length)return "";
   return `<div class="ap-cards">${ps.slice(0,6).map(p=>{const k=apKey(p),on=typeof inTrip==="function"&&inTrip(k);
-    return `<div class="ap-card"><button type="button" class="ap-im pl" data-id="${p.id}" style="background-image:url('${esc(p.photo||CATS[p.cat].img)}')${p.photo?"":";background-size:70%;background-repeat:no-repeat;background-color:#F5EDE0"}">${p.halal?`<em>${p.hl==="friendly"?T("Muslim-friendly"):T("halal ✓")}</em>`:""}</button>
+    return `<div class="ap-card"><button type="button" class="ap-im pl" data-id="${p.id}" style="background-image:url('${esc(p.photo?(window.tnPic?tnPic(p.photo):p.photo):CATS[p.cat].img)}')${p.photo?"":";background-size:70%;background-repeat:no-repeat;background-color:#F5EDE0"}">${p.halal?`<em>${p.hl==="friendly"?T("Muslim-friendly"):T("halal ✓")}</em>`:""}</button>
       <div class="ap-ct"><b dir="auto">${esc(p.n)}</b><small>${esc(D(CITIES[p.city]||{},"n")||"")} · ${esc(D(CATS[p.cat],"n"))}</small>
       <div class="ap-cb"><button type="button" class="pl" data-id="${p.id}">${T("Open")}</button><button type="button" class="ap-add${on?" on":""}" data-k="${esc(k)}">${on?"✓":"＋ "+T("Trip")}</button></div></div></div>`}).join("")}</div>`}
 function planBox(plan,i){

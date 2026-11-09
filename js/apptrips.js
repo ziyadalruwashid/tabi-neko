@@ -51,7 +51,7 @@ function draw(){
   el.querySelectorAll(".tr-city").forEach(b=>b.onclick=()=>{const k=b.dataset.c;close();setTimeout(()=>{if(window.tnExploreCity)tnExploreCity(k);if(window.goTab)goTab("explore");window.scrollTo(0,0)},60)});
 }
 function card(t){const im=pic(t);
-  return `<button type="button" class="tr-card">${im?`<span class="tr-im" style="background-image:url('${esc(im)}')"></span>`:`<span class="tr-im tr-emo">${t.e||"🚆"}</span>`}
+  return `<button type="button" class="tr-card">${im?`<span class="tr-im" style="background-image:url('${esc(window.tnPic?tnPic(im):im)}')"></span>`:`<span class="tr-im tr-emo">${t.e||"🚆"}</span>`}
     <span class="tr-cx"><b>${esc(D(t,"n"))}</b>${t.jp?`<small class="tr-jp">${esc(t.jp)}</small>`:""}<span class="tr-best">${esc(D(t,"best"))}</span>
     <span class="tr-mini"><span>⏱ ${esc(D(t,"time"))}</span><span>💴 ${esc(first(D(t,"cost")))}</span>${halalChip(t)}</span>
     <span class="tr-go">${T("See the full trip →")}</span></span></button>`}
