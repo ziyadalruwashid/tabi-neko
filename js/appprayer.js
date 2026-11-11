@@ -7,6 +7,9 @@
 //   ids 5000+, so the trip reminders in js/appremind.js leave them alone).
 // - The Qibla compass turns with the phone (the device's compass). Where
 //   there's no compass, it shows the direction with north at the top.
+//   Phone compasses point to magnetic north, which in Japan is about 7-8°
+//   west of true north (the north the Qibla angle is measured from), so
+//   the heading is corrected by the local declination (see DECL).
 // - Prayer rooms: mosques and airport rooms checked against two sources,
 //   plus every notebook restaurant whose tip mentions a prayer room.
 (function(){
@@ -168,12 +171,19 @@ function close(){if(history.state&&history.state.tnPray)history.back();else clos
 // ---- the Qibla compass ----
 const qv=document.createElement("div");qv.id="qiblaview";qv.hidden=true;qv.setAttribute("role","dialog");qv.setAttribute("aria-modal","true");document.body.appendChild(qv);
 let heading=null,spin=0,lastSeen=0,qTimer=null;
+// Magnetic declination, degrees west (GSI's 2020.0 values for the
+// prefectural capitals; it changes by well under a degree a decade).
+// The nearest one is used: within the six cities it's right to ~0.3°,
+// and anywhere else in Japan to within about 2°.
+const DECL=[[35.69,139.69,7.6],[35.02,135.76,7.9],[34.69,135.52,7.6]];
+const decl=p=>DECL.reduce((b,d)=>{const k=(d[0]-p.lat)**2+(d[1]-p.lng)**2;return k<b[0]?[k,d[2]]:b},[1e9,7.6])[1];
 function onTurn(e){
   let h=null;
   if(typeof e.webkitCompassHeading==="number")h=e.webkitCompassHeading;
   else if((e.absolute||e.type==="deviceorientationabsolute")&&typeof e.alpha==="number")h=360-e.alpha;
   if(h===null)return;
-  h=fix(h+(screen.orientation&&screen.orientation.angle||0),360);
+  // Magnetic → true north, so it matches the Qibla angle.
+  h=fix(h+(screen.orientation&&screen.orientation.angle||0)-decl(here()),360);
   // Turn the shortest way, so the dial never spins all the way round.
   const prev=fix(spin,360);let dlt=h-prev;if(dlt>180)dlt-=360;if(dlt<-180)dlt+=360;spin+=dlt;heading=h;lastSeen=Date.now();paint();
 }
