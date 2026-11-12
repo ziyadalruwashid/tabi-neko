@@ -2692,7 +2692,7 @@ html[dir=rtl] .lp-bar{transform-origin:right}
 .lp-buds{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:34px}
 .lp-b{position:relative;border:0;cursor:pointer;border-radius:28px;padding:30px 20px 22px;text-align:center;background:color-mix(in srgb,var(--c) 15%,#fff);color:var(--ink);transition:transform .25s,box-shadow .25s}
 .lp-b:hover{transform:translateY(-6px);box-shadow:0 18px 30px -16px color-mix(in srgb,var(--c) 70%,#000)}
-.lp-b img{height:170px;max-width:100%;object-fit:contain;transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.lp-b img{height:170px;max-width:100%;margin:0 auto;object-fit:contain;transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
 .lp-b:hover img{transform:translateY(-8px) rotate(-4deg)}
 .lp-b.talk img{animation:lpHop .6s cubic-bezier(.3,1.6,.5,1)}
 .lp-b>b{display:block;font:400 26px var(--display);margin-top:6px}
