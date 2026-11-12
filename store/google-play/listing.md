@@ -53,7 +53,7 @@ Visit a famous spot and collect its stamp in your stamp book, just like the real
 🔒 YOUR TRIP IS YOURS
 No ads. Your data is never sold. No tracking. Exploring needs no account; you only log in to plan trips and collect stamps, and you can delete your account at any time.
 
-Pick your travel buddy: Apollo the cat, Kenbo the eagle or Fa the duck. Mata ne! またね
+Pick your travel buddy: Apollo the cat, Kenbo the eagle, Fa the duck or Lily the fennec. Mata ne! またね
 ```
 
 ---
@@ -102,7 +102,7 @@ Pick your travel buddy: Apollo the cat, Kenbo the eagle or Fa the duck. Mata ne!
 🔒 رحلتك لك
 بدون إعلانات. بياناتك ما تنباع. بدون تتبع. تقدر تستكشف بدون حساب، وتحتاج تسجّل بس عشان تخطط رحلاتك وتجمع الأختام، وتقدر تحذف حسابك متى ما بغيت.
 
-اختار رفيقك: القط أبولو، النسر كينبو، أو البطة فا. ماتا نيه! またね
+اختار رفيقك: القط أبولو، النسر كينبو، البطة فا، أو الفنك ليلي. ماتا نيه! またね
 ```
 
 ---
