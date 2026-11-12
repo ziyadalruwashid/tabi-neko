@@ -33,7 +33,7 @@ const FEATS=[
 const BUDS=[["apollo","assets/cat.png","--lantern","guide","i only recommend places i'd go back to."],
   ["kenbo","assets/crew/kenbo.png","--wasabi","scout","if it's more than an hour out of the city, it's my page. pack water."],
   ["fa","assets/crew/fa.png","--mochi","support","slow down. drink something warm. you've got this."],
-  ["lily","assets/crew/lily.png","--shinkansen","problem solver","there's always a way. let me take a closer look."]];
+  ["lily","assets/crew/lily.png","--yuzu","problem solver","there's always a way. let me take a closer look."]];
 const TIPS=["i only recommend places i'd go back to.","Fushimi Inari at 7 in the morning, before the crowds.","the deer in Nara bow first. bow back.","download the city offline before you land."];
 const bud=k=>(typeof BUDDIES!=="undefined"&&BUDDIES.find(b=>b.k===k))||{};
 const crewOf=k=>(typeof CREW!=="undefined"&&CREW.find(c=>c.n.toLowerCase()===k))||{};
@@ -97,7 +97,7 @@ function draw(){
 
   <section class="lp-sec" id="lp-bud"><span class="lp-k lp-rv">${T("PICK YOUR GUIDE")}</span><h2 class="lp-rv">${T("Travel with Apollo, Kenbo, Fa or Lily")}</h2>
     <p class="lp-d lp-rv">${T("Your buddy says hello, gives the tips and guides the whole app. Tap one to hear from them.")}</p>
-    <div class="lp-buds">${BUDS.map(([k,img,c,role,q],i)=>{const b=bud(k),cr=crewOf(k);return `<button type="button" class="lp-b lp-rv" style="--c:var(${c});--d:${i}" data-q="${esc(D(cr,"tip")||T(q))}">
+    <div class="lp-buds">${BUDS.map(([k,img,c,role,q],i)=>{const b=bud(k),cr=crewOf(k);return `<button type="button" class="lp-b lp-rv" style="--c:var(${c});--d:${i}${cr.cf?";--cf:"+cr.cf+";--cb:color-mix(in srgb,var(--c) 35%,#3F2116)":""}" data-q="${esc(D(cr,"tip")||T(q))}">
       <span class="lp-bq" aria-live="polite"></span><img src="${img}" alt=""><b>${esc(isAR()?b.ar||D(cr,"n")||b.n:b.n||cr.n||k)}</b><small>${esc(D(cr,"role")||role)}</small><span class="lp-hi">${esc(isAR()?b.helloAr||"مياو!":b.hello||"Meow!")}</span></button>`}).join("")}</div></section>
 
   <section class="lp-final lp-rv" id="lp-get"><div><h2>${T("Your Japan trip, in your pocket.")}</h2>

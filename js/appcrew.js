@@ -18,7 +18,7 @@ function draw(){
   if(el.hidden||!n())return;
   const m=at(i),l=at(i-1),r=at(i+1),many=n()>1;
   const st=(m.stats||[]).filter(k=>STAT[k]).slice(0,2).map(k=>STAT[k]());
-  el.style.setProperty("--c",`var(${m.c||"--lantern"})`);
+  el.style.setProperty("--c",`var(${m.c||"--lantern"})`);el.style.setProperty("--cf",m.cf||"#fff");if(m.cf)el.style.setProperty("--cb","color-mix(in srgb,var(--c) 35%,#3F2116)");else el.style.removeProperty("--cb");
   el.innerHTML=`<div class="cs-bg"></div><div class="cs-ray" aria-hidden="true"></div>
     <div class="cs-top"><button type="button" class="cs-x" aria-label="${esc(T("Back"))}">‹</button><b>${T("The crew")}</b><span>${T("{n} so far",{n:n()})}</span></div>
     <div class="cs-stage">
