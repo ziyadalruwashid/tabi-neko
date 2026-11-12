@@ -99,12 +99,14 @@ window.tnPic=src=>{const r=relOf(src);return r?pics[r]||BASE+r:src};
 const artFor=r=>{const p=P.find(x=>x.photo===r||x.photo===BASE+r);return p&&CATS[p.cat]?CATS[p.cat].img:"assets/c-views.png"};
 // An <img> whose photo isn't in the app: the saved copy, then the
 // website, then the drawing.
+// A photo shimmers (css/tabi.css, "Loading photos") until it has loaded.
+document.addEventListener("load",e=>{const im=e.target;if(im&&im.tagName==="IMG")im.classList.add("tn-ok")},true); // (image load events never reach window)
 addEventListener("error",e=>{const im=e.target;if(!im||im.tagName!=="IMG")return;
   const st=im.dataset.tnp||"",r=relOf(st?im.dataset.tnr:im.getAttribute("src"));if(!r||st==="x")return;
   im.dataset.tnr=r;
   if(!st&&pics[r]){im.dataset.tnp="s";im.src=pics[r]}
   else if(st!=="w"&&!(st===""&&im.getAttribute("src")===BASE+r)){im.dataset.tnp="w";im.src=BASE+r}
-  else{im.dataset.tnp="x";im.src=artFor(r)}},true);
+  else{im.dataset.tnp="x";im.classList.add("tn-ok");im.src=artFor(r)}},true);
 
 // Save My trip's photos on the phone (Capacitor's Filesystem), and drop
 // the ones no longer in it.

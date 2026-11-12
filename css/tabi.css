@@ -3136,3 +3136,13 @@ html.tn-app .hx-mbd{display:block;margin-top:3px}
 .rs-add{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:none;cursor:pointer;font:800 16px var(--body);color:var(--ink)}
 .rs-add.on{background:var(--ink);color:#fff}
 .rs-none{padding:30px 10px;text-align:center;color:var(--muted)}
+
+/* Loading photos (the app): place, area and album photos come from the
+   website (js/live.js), so each one shows a soft cream shimmer until it
+   has loaded, then fades in. Drawings and the app's own art never shimmer. */
+html.tn-app img:is([src*="assets/photos/"],[src*="assets/hoods/"],[src*="assets/album/"],[src*="_capacitor_file_"]):not(.tn-ok){
+  background:linear-gradient(100deg,#EFE6D6 30%,#FBF5EA 50%,#EFE6D6 70%) 0 0/200% 100%;animation:tnsk 1.3s linear infinite}
+html.tn-app img.tn-ok:is([src*="assets/photos/"],[src*="assets/hoods/"],[src*="assets/album/"],[src*="_capacitor_file_"]){animation:tnfade .35s ease-out}
+@keyframes tnsk{from{background-position:150% 0}to{background-position:-50% 0}}
+@keyframes tnfade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){html.tn-app img{animation:none!important}}
