@@ -29,6 +29,9 @@ description: Add a batch of the owner's place photos (usually a zip) to the site
    - A new one: add `"photo":"assets/photos/<file>.jpg"` to its line in
      `data/places.js`.
    - Check `places.js` still loads (`node`) and count the photos.
+   - When you overwrite photos, bump `CACHE` in `sw.js` (`tabineko-vN`).
+     The website's service worker serves photos from its saved copy first,
+     so without a bump returning visitors keep the old photos.
 7. **Ship** (the `ship` skill). Say how many were added, replaced and held
    back, with the reasons.
 
