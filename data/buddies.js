@@ -10,5 +10,6 @@ const BUDDIES=[
   {k:"apollo",n:"Apollo",img:"assets/cat.png"},
   {k:"kenbo",n:"Kenbo",ar:"كينبو",img:"assets/crew/kenbo.png",hello:"Kraa!",helloAr:"كراا!",kind:"travel eagle",kindAr:"نسرك المسافر"},
   {k:"fa",n:"Fa",ar:"فا",img:"assets/crew/fa.png",hello:"Quack!",helloAr:"كواك!",kind:"travel duck",kindAr:"بطتك المسافرة"},
-  {k:"lily",n:"Lily",ar:"ليلي",img:"assets/crew/lily.png",hello:"Yip!",helloAr:"ييب!",kind:"travel fennec",kindAr:"ثعلبتك المسافرة"}
+  {k:"lily",n:"Lily",ar:"ليلي",img:"assets/crew/lily.png",hello:"Yip!",helloAr:"ييب!",kind:"travel fennec",kindAr:"ثعلبتك المسافرة"},
+  {k:"sloom",n:"Sloom",ar:"سلوم",img:"assets/crew/sloom.png",hello:"Beep boop!",helloAr:"بيب بوب!",kind:"travel red panda",kindAr:"باندتك الحمرا المسافرة"}
 ];
