@@ -97,7 +97,7 @@ Sizes in the app: display titles 21 to 28 px, body 14 to 16 px, small text
 - Each category has a sticker drawing (`assets/c-*.png`), and moods have
   their own (`fuji.png`, `coffee.png`, `torii.png`, `ramen.png`…). A place
   without a photo shows its category drawing, never an empty box.
-- Apollo (the cat) and the buddies Kenbo and Fa appear as small stickers,
+- Apollo (the cat) and the buddies Kenbo, Fa, Lily and Sloom appear as small stickers,
   not as big hero art on every screen.
 - Emoji are fine as small icons in labels (🍜 🕌 📍), never as decoration in
   titles.

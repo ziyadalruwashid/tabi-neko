@@ -227,7 +227,7 @@ AR.ui={
 "Go, and collect the stamps":"سافر، واجمع الأختام",
 "In Japan the app opens on today: what's next, what's near, and a stamp at every famous place.":"في اليابان يفتح التطبيق على يومك: إيش الجاي، وإيش القريب، وختم عند كل مكان مشهور.",
 "PICK YOUR GUIDE":"اختر دليلك",
-"Travel with Apollo, Kenbo, Fa or Lily":"سافر مع أبولو أو كينبو أو فا أو ليلي",
+"Travel with Apollo, Kenbo, Fa, Lily or Sloom":"سافر مع أبولو أو كينبو أو فا أو ليلي أو سلوم",
 "Your buddy says hello, gives the tips and guides the whole app. Tap one to hear from them.":"رفيقك يرحّب فيك، ويعطيك النصائح، ويرافقك في التطبيق كله. اضغط على أي واحد واسمع منه.",
 "Your Japan trip, in your pocket.":"رحلتك لليابان، في جيبك.",
 "Free. No ads. Your trip is saved to your account, so it's safe on any phone, and you can plan it together with your travel buddies.":"مجاني. بدون إعلانات. رحلتك محفوظة في حسابك، فتكون بأمان على أي جوال، وتقدر تخططها مع رفاق السفر.",
