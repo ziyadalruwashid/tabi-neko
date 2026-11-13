@@ -262,8 +262,6 @@ AR.ui={
 "Get it on Google Play":"حمّله من Google Play",
 "Not on iPhone":"مو موجود على iPhone",
 "Pick any one you like from the store.":"اختر أي واحد يعجبك من المتجر.",
-"day trips":"رحلات يوم",
-"halal spots":"أماكن حلال",
 "Previous":"السابق",
 "{n} neighbourhoods, each rated by Apollo 🐾":"{n} منطقة، كلها مقيّمة من أبولو 🐾",
 "Best for {m} in {c}":"الأفضل لـ{m} في {c}",
