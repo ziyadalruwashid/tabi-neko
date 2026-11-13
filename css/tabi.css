@@ -2389,9 +2389,6 @@ html[dir=rtl] #crewcs .cs-hero.in-r{animation-name:csInL,csBob}html[dir=rtl] #cr
 #crewcs .cs-panel p{font:600 13.5px/1.55 var(--body);color:#5b4436;margin:6px 0 0}
 #crewcs .cs-bub{margin-top:10px;background:color-mix(in srgb,var(--c) 12%,#fff);border-radius:16px 16px 16px 4px;padding:9px 12px;font:400 17.5px/1.3 var(--hand);color:var(--cb,color-mix(in srgb,var(--c) 70%,#3F2116))}
 html[dir=rtl] #crewcs .cs-bub{border-radius:16px 16px 4px 16px;font-family:var(--body);font-size:14.5px;font-weight:700}
-#crewcs .cs-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
-#crewcs .cs-stats div{background:#F5EDE0;border-radius:12px;padding:7px 4px;text-align:center;font:700 11.5px/1.25 var(--body);color:var(--muted)}
-#crewcs .cs-stats b{display:block;font:900 16px var(--body);color:var(--ink)}
 #crewcs .cs-links{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 #crewcs .cs-links a{font:800 12.5px var(--body);color:var(--ink);background:#F5EDE0;border-radius:99px;padding:5px 11px;text-decoration:none}
 #crewcs .cs-dots{display:flex;gap:6px;justify-content:center;margin-top:12px}

@@ -6,18 +6,9 @@
 const el=document.createElement("div");el.id="crewcs";el.hidden=true;el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");document.body.appendChild(el);
 let i=0,dir=0;
 const n=()=>CREW.length,at=k=>CREW[(k%n()+n())%n()];
-// The live numbers a character can show (the `stats` field in data/crew.js).
-const STAT={
-  places:()=>[P.length,T("places")],
-  cities:()=>[new Set(P.map(p=>p.city)).size,T("cities")],
-  trips:()=>[typeof TRIPS!=="undefined"?TRIPS.length:0,T("day trips")],
-  stamps:()=>[typeof STAMPS!=="undefined"?STAMPS.length:0,T("stamps")],
-  halal:()=>[P.filter(p=>p.halal).length,T("halal spots")]
-};
 function draw(){
   if(el.hidden||!n())return;
   const m=at(i),l=at(i-1),r=at(i+1),many=n()>1;
-  const st=(m.stats||[]).filter(k=>STAT[k]).slice(0,2).map(k=>STAT[k]());
   el.style.setProperty("--c",`var(${m.c||"--lantern"})`);el.style.setProperty("--cf",m.cf||"#fff");if(m.cf)el.style.setProperty("--cb","color-mix(in srgb,var(--c) 35%,#3F2116)");else el.style.removeProperty("--cb");
   el.innerHTML=`<div class="cs-bg"></div><div class="cs-ray" aria-hidden="true"></div>
     <div class="cs-top"><button type="button" class="cs-x" aria-label="${esc(T("Back"))}">‹</button><b>${T("The crew")}</b><span>${T("{n} so far",{n:n()})}</span></div>
@@ -31,7 +22,6 @@ function draw(){
       <div class="cs-nm"><b>${esc(D(m,"n"))}</b>${m.jp?`<span class="cs-jp">${esc(m.jp)}</span>`:""}${m.role?`<span class="cs-pill">${esc(D(m,"role"))}</span>`:""}</div>
       <p>${esc(D(m,"what"))}</p>
       ${m.tip?`<div class="cs-bub">“${esc(D(m,"tip"))}” 🐾</div>`:""}
-      <div class="cs-stats">${st.map(([v,t])=>`<div><b>${v}</b>${esc(t)}</div>`).join("")}${m.cap?`<div><b>${m.e||"🐾"}</b>${esc(D(m,"cap"))}</div>`:""}</div>
       ${m.links&&m.links.length?`<div class="cs-links">${m.links.map(x=>`<a href="${esc(x[1])}" target="_blank" rel="noopener noreferrer">${esc(x[0])} ↗</a>`).join("")}</div>`:""}
       ${many?`<div class="cs-dots">${CREW.map((c,k)=>`<button type="button" class="${k===i?"on":""}" data-k="${k}" aria-label="${esc(D(c,"n"))}"></button>`).join("")}</div>`:""}
     </div>`;
