@@ -16,7 +16,8 @@
 //   would weigh ~60 MB more). Each loads from the website the first time
 //   it shows, and the phone's web cache keeps it. Photos of the places in
 //   My trip (and its cover) are also saved on the phone, so the trip has
-//   its photos offline. No connection and not saved: the category drawing.
+//   its photos offline, and saved again when the website's photo changes.
+//   No connection and not saved: the category drawing.
 // - A new app version (a new APK) brings its own newer lists, so a copy
 //   saved under the old version is dropped.
 //
@@ -109,8 +110,18 @@ addEventListener("error",e=>{const im=e.target;if(!im||im.tagName!=="IMG")return
   else{im.dataset.tnp="x";im.classList.add("tn-ok");im.src=artFor(r)}},true);
 
 // Save My trip's photos on the phone (Capacitor's Filesystem), and drop
-// the ones no longer in it.
+// the ones no longer in it. A photo replaced on the website under the
+// same name is noticed by its size and date (checked once per launch,
+// when online) and downloaded again.
 const FS=()=>{const C=window.Capacitor;return C&&C.Plugins&&C.Plugins.Filesystem};
+const TAGS="tabineko-pic-tags";
+let tags={};try{tags=JSON.parse(localStorage.getItem(TAGS)||"{}")||{}}catch(e){}
+const checked=new Set();
+const tagOf=res=>(res.headers.get("content-length")||"")+"/"+(res.headers.get("last-modified")||"");
+// The file for a photo: a new name for each version, so the phone never
+// shows an old copy of the same file.
+const fileOf=(r,t)=>"pics/"+r.replace(/\//g,"_")+(t?"."+[...t].reduce((h,c)=>(h*31+c.charCodeAt(0))>>>0,7).toString(36):"");
+const saveTags=()=>{try{localStorage.setItem(TAGS,JSON.stringify(tags))}catch(e){}};
 let busy=false,again=false,timer=0;
 function wanted(){const w=new Set();if(typeof trip==="undefined"||!trip)return w;
   const by=new Map(P.map(p=>[p.city+"|"+p.n,p]));
@@ -123,16 +134,26 @@ async function savePics(){
   const fs=FS(),C=window.Capacitor;if(!fs||!C||!C.convertFileSrc)return;
   if(busy){again=true;return}busy=true;
   try{
-    const w=wanted();
-    for(const r of Object.keys(pics))if(!w.has(r)){
-      try{await fs.deleteFile({path:"pics/"+r.replace(/\//g,"_"),directory:"DATA"})}catch(e){}
-      delete pics[r]}
-    localStorage.setItem(PICS,JSON.stringify(pics));
+    const w=wanted(),drop=async r=>{try{await fs.deleteFile({path:(tags[r]&&tags[r].f)||fileOf(r),directory:"DATA"})}catch(e){}};
+    for(const r of Object.keys(pics))if(!w.has(r)){await drop(r);delete pics[r];delete tags[r]}
+    localStorage.setItem(PICS,JSON.stringify(pics));saveTags();
     if(navigator.onLine===false)return;
-    for(const r of w){if(pics[r])continue;
-      try{const res=await fetch(BASE+r);if(!res.ok)continue;
-        const {uri}=await fs.writeFile({path:"pics/"+r.replace(/\//g,"_"),data:await b64(await res.blob()),directory:"DATA",recursive:true});
-        pics[r]=C.convertFileSrc(uri);localStorage.setItem(PICS,JSON.stringify(pics))}catch(e){}}
+    for(const r of w){
+      try{
+        if(pics[r]){
+          if(checked.has(r))continue;
+          const h=await fetch(BASE+r,{method:"HEAD",cache:"no-cache"});if(!h.ok)continue;
+          checked.add(r);
+          if(tags[r]&&tags[r].t===tagOf(h))continue;  // still the same photo
+        }
+        const res=await fetch(BASE+r,{cache:"no-cache"});if(!res.ok)continue;
+        const t=tagOf(res),f=fileOf(r,t);
+        const {uri}=await fs.writeFile({path:f,data:await b64(await res.blob()),directory:"DATA",recursive:true});
+        if(pics[r]&&(!tags[r]||tags[r].f!==f))await drop(r);
+        checked.add(r);pics[r]=C.convertFileSrc(uri);tags[r]={t,f};
+        localStorage.setItem(PICS,JSON.stringify(pics));saveTags();
+        document.querySelectorAll('img[data-tnr="'+r+'"][data-tnp="s"]').forEach(im=>{im.src=pics[r]});
+      }catch(e){}}
   }catch(e){}finally{busy=false;if(again){again=false;savePics()}}
 }
 window.tnSavePics=()=>{clearTimeout(timer);timer=setTimeout(savePics,1500)};
