@@ -86,8 +86,9 @@ build for them.
    message that says what changed and why.
 3. Open a PR, squash-merge it, and bring the branch back to `main`. The
    `ship` skill has the exact steps.
-4. A merge to `main` deploys the site (Vercel) and builds the Android APK
-   (GitHub Actions). The newest APK is always at
+4. A merge to `main` deploys the site (Vercel), builds the Android APK
+   (GitHub Actions) and uploads an iPhone build to TestFlight
+   (`store/app-store/testflight.md`; skipped until Apple's secrets are set). The newest APK is always at
    https://github.com/ziyadalruwashid/tabi-neko/releases/download/android-latest/tabi-neko.apk
    and installs over the current app.
 5. Tell the owner when the APK is ready, or fix the build if it failed.
