@@ -10,11 +10,13 @@ four secrets below exist it skips itself with a note.
 1. **Apple Developer Program**: enrol at developer.apple.com ($99/year,
    identity check, 1–2 days).
 2. **App ID**: Certificates, IDs & Profiles → Identifiers → + → App IDs →
-   App → Bundle ID `com.tabineko.app` (explicit), description "Tabi Neko".
-   No extra capabilities are needed.
+   App → Bundle ID `com.ziyadalruwashid.tabineko` (explicit), description
+   "Tabi Neko". No extra capabilities are needed. (`com.tabineko.app`, the
+   Android ID, was already taken on Apple's side, so the iPhone app has its
+   own ID; it's set in `app/ios/App/App.xcodeproj/project.pbxproj`.)
 3. **The app in App Store Connect**: appstoreconnect.apple.com → Apps → + →
    New App: iOS, name "Tabi Neko", primary language English, bundle ID
-   `com.tabineko.app`, SKU `tabineko`.
+   `com.ziyadalruwashid.tabineko`, SKU `tabineko`.
 4. **API key**: App Store Connect → Users and Access → Integrations →
    App Store Connect API → Team Keys → + → name "GitHub", access **Admin**.
    Download the `.p8` file (Apple lets you download it only once) and note
