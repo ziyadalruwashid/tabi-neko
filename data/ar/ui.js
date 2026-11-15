@@ -482,6 +482,7 @@ AR.ui={
 "This phone has no Japanese voice. Show the screen instead.":"جوالك ما فيه صوت ياباني. ورّهم الشاشة بدالها.",
 "Pick something on the left":"اختار شي من القائمة",
 "Prayer times, Halal Lens, day trips and more open here.":"أوقات الصلاة، عدسة الحلال، رحلات اليوم الواحد وغيرها تنفتح هنا.",
+"Halal Lens, day trips and more open here.":"عدسة الحلال، رحلات اليوم الواحد وغيرها تنفتح هنا.",
 "Your chats will show up here.":"محادثاتك بتطلع هنا.",
 "Delete your Tabi Neko account":"احذف حسابك في تابي نيكو",
 "In the app: More → Privacy → Delete my account. On the website: log in, then tap the button below.":"في التطبيق: المزيد ← الخصوصية ← احذف حسابي. وفي الموقع: سجّل دخولك، وبعدها اضغط الزر اللي تحت.",
