@@ -14,6 +14,12 @@
 //   plus every notebook restaurant whose tip mentions a prayer room.
 (function(){
 if(typeof IS_APP==="undefined"||!IS_APP)return;
+// Hidden for now (the owner's call, November 2026): no card in More and no
+// prayer reminders; reminders set earlier are cancelled. Set HIDDEN to
+// false to bring it all back.
+const HIDDEN=true;
+if(HIDDEN){setTimeout(()=>{try{const L=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.LocalNotifications;
+  if(L)L.cancel({notifications:Array.from({length:40},(_,i)=>({id:5000+i}))}).catch(()=>{})}catch(e){}},3000);return}
 const KEY="tabineko-prayer";
 const LN=()=>window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.LocalNotifications;
 
