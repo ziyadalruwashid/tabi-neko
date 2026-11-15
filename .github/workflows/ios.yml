@@ -1,0 +1,113 @@
+# Builds the iPhone/iPad app on GitHub's Macs and uploads it to TestFlight,
+# so it installs from Apple's TestFlight app without anyone owning a Mac.
+# Run it from the Actions tab ("Run workflow"), or it runs by itself when the
+# app or the site changes on main (not for new places alone, like Android).
+#
+# It needs four repository secrets (Settings → Secrets and variables →
+# Actions). Until all four are set it skips itself with a note, so merges
+# don't go red:
+#   APPLE_TEAM_ID       the 10-character Team ID (developer.apple.com → Membership)
+#   APPSTORE_KEY_ID     an App Store Connect API key's Key ID
+#   APPSTORE_ISSUER_ID  the Issuer ID shown above the list of keys
+#   APPSTORE_KEY_P8     the whole text of that key's .p8 file
+# The key needs the Admin role: Xcode then makes and renews the signing
+# certificate and profile by itself (cloud signing), so none are stored here.
+# Each build's number is the run number, so every upload is newer than the last.
+name: iOS app
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - app/**
+      - index.html
+      - css/**
+      - js/**
+      - data/**
+      - '!data/places.js'
+      - '!data/hoods.js'
+      - '!data/trips.js'
+      - '!data/ar/content.js'
+      - '!data/scout.json'
+      - assets/**
+      - .github/workflows/ios.yml
+
+concurrency:
+  group: ios-testflight
+  cancel-in-progress: false
+
+jobs:
+  testflight:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - name: Check the Apple secrets
+        id: keys
+        env:
+          TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          KID: ${{ secrets.APPSTORE_KEY_ID }}
+          ISS: ${{ secrets.APPSTORE_ISSUER_ID }}
+          P8: ${{ secrets.APPSTORE_KEY_P8 }}
+        run: |
+          missing=""
+          [ -n "$TEAM" ] || missing="$missing APPLE_TEAM_ID"
+          [ -n "$KID" ] || missing="$missing APPSTORE_KEY_ID"
+          [ -n "$ISS" ] || missing="$missing APPSTORE_ISSUER_ID"
+          [ -n "$P8" ] || missing="$missing APPSTORE_KEY_P8"
+          if [ -n "$missing" ]; then
+            echo "::notice::iOS build skipped: these secrets aren't set yet:$missing"
+            echo "iOS build skipped: missing secrets:$missing" >> "$GITHUB_STEP_SUMMARY"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.keys.outputs.ready == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.keys.outputs.ready == 'true'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - name: Copy the site into the app
+        if: steps.keys.outputs.ready == 'true'
+        working-directory: app
+        run: npm ci && npm run web && npx cap sync ios
+      - name: Build, sign and upload to TestFlight
+        if: steps.keys.outputs.ready == 'true'
+        working-directory: app/ios/App
+        env:
+          TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          KID: ${{ secrets.APPSTORE_KEY_ID }}
+          ISS: ${{ secrets.APPSTORE_ISSUER_ID }}
+          P8: ${{ secrets.APPSTORE_KEY_P8 }}
+          BUILD: ${{ github.run_number }}
+        run: |
+          set -o pipefail
+          KEY="$RUNNER_TEMP/AuthKey_$KID.p8"
+          printf '%s\n' "$P8" > "$KEY"
+          trap 'rm -f "$KEY"' EXIT
+          AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$KEY" -authenticationKeyID "$KID" -authenticationKeyIssuerID "$ISS")
+          xcodebuild -version
+          xcodebuild archive -project App.xcodeproj -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Automatic CURRENT_PROJECT_VERSION="$BUILD" \
+            "${AUTH[@]}" | tail -n 150
+          cat > "$RUNNER_TEMP/export.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$TEAM</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+            <key>uploadSymbols</key><true/>
+          </dict></plist>
+          EOF
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/export" \
+            "${AUTH[@]}" | tail -n 80
+          VER=$(/usr/libexec/PlistBuddy -c 'Print :ApplicationProperties:CFBundleShortVersionString' "$RUNNER_TEMP/App.xcarchive/Info.plist")
+          echo "Uploaded Tabi Neko $VER ($BUILD) to TestFlight. Apple takes about 10–30 minutes to process it before it shows in the TestFlight app." | tee -a "$GITHUB_STEP_SUMMARY"
