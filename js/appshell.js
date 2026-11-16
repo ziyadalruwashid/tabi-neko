@@ -686,6 +686,28 @@ function renderShell(){renderTabs();renderExplore();renderMore();renderBars();if
 const _setLang=setLang;setLang=function(l){_setLang(l);if(l==="ar"&&!AR_ON())return;renderShell()};
 if(typeof userBtn==="function"){const _u=userBtn;userBtn=function(){_u();renderShell()}}
 renderShell();
+// ---- the status bar on an iPhone ----
+// The page runs under it (index.html), so its clock and battery follow
+// what's behind them: light over dark skies and photos, the boarding pass
+// and the first-run photos, dark everywhere else. Pages scrolling inside
+// themselves count too (the scroll is caught on its way down).
+(function(){
+  const SB=window.Capacitor&&Capacitor.getPlatform&&Capacitor.getPlatform()==="ios"&&Capacitor.Plugins&&Capacitor.Plugins.StatusBar;
+  if(!SB)return;
+  const H=document.documentElement;let last="",t=0;
+  const check=()=>{t=0;
+    const el=document.elementFromPoint(innerWidth/2,8);
+    // Light over the night sky, the photos at the top of a place, an area or
+    // a trip, the camera and the contributors' orange page.
+    const dark=H.classList.contains("tn-splash")||H.classList.contains("onb-open")||!!(el&&(el.closest(".xs-night,.pv-hero,.ar-hero,.at-cover,#crewcs")||el.closest("#lens")&&!document.querySelector("#lens .ln-page")));
+    const s=dark?"DARK":"LIGHT";if(s!==last){last=s;SB.setStyle({style:s}).catch(()=>{})}};
+  const soon=()=>{if(!t)t=requestAnimationFrame(check)};
+  document.addEventListener("scroll",soon,{capture:true,passive:true});addEventListener("popstate",soon);
+  addEventListener("click",()=>setTimeout(soon,350),true);
+  new MutationObserver(soon).observe(H,{attributes:true,attributeFilter:["class","data-tab"]});
+  if($("explore"))new MutationObserver(soon).observe($("explore"),{childList:true});
+  setInterval(soon,60e3);soon();
+})();
 // The app opens on Explore unless a page was asked for.
 const h=location.hash.slice(1);
 if(!h||h==="top")go("explore");else syncTabs();
