@@ -32,10 +32,10 @@ async function allStamps(){
 async function load(){
   busy=true;err="";draw();
   const safe=p=>p.catch(e=>{console.warn(e);return null});
-  const [trips,opens,visits,stamps]=await Promise.all([safe(allTrips()),safe(days("opens")),safe(visitDays()),safe(allStamps()),safe(loadScout())]);
+  const [trips,opens,visits,stamps,,users]=await Promise.all([safe(allTrips()),safe(days("opens")),safe(visitDays()),safe(allStamps()),safe(loadScout()),safe(allUsers())]);
   busy=false;
   if(!trips){err="Couldn't load the trips. Check your connection, or that the latest firestore.rules are published.";draw();return}
-  data={trips,opens,visits,stamps,at:new Date()};draw();
+  data={trips,opens,visits,stamps,users,at:new Date()};draw();
 }
 // ---- trips by their dates (counts only) ----
 function tripWhen(c){
@@ -76,7 +76,7 @@ function today(){
   const oT=sumDays(opens,0,1),oLW=sumDays(opens,7,1),vT=sumDays(visits,0,1),vLW=sumDays(visits,7,1);
   const b7=(A?sumDays(opens,0,7):0)+(W?sumDays(visits,0,7):0),bP7=(A?sumDays(opens,7,7):0)+(W?sumDays(visits,7,7):0);
   const tT=(A?oT:0)+(W?vT:0),tLW=(A?oLW:0)+(W?vLW:0);
-  const newT=trips.filter(t=>riyadhDay(t.created)===riyadhDay(new Date())).length;
+  const acc=accountsOf(trips,data.users),newT=acc.filter(t=>riyadhDay(t.created)===riyadhDay(new Date())).length;
   const stT=stamps?stamps.reduce((s,x)=>s+Object.values(x.s).filter(d=>d===todayJ()).length,0):0,stAll=stamps?stamps.reduce((s,x)=>s+Object.keys(x.s).length,0):0;
   const when={there:0,soon:0,nodate:0};trips.forEach(t=>{const w=tripWhen(cleanTrip(t.data));if(w in when)when[w]++});
   const cityN=new Map();trips.forEach(t=>new Set(cleanTrip(t.data).stays.map(s=>s.city)).forEach(c=>cityN.set(c,(cityN.get(c)||0)+1)));
@@ -91,7 +91,7 @@ function today(){
       ${A?tile(opens?n(oT):"–","app opens today",opens?pct(oT,oLW)+" vs last week":"not counting yet",{dn:oT<oLW,tag:"app"}):""}
       ${W?tile(visits?n(vT):"–","website visits today",visits?pct(vT,vLW)+" vs last week":"not counting yet",{dn:vT<vLW,tag:"web"}):""}
       ${tile(n(b7),mode==="both"?"both, last 7 days":mode==="app"?"opens, last 7 days":"visits, last 7 days",pct(b7,bP7),{dn:b7<bP7})}
-      ${tile(n(newT),"new accounts today",n(trips.length)+" in total")}
+      ${tile(n(newT),"new accounts today",n(acc.length)+" in total")}
       ${tile(stamps?n(stT):"–","stamps today",stamps?n(stAll)+" in total":"stamps rule not published")}
       ${tile(n(w),"Scout picks waiting",w?"review →":"all done ✓",{dn:!!w,go:"scout"})}</div>
     <div class="wa-grid">
@@ -103,7 +103,7 @@ function today(){
       </div></div>`;
 }
 function people(){
-  const {trips}=data,wk=Date.now()-7*DAY,wk2=Date.now()-14*DAY;
+  const {trips}=data,acc=accountsOf(trips,data.users),wk=Date.now()-7*DAY,wk2=Date.now()-14*DAY;
   const planned=trips.filter(t=>hasTrip(cleanTrip(t.data))).length;
   const act=trips.filter(t=>t.updated>wk).length,actPrev=trips.filter(t=>t.updated>wk2&&t.updated<=wk).length;
   const shared=trips.filter(t=>t.members.length),invited=shared.reduce((a,t)=>a+t.members.length,0);
@@ -111,15 +111,15 @@ function people(){
   const chip=(t,c)=>{const w=tripWhen(c),d=Math.floor((Date.now()-t.updated)/DAY);
     return w==="there"?`<span class="wa-chip b">in Japan</span>`:Date.now()-t.created<2*DAY?`<span class="wa-chip o">new</span>`:d<1?`<span class="wa-chip g">active today</span>`:`<span class="wa-chip">${esc(ago(t.updated))}</span>`};
   const ql=q.trim().toLowerCase();
-  const rows=[...trips].sort((a,b)=>b.updated-a.updated).filter(t=>!ql||(t.email||t.emails[t.uid]||"").toLowerCase().includes(ql)).map(t=>{const c=cleanTrip(t.data),em=t.email||t.emails[t.uid]||"",inT=memberOf.get(t.uid),k=allIds(c).length;
+  const rows=[...acc].sort((a,b)=>b.updated-a.updated).filter(t=>!ql||(t.email||t.emails[t.uid]||"").toLowerCase().includes(ql)).map(t=>{const c=cleanTrip(t.data),em=t.email||t.emails[t.uid]||"",inT=memberOf.get(t.uid),k=allIds(c).length;
     const trip=[c.stays.map(s=>D(CITIES[s.city],"n")).join(", "),k?k+" places":""].filter(Boolean).join(" · ")||"no trip yet";
     const tog=t.members.length?`👥 owner · ${t.members.length+1}`:inT?"👥 member":"";
-    return `<tr><td><span class="wa-av">${esc((em[0]||"?").toUpperCase())}</span><span dir="ltr">${em?esc(em):`<span class="wa-mu">email not saved yet</span>`}</span></td><td>${esc(trip)}</td><td>${tog}</td><td>${st.get(t.uid)||"–"}</td><td>${fmtDay(t.created)}</td><td>${chip(t,c)}</td></tr>`}).join("");
-  return `<div class="wa-tiles four">${tile(n(trips.length),"accounts",`+${trips.filter(t=>t.created>wk).length} this week`)}${tile(n(planned),"with a trip planned",trips.length?Math.round(planned/trips.length*100)+"% of accounts":"")}
+    return `<tr><td><span class="wa-av">${esc((em[0]||"?").toUpperCase())}</span><span dir="ltr">${em?esc(em):`<span class="wa-mu">email not saved yet</span>`}</span>${viaChip(t)?` <span class="wa-chip">${viaChip(t)}</span>`:""}</td><td>${esc(trip)}</td><td>${tog}</td><td>${st.get(t.uid)||"–"}</td><td>${fmtDay(t.created)}</td><td>${chip(t,c)}</td></tr>`}).join("");
+  return `<div class="wa-tiles four">${tile(n(acc.length),"accounts",`+${acc.filter(t=>t.created>wk).length} this week`)}${tile(n(planned),"with a trip planned",acc.length?Math.round(planned/acc.length*100)+"% of accounts":"")}
       ${tile(n(act),"active this week",(act>=actPrev?"▲ ":"▼ ")+Math.abs(act-actPrev)+" vs last week",{dn:act<actPrev})}${tile(n(shared.length),"shared trips",invited+" people invited")}</div>
     <div class="wa-grid even">${card("New trips per week","last 8 weeks",weekly(trips))}
       ${card("Shared trips","",shared.length?`<table class="wa-tb"><tr><th>Owner</th><th>People</th><th>Last change</th></tr>${shared.sort((a,b)=>b.updated-a.updated).map(t=>`<tr><td dir="ltr">${esc(t.email||t.emails[t.uid]||"—")}</td><td>${t.members.length+1}</td><td>${ago(t.updated)}</td></tr>`).join("")}</table>`:muted("No shared trips yet."))}</div>
-    ${card("Accounts",`${trips.length} · latest first`,`${muted("Accounts that saved a trip. Everyone who signed up: Firebase console → Authentication → Users.")}
+    ${card("Accounts",`${acc.length} · latest first`,`${muted("Everyone who has logged in since sign-ins were first noted (17 Nov 2026), and every account with a trip. Older sign-ups that never saved a trip: Firebase console → Authentication → Users.")}
       <div class="wa-scroll"><table class="wa-tb wa-acc"><tr><th>Account</th><th>Trip</th><th>Together</th><th>Stamps</th><th>Joined</th><th></th></tr>${rows||`<tr><td colspan="6" class="wa-mu">${ql?"No account matches.":"No accounts yet."}</td></tr>`}</table></div>`)}`;
 }
 function places(){

@@ -127,12 +127,20 @@ service cloud.firestore {
             : fresh());
     }
 
+    // active: the shared trip you're planning. email, name, via ("google"
+    // or "email") and seen (last sign-in, ISO time) are only for the owner's
+    // dashboard, so it can list accounts that haven't saved a trip yet. The
+    // email has to be your own login email.
     match /users/{uid} {
       allow read: if admin() || (request.auth != null && me() == uid);
       allow delete: if request.auth != null && me() == uid;
       allow create, update: if request.auth != null && me() == uid
-        && request.resource.data.keys().hasOnly(['active'])
-        && request.resource.data.active is string;
+        && request.resource.data.keys().hasOnly(['active', 'email', 'name', 'via', 'seen'])
+        && (!('active' in request.resource.data) || request.resource.data.active is string)
+        && (!('email' in request.resource.data) || request.resource.data.email == request.auth.token.email)
+        && (!('name' in request.resource.data) || (request.resource.data.name is string && request.resource.data.name.size() <= 80))
+        && (!('via' in request.resource.data) || request.resource.data.via in ['google', 'email'])
+        && (!('seen' in request.resource.data) || (request.resource.data.seen is string && request.resource.data.seen.size() <= 40));
     }
   }
 }

@@ -72,10 +72,10 @@ const rank=(rows,sub)=>rows.map(([p,v],i)=>`<button type="button" class="ad-it" 
 async function load(){
   busy=true;err="";draw();
   const safe=p=>p.catch(e=>{console.warn(e);return null});
-  const [trips,opens,visits,stamps]=await Promise.all([safe(allTrips()),safe(days("opens")),safe(days("visits")),safe(allStamps()),safe(loadScoutLive())]);
+  const [trips,opens,visits,stamps,,users]=await Promise.all([safe(allTrips()),safe(days("opens")),safe(days("visits")),safe(allStamps()),safe(loadScoutLive()),safe(allUsers())]);
   busy=false;
   if(!trips){err="Couldn't load the trips. Check your connection, or that the latest firestore.rules are published.";draw();return}
-  data={trips,opens,visits,stamps,at:new Date()};draw();
+  data={trips,opens,visits,stamps,users,at:new Date()};draw();
   if(typeof window.tnRenderMore==="function")tnRenderMore();
 }
 
@@ -83,7 +83,7 @@ async function load(){
 function today(){
   const {trips,opens,stamps}=data,wk=Date.now()-7*DAY;
   const oT=opens?sumDays(opens,0,1):0,oLW=opens?sumDays(opens,7,1):0,o7=opens?sumDays(opens,0,7):0,oP7=opens?sumDays(opens,7,7):0;
-  const newT=trips.filter(t=>riyadhDay(t.created)===riyadhDay(new Date())).length;
+  const acc=accountsOf(trips,data.users),newT=acc.filter(t=>riyadhDay(t.created)===riyadhDay(new Date())).length;
   const stT=stamps?stamps.reduce((s,x)=>s+Object.values(x.s).filter(d=>d===todayJ()).length,0):0;
   const stAll=stamps?stamps.reduce((s,x)=>s+Object.keys(x.s).length,0):0;
   // Trips by their dates: counts only.
@@ -98,13 +98,13 @@ function today(){
   const line=opens?`${n(oT)} app open${oT===1?"":"s"} today${oLW||oT?`, ${oT>=oLW?n(oT-oLW)+" more":n(oLW-oT)+" fewer"} than last ${new Date().toLocaleDateString("en-GB",{weekday:"long",timeZone:"Asia/Riyadh"})}`:""}. ${n(newT)} new account${newT===1?"":"s"} and ${n(stT)} stamp${stT===1?"":"s"} collected.`:"App opens start counting once the new rules are published.";
   return `<div class="ad-hi"><small>${esc(day.toUpperCase())}</small><b>Hi ${esc(name)} 🐾</b><p>${esc(line)}</p><img src="assets/cat.png" alt=""></div>
     <div class="ad-tiles">${tile(n(oT),"app opens today",opens?pct(oT,oLW)+" vs last week":"not counting yet",oT<oLW)}${tile(n(o7),"opens, last 7 days",opens?pct(o7,oP7):"",o7<oP7)}
-      ${tile(n(newT),"new accounts today",n(trips.length)+" in total")}${tile(stamps?n(stT):"–","stamps today",stamps?n(stAll)+" in total":"stamps rule not published")}</div>
+      ${tile(n(newT),"new accounts today",n(acc.length)+" in total")}${tile(stamps?n(stT):"–","stamps today",stamps?n(stAll)+" in total":"stamps rule not published")}</div>
     ${opens?card("App opens per day","last 30 days",cols(opens,"App opens per day, last 30 days","opens")):card("App opens per day","",`<p class="ad-muted">Paste the new firestore.rules (the <code>opens</code> part) in Firebase, then opens start counting.</p>`)}
     ${card("Trips happening","counts only, never names",`<div class="ad-fly"><div><b>${there}</b><span>in Japan now ✈️</span></div><div><b>${soon}</b><span>fly in the next 30 days</span></div><div><b>${nodate}</b><span>planning, no date yet</span></div></div>`)}
     ${data.visits?card("Website visits","last 30 days",`<div class="ad-mini"><span><b>${n(sumDays(data.visits,0,1))}</b> today</span><span><b>${n(sumDays(data.visits,0,7))}</b> last 7 days</span><span><b>${n(sumDays(data.visits,0,30))}</b> last 30 days</span></div>${cols(data.visits,"Website visits per day, last 30 days","visits")}`):""}`;
 }
 function people(){
-  const {trips,stamps}=data,wk=Date.now()-7*DAY,wk2=Date.now()-14*DAY;
+  const {trips,stamps}=data,acc=accountsOf(trips,data.users),wk=Date.now()-7*DAY,wk2=Date.now()-14*DAY;
   const planned=trips.filter(t=>hasTrip(cleanTrip(t.data))).length;
   const act=trips.filter(t=>t.updated>wk).length,actPrev=trips.filter(t=>t.updated>wk2&&t.updated<=wk).length;
   const shared=trips.filter(t=>t.members.length),invited=shared.reduce((a,t)=>a+t.members.length,0);
@@ -112,15 +112,15 @@ function people(){
   const stampsOf=new Map((stamps||[]).map(x=>[x.uid,Object.keys(x.s).length]));
   const memberOf=new Map();shared.forEach(t=>t.members.forEach(m=>memberOf.set(m,t)));
   const chip=t=>{const d=Math.floor((Date.now()-t.updated)/DAY);return Date.now()-t.created<2*DAY?`<span class="ad-chip o">new</span>`:d<1?`<span class="ad-chip g">active today</span>`:`<span class="ad-chip">${esc(ago(t.updated))}</span>`};
-  const rows=[...trips].sort((a,b)=>b.updated-a.updated).map(t=>{const c=cleanTrip(t.data),em=t.email||t.emails[t.uid]||"",inT=memberOf.get(t.uid);
+  const rows=[...acc].sort((a,b)=>b.updated-a.updated).map(t=>{const c=cleanTrip(t.data),em=t.email||t.emails[t.uid]||"",inT=memberOf.get(t.uid);
     const bits=[c.stays.map(s=>D(CITIES[s.city],"n")).join(", ")||"no trip yet",allIds(c).length?allIds(c).length+" places":"",stampsOf.get(t.uid)?stampsOf.get(t.uid)+" stamps":"",
-      t.members.length?`owner · ${t.members.length+1} people`:inT?"member of a shared trip":"","started "+fmtDay(t.created)].filter(Boolean).join(" · ");
+      t.members.length?`owner · ${t.members.length+1} people`:inT?"member of a shared trip":"",viaChip(t)?viaChip(t)+" login":"",(t.noTrip?"joined ":"started ")+fmtDay(t.created)].filter(Boolean).join(" · ");
     return `<div class="ad-acct"><span class="ad-av">${esc((em[0]||"?").toUpperCase())}</span><span class="ad-n"><b dir="ltr">${em?esc(em):"email not saved yet"}</b><small>${esc(bits)}</small></span>${chip(t)}</div>`}).join("");
-  return `<div class="ad-tiles">${tile(n(trips.length),"accounts",`+${trips.filter(t=>t.created>wk).length} this week`)}${tile(n(planned),"with a trip planned",trips.length?Math.round(planned/trips.length*100)+"% of accounts":"")}
+  return `<div class="ad-tiles">${tile(n(acc.length),"accounts",`+${acc.filter(t=>t.created>wk).length} this week`)}${tile(n(planned),"with a trip planned",acc.length?Math.round(planned/acc.length*100)+"% of accounts":"")}
       ${tile(n(act),"active this week",(act>=actPrev?"▲ ":"▼ ")+Math.abs(act-actPrev)+" vs last week",act<actPrev)}${tile(n(shared.length),"shared trips",invited+" people invited")}</div>
     ${card("Cities in trips","trips that include it",cityN.size?hbars([...cityN].sort((a,b)=>b[1]-a[1]).map(([c,v])=>({label:esc(D(CITIES[c],"n")),v}))):`<p class="ad-muted">No cities yet.</p>`)}
     ${card("New trips per week","last 8 weeks",weekly(trips))}
-    ${card("Accounts",`${trips.length} · latest first`,`<p class="ad-muted">Accounts that saved a trip. Everyone who signed up: Firebase console → Authentication → Users.</p>${rows||`<p class="ad-muted">No accounts yet.</p>`}`)}
+    ${card("Accounts",`${acc.length} · latest first`,`<p class="ad-muted">Everyone who has logged in since sign-ins were first noted (17 Nov 2026), and every account with a trip. Older sign-ups that never saved a trip: Firebase console → Authentication → Users.</p>${rows||`<p class="ad-muted">No accounts yet.</p>`}`)}
     ${shared.length?card("Shared trips","",shared.sort((a,b)=>b.updated-a.updated).map(t=>`<div class="ad-acct"><span class="ad-av">👥</span><span class="ad-n"><b dir="ltr">${esc(t.email||t.emails[t.uid]||"—")}</b><small>${t.members.length+1} people · last change ${esc(ago(t.updated))}</small></span></div>`).join("")):""}`;
 }
 function places(){
