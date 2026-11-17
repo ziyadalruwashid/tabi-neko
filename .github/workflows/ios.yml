@@ -64,6 +64,22 @@ jobs:
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
+      # App Store Connect only takes apps built with the iOS 26 SDK or later,
+      # and the runner defaults to an older Xcode: pick the newest Xcode 26+
+      # release installed (betas and release candidates aside).
+      - name: Use Xcode 26 or later
+        if: steps.keys.outputs.ready == 'true'
+        run: |
+          ls -d /Applications/Xcode*.app
+          X=$(ls -d /Applications/Xcode_*.app | grep -viE 'beta|_rc|release.candidate' \
+            | awk -F'Xcode_|\\.app' '{split($2,v,"."); if (v[1]+0 >= 26) printf "%05d%05d%05d %s\n", v[1], v[2], v[3], $0}' \
+            | sort | tail -1 | cut -d' ' -f2-)
+          if [ -z "$X" ]; then
+            echo "::error::No Xcode 26 or later on this runner, and App Store Connect needs the iOS 26 SDK. Change runs-on in .github/workflows/ios.yml to a newer macOS image."
+            exit 1
+          fi
+          sudo xcode-select -s "$X/Contents/Developer"
+          xcodebuild -version | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: actions/checkout@v4
         if: steps.keys.outputs.ready == 'true'
       - uses: actions/setup-node@v4
