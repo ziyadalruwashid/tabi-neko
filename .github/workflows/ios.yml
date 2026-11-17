@@ -10,8 +10,10 @@
 #   APPSTORE_KEY_ID     an App Store Connect API key's Key ID
 #   APPSTORE_ISSUER_ID  the Issuer ID shown above the list of keys
 #   APPSTORE_KEY_P8     the whole text of that key's .p8 file
-# The key needs the Admin role: Xcode then makes and renews the signing
-# certificate and profile by itself (cloud signing), so none are stored here.
+# The key needs the Admin role: each build makes its own Apple Distribution
+# certificate and App Store profile through the API, signs with them and
+# deletes them again (.github/scripts/asc_signing.py), so nothing is stored
+# here and no iPhone has to be registered on the account.
 # Each build's number is the run number, so every upload is newer than the last.
 name: iOS app
 
@@ -74,17 +76,15 @@ jobs:
         if: steps.keys.outputs.ready == 'true'
         working-directory: app
         run: npm ci && npm run web && npx cap sync ios
-      - name: Build, sign and upload to TestFlight
+      - name: Read the App Store Connect key
+        id: key
         if: steps.keys.outputs.ready == 'true'
-        working-directory: app/ios/App
         env:
           TEAM: ${{ secrets.APPLE_TEAM_ID }}
           KID: ${{ secrets.APPSTORE_KEY_ID }}
           ISS: ${{ secrets.APPSTORE_ISSUER_ID }}
           P8: ${{ secrets.APPSTORE_KEY_P8 }}
-          BUILD: ${{ github.run_number }}
         run: |
-          set -o pipefail
           # Trim stray spaces around the IDs, then rebuild the .p8 as a clean
           # PEM whatever shape it was pasted in (Windows line endings, one
           # long line, no BEGIN/END lines, or the whole file base64-encoded).
@@ -92,7 +92,6 @@ jobs:
           KID="$(printf '%s' "$KID" | tr -d '[:space:]')"
           ISS="$(printf '%s' "$ISS" | tr -d '[:space:]')"
           KEY="$RUNNER_TEMP/AuthKey_$KID.p8"
-          trap 'rm -f "$KEY"' EXIT
           python3 - "$KEY" <<'PY'
           import base64, os, re, sys
           raw = os.environ["P8"].replace("\r", "").strip()
@@ -114,12 +113,37 @@ jobs:
             exit 1
           fi
           echo "API key read OK (Key ID ${#KID} characters, Team ID ${#TEAM} characters)."
-          AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$KEY" -authenticationKeyID "$KID" -authenticationKeyIssuerID "$ISS")
+          { echo "path=$KEY"; echo "kid=$KID"; echo "iss=$ISS"; echo "team=$TEAM"; } >> "$GITHUB_OUTPUT"
+      # Manual App Store signing: no registered iPhones needed (see the script).
+      - name: Make an App Store certificate and profile for this build
+        id: sign
+        if: steps.keys.outputs.ready == 'true'
+        env:
+          KEY: ${{ steps.key.outputs.path }}
+          KID: ${{ steps.key.outputs.kid }}
+          ISS: ${{ steps.key.outputs.iss }}
+          TEAM: ${{ steps.key.outputs.team }}
+          BUNDLE: com.ziyadalruwashid.tabineko
+          PROJECT: app/ios/App/App.xcodeproj/project.pbxproj
+          WORK: ${{ runner.temp }}
+        run: python3 .github/scripts/asc_signing.py setup
+      - name: Build, sign and upload to TestFlight
+        if: steps.keys.outputs.ready == 'true'
+        working-directory: app/ios/App
+        env:
+          KEY: ${{ steps.key.outputs.path }}
+          KID: ${{ steps.key.outputs.kid }}
+          ISS: ${{ steps.key.outputs.iss }}
+          TEAM: ${{ steps.key.outputs.team }}
+          PROFILE: ${{ steps.sign.outputs.profile_name }}
+          BUNDLE: com.ziyadalruwashid.tabineko
+          BUILD: ${{ github.run_number }}
+        run: |
+          set -o pipefail
           xcodebuild -version
           xcodebuild archive -project App.xcodeproj -scheme App -configuration Release \
             -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/App.xcarchive" \
-            DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Automatic CURRENT_PROJECT_VERSION="$BUILD" \
-            "${AUTH[@]}" | tail -n 150
+            CURRENT_PROJECT_VERSION="$BUILD" | tail -n 150
           cat > "$RUNNER_TEMP/export.plist" <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -127,13 +151,27 @@ jobs:
             <key>method</key><string>app-store-connect</string>
             <key>destination</key><string>upload</string>
             <key>teamID</key><string>$TEAM</string>
-            <key>signingStyle</key><string>automatic</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>signingCertificate</key><string>Apple Distribution</string>
+            <key>provisioningProfiles</key><dict><key>$BUNDLE</key><string>$PROFILE</string></dict>
             <key>manageAppVersionAndBuildNumber</key><false/>
             <key>uploadSymbols</key><true/>
           </dict></plist>
           EOF
           xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" \
             -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/export" \
-            "${AUTH[@]}" | tail -n 80
+            -authenticationKeyPath "$KEY" -authenticationKeyID "$KID" -authenticationKeyIssuerID "$ISS" | tail -n 80
           VER=$(/usr/libexec/PlistBuddy -c 'Print :ApplicationProperties:CFBundleShortVersionString' "$RUNNER_TEMP/App.xcarchive/Info.plist")
           echo "Uploaded Tabi Neko $VER ($BUILD) to TestFlight. Apple takes about 10–30 minutes to process it before it shows in the TestFlight app." | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Remove this build's certificate, profile and key
+        if: always() && steps.keys.outputs.ready == 'true'
+        env:
+          KEY: ${{ steps.key.outputs.path }}
+          KID: ${{ steps.key.outputs.kid }}
+          ISS: ${{ steps.key.outputs.iss }}
+          CERT_ID: ${{ steps.sign.outputs.cert_id }}
+          PROFILE_ID: ${{ steps.sign.outputs.profile_id }}
+          KEYCHAIN: ${{ steps.sign.outputs.keychain }}
+        run: |
+          if [ -n "$KEY" ] && [ -f "$KEY" ]; then python3 .github/scripts/asc_signing.py cleanup; fi
+          rm -f "$KEY"

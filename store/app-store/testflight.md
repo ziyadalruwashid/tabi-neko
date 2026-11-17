@@ -1,7 +1,11 @@
 # iPhone app: TestFlight without a Mac
 
 `.github/workflows/ios.yml` builds the app on GitHub's Macs, signs it and
-uploads it to TestFlight. It runs from the Actions tab ("Run workflow") and by
+uploads it to TestFlight. No iPhone needs to be registered: each build makes
+its own App Store certificate and profile with the API key, signs with them
+and deletes them afterwards (`.github/scripts/asc_signing.py`). Apple emails
+the account holder each time a certificate is made or revoked; that's
+expected. It runs from the Actions tab ("Run workflow") and by
 itself on every merge to `main` that changes the app or the site. Until the
 four secrets below exist it skips itself with a note.
 
