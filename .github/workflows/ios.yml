@@ -34,6 +34,7 @@ on:
       - '!data/scout.json'
       - assets/**
       - .github/workflows/ios.yml
+      - .github/scripts/asc_signing.py
 
 concurrency:
   group: ios-testflight
