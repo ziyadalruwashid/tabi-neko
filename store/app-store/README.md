@@ -1,5 +1,9 @@
 # App Store screenshots and artwork
 
+The listing text (name, subtitle, description, keywords in English and
+Arabic), the App Privacy answers, the age rating and the review notes are in
+[`listing.md`](listing.md).
+
 Everything to upload in App Store Connect: **your app → Distribution → the
 version → App Previews and Screenshots**. English is the default language;
 add Arabic under **App Information → Localizable Information → Arabic** and

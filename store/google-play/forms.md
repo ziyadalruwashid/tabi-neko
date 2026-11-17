@@ -101,7 +101,7 @@ the AI chat; both are fine).
 | **App activity → Other user-generated content** (your trips, stamps, where you're staying, and reported Apollo answers) | Yes | No | No | Optional | App functionality |
 | **Messages → Other in-app messages** (questions to Apollo) | Yes | No | **Yes** (sent to write the answer, not stored) | Optional | App functionality |
 | **App activity → In-app search history** (the hotel search box) | Yes | No | **Yes** (sent to OpenStreetMap to find the place, not stored) | Optional | App functionality |
-| **App activity → App interactions** (how many Apollo questions you asked today, for the 10-a-day limit) | Yes | No | No | Optional | App functionality, Fraud prevention, security, and compliance |
+| **App activity → App interactions** (how many Apollo questions you asked today, for the 10-a-day limit; when you last logged in and whether with Google or email, for the owner's dashboard) | Yes | No | No | Optional | App functionality, Analytics, Fraud prevention, security, and compliance |
 
 ### Do NOT tick these, and why
 

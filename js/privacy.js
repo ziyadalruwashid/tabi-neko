@@ -7,7 +7,7 @@
 // Keep it true: if what the app keeps changes, change it here too.
 (function(){
 const QS=[
-  ["👀","Who can see my trip?","Only you. The owner of Tabi Neko sees totals (like how many trips include Senso-ji) and a list of accounts with their email, cities and when they last saved, never your trip itself or where you're staying. If someone shared a trip with you before, the people in it can see and edit it and see each other's email."],
+  ["👀","Who can see my trip?","Only you. The owner of Tabi Neko sees totals (like how many trips include Senso-ji) and a list of accounts with their email, name, cities, when they last saved or logged in and whether with Google or email, never your trip itself or where you're staying. If someone shared a trip with you before, the people in it can see and edit it and see each other's email."],
   ["📍","Location and camera","Your location is only used on your phone: to measure how far places are and to check you're really at a place for its stamp. Halal Lens reads the photo on your phone and never uploads it. Both ask your permission first, and you can say no."],
   ["🐱","Ask Apollo","Questions you ask Apollo are sent to Anthropic's Claude to write the answer, under Anthropic's own privacy policy. They aren't linked to your account, and we don't keep them. Each account can ask 10 questions a day, so we keep one number with your account: how many you've asked today. Only if you tap Report on an answer do we save that one question and answer, without your account, so we can fix it."],
   ["📊","What we count","One number per day for app opens and one for website visits. Nothing about you goes with it: no cookies, no IP address, no device details."],
