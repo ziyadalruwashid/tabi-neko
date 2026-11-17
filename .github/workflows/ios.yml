@@ -85,9 +85,35 @@ jobs:
           BUILD: ${{ github.run_number }}
         run: |
           set -o pipefail
+          # Trim stray spaces around the IDs, then rebuild the .p8 as a clean
+          # PEM whatever shape it was pasted in (Windows line endings, one
+          # long line, no BEGIN/END lines, or the whole file base64-encoded).
+          TEAM="$(printf '%s' "$TEAM" | tr -d '[:space:]')"
+          KID="$(printf '%s' "$KID" | tr -d '[:space:]')"
+          ISS="$(printf '%s' "$ISS" | tr -d '[:space:]')"
           KEY="$RUNNER_TEMP/AuthKey_$KID.p8"
-          printf '%s\n' "$P8" > "$KEY"
           trap 'rm -f "$KEY"' EXIT
+          python3 - "$KEY" <<'PY'
+          import base64, os, re, sys
+          raw = os.environ["P8"].replace("\r", "").strip()
+          if "BEGIN" not in raw:
+              try:
+                  dec = base64.b64decode(re.sub(r"\s", "", raw), validate=True).decode()
+                  if "BEGIN" in dec:
+                      raw = dec
+              except Exception:
+                  pass
+          body = re.sub(r"-----[A-Z ]+-----", "", raw)
+          body = re.sub(r"[^A-Za-z0-9+/=]", "", body)
+          lines = [body[i:i + 64] for i in range(0, len(body), 64)]
+          with open(sys.argv[1], "w") as f:
+              f.write("-----BEGIN PRIVATE KEY-----\n" + "\n".join(lines) + "\n-----END PRIVATE KEY-----\n")
+          PY
+          if ! openssl pkey -in "$KEY" -noout 2>/dev/null; then
+            echo "::error::APPSTORE_KEY_P8 isn't a readable App Store Connect key. Open the downloaded AuthKey_….p8 in a plain text editor, copy all of it (from -----BEGIN PRIVATE KEY----- to -----END PRIVATE KEY-----) and paste it into the secret again."
+            exit 1
+          fi
+          echo "API key read OK (Key ID ${#KID} characters, Team ID ${#TEAM} characters)."
           AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$KEY" -authenticationKeyID "$KID" -authenticationKeyIssuerID "$ISS")
           xcodebuild -version
           xcodebuild archive -project App.xcodeproj -scheme App -configuration Release \
