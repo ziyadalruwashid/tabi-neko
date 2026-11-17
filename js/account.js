@@ -118,7 +118,8 @@ async function nativeGoogle(){
   try{r=await sl.login({provider:"google",options:{}})}
   catch(e){const m=String(e&&(e.message||e.code)||e);throw /cancel/i.test(m)?{code:"GOOGLE_CANCELLED"}:{code:"GOOGLE_NATIVE",msg:m}}
   const tok=r&&r.result&&r.result.idToken;if(!tok)throw {code:"GOOGLE_NATIVE"};
-  return ID("signInWithIdp",{postBody:`id_token=${encodeURIComponent(tok)}&providerId=google.com`,requestUri:location.origin+"/",returnSecureToken:true,returnIdpCredential:true});
+  // Firebase wants an http(s) address here; the iPhone app's own is capacitor://.
+  return ID("signInWithIdp",{postBody:`id_token=${encodeURIComponent(tok)}&providerId=google.com`,requestUri:/^https?:/.test(location.origin)?location.origin+"/":"http://localhost/",returnSecureToken:true,returnIdpCredential:true});
 }
 async function googleIdp(){
   if(IS_APP)return nativeGoogle();
@@ -527,7 +528,7 @@ async function logIn(email,pw,signup,name){
 // the buddy picker, like a new email account.
 async function logInGoogle(){
   let r;
-  try{r=await googleIdp()}catch(e){if(!acct)return;if(e&&e.code==="GOOGLE_CANCELLED")return;return say(e&&e.status?failMsg(e):T("Couldn't open Google sign-in. Try again, or use your email."))}
+  try{r=await googleIdp()}catch(e){if(!acct)return;if(e&&e.code==="GOOGLE_CANCELLED")return;return say(e&&e.status?failMsg(e)+(e.code?` (${e.code})`:""):T("Couldn't open Google sign-in. Try again, or use your email.")+(e&&e.msg?` (${String(e.msg).slice(0,120)})`:""))}
   if(!acct)acct={step:"login",msg:""};
   if(r.needConfirmation||!r.idToken)return say(T("There's already a Tabi Neko account with this email. Log in with your email and password."));
   acct={...acct,busy:true,msg:""};renderAcct();
