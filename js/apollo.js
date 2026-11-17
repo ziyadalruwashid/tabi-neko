@@ -68,8 +68,8 @@ function renderApollo(){
   renderChat();
 }
 // ---- reading an answer ----
-// Apollo is asked to end with "Next: q1 | q2 | q3" (follow-up questions) and
-// to write a day plan as "HH:MM - **Place** - note" lines. Both are shown as
+// Apollo is asked to end with "Next: q1 | q2 | q3" (follow-up questions) and,
+// when you ask for a day plan, to write it as "HH:MM - **Place** - note" lines. Both are shown as
 // their own pieces, not as text. Places he bolds that are in the notebook
 // become cards under the answer.
 const NEXT=/\n?\s*(?:Next|التالي)\s*[:：]\s*(.*)$/i;
@@ -242,9 +242,11 @@ async function send(text){
   }else{
     try{
       // The newest question carries a short note: where you are and the time
-      // in Japan, and how to lay out a day plan and the follow-ups.
+      // in Japan (background only), the day-plan layout for when a plan is
+      // asked for, and the follow-ups. Without "only if", every answer
+      // turned into a schedule.
       const msgs=chatHistory(),x=context();
-      if(msgs.length)msgs[msgs.length-1]={role:"user",content:`[${x.cityName}${x.day?`, trip day ${x.day}`:""}, ${String(x.hh).padStart(2,"0")}h Japan] ${msgs[msgs.length-1].content}\n(Day plan: lines "HH:MM - **Place** - note". End: "Next: q1 | q2 | q3", in my language.)`};
+      if(msgs.length)msgs[msgs.length-1]={role:"user",content:`[Background, use only if it helps: ${x.cityName}${x.day?`, trip day ${x.day}`:""}, ${String(x.hh).padStart(2,"0")}h in Japan]\n${msgs[msgs.length-1].content}\n(Answer just what I asked. Only if I ask for a day plan or schedule, write it as lines "HH:MM - **Place** - note". End with "Next: q1 | q2 | q3", in my language.)`};
       const res=await fetch(APOLLO_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:msgs,idToken:await token()})});
       const lh=res.headers.get("X-Apollo-Left");if(lh!==null&&lh!=="")setLeft(+lh);
       let why=res.status===429?"slow":res.status===401?"login":"error";
