@@ -11,6 +11,8 @@ profile needs none, so the workflow signs manually for the App Store:
            target's Release signing at them.
   cleanup  deletes that profile and revokes that certificate, so they never
            pile up (Apple allows only a few distribution certificates).
+           It retries Apple's server errors and never fails the build; any
+           leftover is swept at the start of the next setup.
            Builds already uploaded aren't affected: Apple re-signs them.
 
 Only the standard library and the openssl and security tools are used.
@@ -51,21 +53,33 @@ def token():
     return f"{head}.{body}.{b64u(der_to_raw(sig))}"
 
 
-def call(method, path, data=None):
-    req = urllib.request.Request(API + path, method=method,
-                                 data=json.dumps(data).encode() if data else None,
-                                 headers={"Authorization": "Bearer " + token(), "Content-Type": "application/json"})
-    try:
-        with urllib.request.urlopen(req) as r:
-            raw = r.read()
-            return json.loads(raw) if raw else {}
-    except urllib.error.HTTPError as e:
-        detail = e.read().decode(errors="replace")
+def call(method, path, data=None, fatal=True, tries=3):
+    """One API call. Apple's 5xx answers are retried; a failure stops the
+    build (fatal) or, for clean-up, is only a warning and returns None."""
+    for attempt in range(1, tries + 1):
+        req = urllib.request.Request(API + path, method=method,
+                                     data=json.dumps(data).encode() if data else None,
+                                     headers={"Authorization": "Bearer " + token(), "Content-Type": "application/json"})
         try:
-            detail = "; ".join(x.get("detail") or x.get("title", "") for x in json.loads(detail)["errors"])
-        except Exception:
-            pass
-        sys.exit(f"::error::App Store Connect said {e.code} to {method} {path.split('?')[0]}: {detail}")
+            with urllib.request.urlopen(req) as r:
+                raw = r.read()
+                return json.loads(raw) if raw else {}
+        except urllib.error.HTTPError as e:
+            detail = e.read().decode(errors="replace")
+            try:
+                detail = "; ".join(x.get("detail") or x.get("title", "") for x in json.loads(detail)["errors"])
+            except Exception:
+                pass
+            if e.code == 404 and method == "DELETE":
+                return {}  # already gone
+            if e.code >= 500 and attempt < tries:
+                time.sleep(5 * attempt)
+                continue
+            msg = f"App Store Connect said {e.code} to {method} {path.split('?')[0]}: {detail}"
+            if fatal:
+                sys.exit("::error::" + msg)
+            print("::warning::" + msg)
+            return None
 
 
 def out(name, value):
@@ -73,7 +87,23 @@ def out(name, value):
         f.write(f"{name}={value}\n")
 
 
+def sweep():
+    """Delete profiles (and revoke their certificates) left behind by an
+    earlier build whose clean-up Apple refused. Only ones this script made:
+    their names start with "Tabi Neko CI"."""
+    res = call("GET", "/profiles?limit=200&include=certificates&fields[profiles]=name,certificates", fatal=False) or {}
+    for p in res.get("data", []):
+        if not p["attributes"].get("name", "").startswith("Tabi Neko CI"):
+            continue
+        certs = [c["id"] for c in (p.get("relationships", {}).get("certificates", {}).get("data") or [])]
+        call("DELETE", f"/profiles/{p['id']}", fatal=False)
+        for c in certs:
+            call("DELETE", f"/certificates/{c}", fatal=False)
+        print(f"Removed a leftover profile from an earlier build ({p['attributes']['name']}).")
+
+
 def setup():
+    sweep()
     work, bundle, team = E["WORK"], E["BUNDLE"], E["TEAM"]
     key, csr = f"{work}/dist.key", f"{work}/dist.csr"
     run("openssl", "genrsa", "-out", key, "2048")
@@ -145,10 +175,12 @@ def setup():
 
 
 def cleanup():
+    # Never fails the build: the app is already uploaded by now, and
+    # anything Apple refuses to delete here is swept at the next build.
     if E.get("PROFILE_ID"):
-        call("DELETE", f"/profiles/{E['PROFILE_ID']}")
+        call("DELETE", f"/profiles/{E['PROFILE_ID']}", fatal=False)
     if E.get("CERT_ID"):
-        call("DELETE", f"/certificates/{E['CERT_ID']}")
+        call("DELETE", f"/certificates/{E['CERT_ID']}", fatal=False)
     if E.get("KEYCHAIN"):
         subprocess.run(["security", "delete-keychain", E["KEYCHAIN"]], capture_output=True)
     print("Removed the build's certificate, profile and keychain.")
