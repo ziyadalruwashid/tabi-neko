@@ -53,8 +53,9 @@ def token():
     return f"{head}.{body}.{b64u(der_to_raw(sig))}"
 
 
-def call(method, path, data=None, fatal=True, tries=3):
-    """One API call. Apple's 5xx answers are retried; a failure stops the
+def call(method, path, data=None, fatal=True, tries=6):
+    """One API call. Apple's 5xx answers are retried for about 2.5 minutes;
+    a failure stops the
     build (fatal) or, for clean-up, is only a warning and returns None."""
     for attempt in range(1, tries + 1):
         req = urllib.request.Request(API + path, method=method,
@@ -73,7 +74,7 @@ def call(method, path, data=None, fatal=True, tries=3):
             if e.code == 404 and method == "DELETE":
                 return {}  # already gone
             if e.code >= 500 and attempt < tries:
-                time.sleep(5 * attempt)
+                time.sleep(10 * attempt)  # Apple's 500s can last a minute or two
                 continue
             msg = f"App Store Connect said {e.code} to {method} {path.split('?')[0]}: {detail}"
             if fatal:
