@@ -25,6 +25,12 @@ try{if(/[?&]app=1/.test(location.search))sessionStorage.setItem("tabineko-app","
   if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()||sessionStorage.getItem("tabineko-app")==="1"){document.documentElement.classList.add("tn-app");
     // The boarding-pass opening (js/appsplash.js), once each time the app starts.
     if(!sessionStorage.getItem("tabineko-splash"))document.documentElement.classList.add("tn-splash")}}catch(e){}
+// On an iPhone the page runs under the status bar, the notch and the Dynamic
+// Island (the CSS keeps clear of them with the safe areas). Android keeps the
+// status bar set in app/capacitor.config.json.
+// No pinch or double-tap zoom either, like any iPhone app.
+try{if(window.Capacitor&&Capacitor.getPlatform&&Capacitor.getPlatform()==="ios"){Capacitor.Plugins.StatusBar.setOverlaysWebView({overlay:true}).catch(()=>{});
+  const v=document.querySelector('meta[name="viewport"]');if(v)v.content+=",maximum-scale=1,user-scalable=no"}}catch(e){}
 // The website's landing page (js/landing.js) shows at the bare address, so
 // the notebook behind it is hidden from the first paint.
 try{if(!document.documentElement.classList.contains("tn-app")&&(!location.hash||/^#lp-/.test(location.hash))&&!location.search)document.documentElement.classList.add("lp-on")}catch(e){}
@@ -266,6 +272,7 @@ try{if(localStorage.getItem("tabineko-lang")==="ar"){document.documentElement.la
 <script src="js/appapps.js"></script>
 <script src="js/apptrips.js"></script>
 <script src="js/appgate.js"></script>
+<script src="js/appios.js"></script>
 <script>
 // Offline copy (sw.js) for the website. The store apps carry every file
 // themselves, so they skip it.

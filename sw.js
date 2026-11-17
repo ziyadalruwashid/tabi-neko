@@ -5,10 +5,12 @@
 // never sees an old version; the saved copy is only the fallback. Photos,
 // art and fonts rarely change, so they come from the saved copy first and
 // are saved as they're viewed, not all at once (there are ~30 MB of photos).
+// Bump CACHE whenever photos or art are replaced under the same file name,
+// or visitors keep the old copies.
 // Other sites (Firebase, Ask Apollo, Google Maps) are never touched.
 //
 // The store apps carry every file inside them and don't use this.
-const CACHE="tabineko-v5";
+const CACHE="tabineko-v6";
 const SHELL=["./","index.html","css/tabi.css","manifest.webmanifest",
   "data/map.js","data/places.js","data/apps.js","data/trips.js","data/crew.js","data/album.js","data/hoods.js","data/ar/ui.js","data/ar/content.js",
   "js/app.js","js/apollo.js","js/trip.js","js/share.js","js/planner.js","js/account.js","js/admin.js",

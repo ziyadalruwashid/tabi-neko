@@ -417,6 +417,7 @@ button.store{font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .member h3{font-family:var(--display);font-weight:400;font-size:clamp(24px,2.6vw,30px);line-height:1.05;margin:0 0 2px;display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 10px}
 .member h3 small{font-family:var(--jp);font-weight:500;font-size:13px;color:var(--muted)}
 .member .role{font-family:var(--body);font-style:normal;font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--c);border:1.5px solid currentColor;border-radius:4px;padding:1px 7px}
+.member[style*="--cf"] .role{color:var(--cf)}
 .member p{margin:6px 0 0;font-size:15.5px;line-height:1.5}
 .member .tip{font-family:var(--body);font-size:15.5px;line-height:1.55;color:var(--muted);margin-top:6px}
 @media (max-width:520px){.member{grid-template-columns:110px minmax(0,1fr);gap:16px}.member .initial{font-size:34px}}
@@ -2384,13 +2385,10 @@ html[dir=rtl] #crewcs .cs-hero.in-r{animation-name:csInL,csBob}html[dir=rtl] #cr
 #crewcs .cs-nm{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 #crewcs .cs-nm b{font:400 30px/1.1 var(--display)}
 #crewcs .cs-jp{font:700 13px var(--jp);color:var(--muted)}
-#crewcs .cs-pill{margin-inline-start:auto;font:800 10.5px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--c);border-radius:99px;padding:3px 10px;align-self:center}
+#crewcs .cs-pill{margin-inline-start:auto;font:800 10.5px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--cf,#fff);background:var(--c);border-radius:99px;padding:3px 10px;align-self:center}
 #crewcs .cs-panel p{font:600 13.5px/1.55 var(--body);color:#5b4436;margin:6px 0 0}
-#crewcs .cs-bub{margin-top:10px;background:color-mix(in srgb,var(--c) 12%,#fff);border-radius:16px 16px 16px 4px;padding:9px 12px;font:400 17.5px/1.3 var(--hand);color:color-mix(in srgb,var(--c) 70%,#3F2116)}
+#crewcs .cs-bub{margin-top:10px;background:color-mix(in srgb,var(--c) 12%,#fff);border-radius:16px 16px 16px 4px;padding:9px 12px;font:400 17.5px/1.3 var(--hand);color:var(--cb,color-mix(in srgb,var(--c) 70%,#3F2116))}
 html[dir=rtl] #crewcs .cs-bub{border-radius:16px 16px 4px 16px;font-family:var(--body);font-size:14.5px;font-weight:700}
-#crewcs .cs-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
-#crewcs .cs-stats div{background:#F5EDE0;border-radius:12px;padding:7px 4px;text-align:center;font:700 11.5px/1.25 var(--body);color:var(--muted)}
-#crewcs .cs-stats b{display:block;font:900 16px var(--body);color:var(--ink)}
 #crewcs .cs-links{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 #crewcs .cs-links a{font:800 12.5px var(--body);color:var(--ink);background:#F5EDE0;border-radius:99px;padding:5px 11px;text-decoration:none}
 #crewcs .cs-dots{display:flex;gap:6px;justify-content:center;margin-top:12px}
@@ -2688,16 +2686,16 @@ html[dir=rtl] .lp-bar{transform-origin:right}
 .lp-si{font-size:34px;display:inline-block;transition:transform .35s cubic-bezier(.3,1.6,.5,1)}.lp-step:hover .lp-si{transform:scale(1.2) rotate(-10deg)}
 .lp-step h3{font-size:22px;margin:10px 0 0}.lp-step p{font:600 15px/1.55 var(--body);color:var(--ink2);margin:6px 0 0}
 /* buddies */
-.lp-buds{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:34px}
+.lp-buds{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:34px}
 .lp-b{position:relative;border:0;cursor:pointer;border-radius:28px;padding:30px 20px 22px;text-align:center;background:color-mix(in srgb,var(--c) 15%,#fff);color:var(--ink);transition:transform .25s,box-shadow .25s}
 .lp-b:hover{transform:translateY(-6px);box-shadow:0 18px 30px -16px color-mix(in srgb,var(--c) 70%,#000)}
-.lp-b img{height:170px;max-width:100%;object-fit:contain;transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.lp-b img{height:170px;max-width:100%;margin:0 auto;object-fit:contain;transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
 .lp-b:hover img{transform:translateY(-8px) rotate(-4deg)}
 .lp-b.talk img{animation:lpHop .6s cubic-bezier(.3,1.6,.5,1)}
 .lp-b>b{display:block;font:400 26px var(--display);margin-top:6px}
-.lp-b small{display:inline-block;font:800 11px var(--body);letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--c);border-radius:99px;padding:3px 10px;margin-top:4px}
+.lp-b small{display:inline-block;font:800 11px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--cf,#fff);background:var(--c);border-radius:99px;padding:3px 10px;margin-top:4px}
 .lp-hi{display:block;font:400 18px var(--hand);color:color-mix(in srgb,var(--c) 70%,#3F2116);margin-top:8px}
-.lp-bq{position:absolute;left:12px;right:12px;top:-18px;background:#fff;border-radius:16px;padding:10px 12px;font:400 17px/1.3 var(--hand);color:color-mix(in srgb,var(--c) 70%,#3F2116);box-shadow:0 12px 24px -12px rgba(63,33,22,.4);opacity:0;transform:translateY(10px) scale(.9);pointer-events:none;transition:.3s cubic-bezier(.3,1.5,.5,1)}
+.lp-bq{position:absolute;left:12px;right:12px;top:-18px;background:#fff;border-radius:16px;padding:10px 12px;font:400 17px/1.3 var(--hand);color:var(--cb,color-mix(in srgb,var(--c) 70%,#3F2116));box-shadow:0 12px 24px -12px rgba(63,33,22,.4);opacity:0;transform:translateY(10px) scale(.9);pointer-events:none;transition:.3s cubic-bezier(.3,1.5,.5,1)}
 .lp-b.talk .lp-bq{opacity:1;transform:translateY(-30px)}
 html[dir=rtl] .lp-bq,html[dir=rtl] .lp-hi,html[dir=rtl] .lp-bub{font-family:var(--body);font-weight:700;font-size:15px}
 /* final */
@@ -2713,7 +2711,7 @@ html[dir=rtl] .lp-bq,html[dir=rtl] .lp-hi,html[dir=rtl] .lp-bub{font-family:var(
 @keyframes lpPaw{from{opacity:.9;transform:translate(-50%,-50%) rotate(var(--r)) scale(.5)}40%{opacity:.9;transform:translate(-50%,-50%) rotate(var(--r)) scale(1.1)}to{opacity:0;transform:translate(-50%,-90%) rotate(var(--r)) scale(1)}}
 @media (max-width:980px){.lp-nav nav{display:none}.lp-hero{grid-template-columns:1fr;padding-top:20px}.lp-stage{height:520px}
   .lp-show{grid-template-columns:1fr}.lp-fp{order:-1;min-height:540px}.lp-ph.big{width:260px;height:520px}.lp-ring{width:380px}
-  .lp-steps{grid-template-columns:1fr}.lp-path{display:none}.lp-buds{grid-template-columns:1fr}.lp-final{grid-template-columns:1fr;padding:36px 28px}.lp-qr{display:none}}
+  .lp-steps{grid-template-columns:1fr}.lp-path{display:none}.lp-buds{grid-template-columns:repeat(2,1fr)}.lp-buds>.lp-b:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - 9px)}.lp-final{grid-template-columns:1fr;padding:36px 28px}.lp-qr{display:none}}
 @media (max-width:620px){.lp-nav{gap:10px;padding:10px 14px}.lp-logo{font-size:19px}.lp-logo img{width:34px;height:34px}.lp-lang{padding:7px 10px}.lp-cta{padding:10px 15px;font-size:14px}
   .lp-stage{height:450px}.lp-ph.c{width:220px;margin-left:-110px}.lp-ph.l,.lp-ph.r{width:160px;top:80px}.lp-ph.l{left:-6%}.lp-ph.r{right:-6%}
   .lp-bub{max-width:260px;font-size:16px;left:0}.lp-chip{font-size:12px}.lp-chip.c2{top:auto;bottom:10px;right:4%}.lp-chip.c1{bottom:56px}
@@ -3136,3 +3134,165 @@ html.tn-app .hx-mbd{display:block;margin-top:3px}
 .rs-add{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:none;cursor:pointer;font:800 16px var(--body);color:var(--ink)}
 .rs-add.on{background:var(--ink);color:#fff}
 .rs-none{padding:30px 10px;text-align:center;color:var(--muted)}
+
+/* Loading photos (the app): place, area and album photos come from the
+   website (js/live.js), so each one shows a soft cream shimmer until it
+   has loaded, then fades in. Drawings and the app's own art never shimmer. */
+html.tn-app img:is([src*="assets/photos/"],[src*="assets/hoods/"],[src*="assets/album/"],[src*="_capacitor_file_"]):not(.tn-ok){
+  background:linear-gradient(100deg,#EFE6D6 30%,#FBF5EA 50%,#EFE6D6 70%) 0 0/200% 100%;animation:tnsk 1.3s linear infinite}
+html.tn-app img.tn-ok:is([src*="assets/photos/"],[src*="assets/hoods/"],[src*="assets/album/"],[src*="_capacitor_file_"]){animation:tnfade .35s ease-out}
+@keyframes tnsk{from{background-position:150% 0}to{background-position:-50% 0}}
+@keyframes tnfade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){html.tn-app img{animation:none!important}}
+
+/* ---- iPhone: iOS 26 glass ----
+   Only in the iPhone app (html.tn-ios, set by js/appshell.js), never on
+   tablets (tn-wide) or Android. The tab bar floats as a glass capsule with
+   Apollo raised in the middle; round buttons on photos, the place page's
+   bottom bar and the map's search turn to glass; sheets float with rounder
+   corners. The map runs under the bar, so what sat on its bottom edge moves
+   up by the bar's old height (--tbh). */
+html.tn-app.tn-ios{--glass:linear-gradient(165deg,rgba(255,255,255,.72) 0%,rgba(255,253,248,.34) 52%,rgba(255,248,236,.48) 100%);--glass-blur:blur(10px) saturate(2.2) brightness(1.05);
+  --glass-edge:inset 0 1.5px .5px rgba(255,255,255,.95),inset 0 -1px 1px rgba(255,255,255,.55),inset 0 0 0 1px rgba(255,255,255,.5),inset 0 -12px 16px -14px rgba(63,33,22,.22);
+  --glass-sh:0 14px 34px rgba(63,33,22,.18),0 2px 6px rgba(63,33,22,.1),0 0 0 .5px rgba(63,33,22,.12);--tbh:calc(76px + env(safe-area-inset-bottom))}
+html.tn-app.tn-ios:not(.tn-wide) #tabbar{left:16px;right:16px;bottom:max(12px,calc(env(safe-area-inset-bottom) - 14px));padding:8px 4px 7px;border:0;border-radius:32px;
+  background:var(--glass);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);box-shadow:var(--glass-sh),var(--glass-edge)}
+html.tn-app.tn-ios:not(.tn-wide) .tb-apo{margin-top:-22px}
+html.tn-app.tn-ios:not(.tn-wide) .tb-cat{border:3px solid rgba(255,255,255,.9);box-shadow:0 6px 16px rgba(241,78,36,.35)}
+html.tn-app.tn-ios :is(.pv-btns .pv-cb,.ar-back,.at-cbtn .at-cb),html.tn-app.tn-ios .mp-search{background:var(--glass);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);box-shadow:var(--glass-sh),var(--glass-edge)}
+html.tn-app.tn-ios .mp-search{border-radius:999px}
+html.tn-app.tn-ios .pv-cta{background:var(--glass);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);border-top:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+html.tn-app.tn-ios:not(.tn-wide) .tpick,html.tn-app.tn-ios:not(.tn-wide) #atsheet:not([hidden]){padding:0 8px 8px}
+html.tn-app.tn-ios:not(.tn-wide) .tpick-sheet{border-radius:38px;padding-bottom:max(8px,calc(env(safe-area-inset-bottom) - 8px));box-shadow:0 12px 40px rgba(63,33,22,.24),inset 0 1px 0 rgba(255,255,255,.85)}
+html.tn-app.tn-ios:not(.tn-wide) .at-sh{border-radius:38px;padding-bottom:calc(14px + env(safe-area-inset-bottom));box-shadow:0 12px 40px rgba(63,33,22,.24)}
+html.tn-app.tn-ios:not(.tn-wide) #amap:not([hidden]){bottom:0}
+html.tn-app.tn-ios:not(.tn-wide) .mp-peek{bottom:calc(12px + var(--tbh))}
+html.tn-app.tn-ios:not(.tn-wide) .mp-fabs{bottom:calc(186px + var(--tbh))}
+html.tn-app.tn-ios:not(.tn-wide) .mp-dir{bottom:calc(150px + var(--tbh))}
+html.tn-app.tn-ios:not(.tn-wide) :is(.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right){bottom:calc(150px + var(--tbh))}
+html.tn-app.tn-ios:not(.tn-wide) .mp-sheet{padding-bottom:var(--tbh);box-sizing:border-box}
+
+/* ---- iPhone: moving between pages (js/appios.js) ----
+   The soft shade under a page while it slides, its shadow on the edge that
+   leads, and the floating buttons that would jump while a tab's own page
+   moves. Long-pressing a photo or a link doesn't pop up a web preview. */
+html.tn-ios .ios-dim{position:fixed;inset:0;background:rgba(30,18,10,.12);pointer-events:none}
+html.tn-ios .ios-top{box-shadow:-10px 0 30px rgba(30,18,10,.16)}
+html.tn-ios[dir=rtl] .ios-top{box-shadow:10px 0 30px rgba(30,18,10,.16)}
+html.tn-ios .ios-moving :is(.at-fab,.mp-cities){visibility:hidden}
+html.tn-ios .ios-snap{pointer-events:none}
+html.tn-ios :is(img,a){-webkit-touch-callout:none}
+/* The contributors' sunburst and bobbing character hold still while their
+   page is being swiped, so it moves without a stutter. */
+html.tn-ios #crewcs.ios-moving :is(.cs-ray,.cs-hero){animation-play-state:paused}
+
+/* ---- iPhone: sheets rise and sink (js/appios.js) ----
+   A sheet rises from the very bottom over a fading shade and sinks back down
+   when it closes; the short slide-ins they had are replaced. The copy that
+   sinks (ios-ghost) can't be tapped. */
+html.tn-app.tn-ios:not(.tn-wide) :is(.tpick:not([hidden]),.tpick:not([hidden])>.tpick-sheet,.mp-cities,#aphome .ah-sscrim,#aphome .ah-sheet,#trview .tr-scrim,#trview .tr-sheet,.pf-dim,.pf-sheet){animation:none}
+html.tn-ios .ios-ghost{pointer-events:none}
+
+/* ---- iPhone: glass buttons and bars (iOS 26) ----
+   Every round button (back, close, share, the map's buttons) is a glass
+   bead; the floating actions are tinted glass; the bars that stay at the
+   top let what scrolls under them blur through; chips over the map, the
+   Explore search and city, the Upcoming/Past switch and the "＋" in lists
+   take the iPhone's shapes. iPhone only (html.tn-ios). */
+html.tn-app.tn-ios{--glass-sh2:0 6px 18px rgba(63,33,22,.17),0 1px 3px rgba(63,33,22,.1),0 0 0 .5px rgba(63,33,22,.12);--glass-bar:color-mix(in srgb,var(--paper) 62%,transparent);
+  --glass-tint:linear-gradient(165deg,color-mix(in srgb,var(--lantern) 68%,#fff) 0%,color-mix(in srgb,var(--lantern) 86%,transparent) 50%,color-mix(in srgb,var(--lantern) 92%,#000) 100%);
+  --glass-ink:linear-gradient(165deg,rgba(112,76,58,.86) 0%,rgba(63,33,22,.82) 55%,rgba(46,23,14,.9) 100%);--bar-blur:blur(20px) saturate(2)}
+html.tn-app.tn-ios :is(.pv-cb,.at-cb,.at-shx,.py-x,.pr-x,.ah-x,.tr-x,.cs-x,.ss-x,.mp-fab,.mp-ch,.xs-city,.ax-search,.ln-page .ln-x,.ln-page .ln-askb){border:0;
+  background:var(--glass);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);box-shadow:var(--glass-sh2),var(--glass-edge)}
+html.tn-app.tn-ios .cp-x{background:var(--glass)!important;-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);box-shadow:var(--glass-sh2),var(--glass-edge)}
+html.tn-app.tn-ios :is(.acct-x,.pl-x,.pf-x){width:34px;height:34px;padding:0;border-radius:50%;display:grid;place-items:center;font-size:19px;color:var(--ink);
+  background:var(--glass);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);box-shadow:var(--glass-sh2),var(--glass-edge)}
+html.tn-app.tn-ios :is(.ax-search,.xs-city){border-radius:999px}
+html.tn-app.tn-ios .xs-night .xs-city{background:rgba(255,255,255,.16);box-shadow:0 6px 18px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.3)}
+html.tn-app.tn-ios .mp-ch.on{background:var(--glass-ink);color:#fff;box-shadow:var(--glass-sh2),inset 0 1px 0 rgba(255,255,255,.25)}
+html.tn-app.tn-ios .mp-ch.hal.on{background:color-mix(in srgb,#2E8B3E 84%,transparent)}
+html.tn-app.tn-ios .mp-ch.mp-city{background:var(--glass-tint);color:#fff;box-shadow:var(--glass-sh2),inset 0 1px 0 rgba(255,255,255,.45)}
+/* Over the camera: dark glass. */
+html.tn-app.tn-ios #lens:not(:has(.ln-page)) :is(.ln-x,.ln-back,.ln-askb){background:rgba(20,14,10,.3);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 0 1px rgba(255,255,255,.12)}
+/* Tinted glass for the actions that float. */
+html.tn-app.tn-ios :is(.at-fab,.tv-plus){background:var(--glass-tint);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  box-shadow:0 10px 26px rgba(241,78,36,.38),inset 0 1.5px .5px rgba(255,255,255,.75),inset 0 -1px 1px rgba(255,255,255,.35),inset 0 0 0 1px rgba(255,255,255,.28)}
+html.tn-app.tn-ios .lv-map{background:var(--glass-ink);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);box-shadow:0 8px 22px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.25)}
+/* The place page's bottom bar: capsules. */
+html.tn-app.tn-ios :is(.pv-maps,.pv-cta .addtrip){border-radius:999px}
+html.tn-app.tn-ios .pv-maps{border:0;background:rgba(255,255,255,.7);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ink) 22%,transparent)}
+/* Bars that stay at the top: what scrolls under them blurs through. */
+html.tn-app.tn-ios :is(.lv-bar,.lv-f,.tv-pills,.sv-bar,#prview .pr-top){background:var(--glass-bar);-webkit-backdrop-filter:var(--bar-blur);backdrop-filter:var(--bar-blur)}
+html.tn-app.tn-ios .sv-bar{border-bottom:0}
+/* The Upcoming / Past switch. */
+html.tn-app.tn-ios .tv-seg{border-radius:999px;padding:3px;background:color-mix(in srgb,var(--ink) 7%,transparent)}
+html.tn-app.tn-ios .tv-seg button{border-radius:999px}
+html.tn-app.tn-ios .tv-seg button.on{background:var(--sheet);box-shadow:0 3px 10px rgba(63,33,22,.12),inset 0 1px 0 #fff}
+/* "＋ add to my trip" in lists: a soft tinted circle, green once added. */
+html.tn-app.tn-ios :is(.lr-add,.mp-add,.hx-madd,.rs-add){border:0;background:color-mix(in srgb,var(--lantern) 13%,transparent);color:var(--lantern);font-weight:900}
+html.tn-app.tn-ios :is(.lr-add,.mp-add,.hx-madd,.rs-add).on{background:#2E8B3E;color:#fff}
+/* The map's credits: a glass ⓘ that opens on a tap (js/appios.js folds it). */
+html.tn-app.tn-ios #amap .maplibregl-ctrl-attrib.maplibregl-compact{background:var(--glass);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  box-shadow:var(--glass-sh2),var(--glass-edge);border-radius:14px;color:var(--ink)}
+html.tn-app.tn-ios #amap .maplibregl-ctrl-attrib-button{background-color:transparent}
+
+/* ---- iPhone: no broken-picture "?" while a photo loads ----
+   A photo that isn't packed in the app fails on its own path first and is
+   then fetched from the website (js/live.js); meanwhile iOS draws a "?"
+   over it. Until it has loaded (tn-ok) only the shimmer above shows. */
+html.tn-app.tn-ios img:is([src*="assets/photos/"],[src*="assets/hoods/"],[src*="assets/album/"],[src*="_capacitor_file_"]):not(.tn-ok){
+  content:url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7")}
+
+/* ---- iPhone: screens that hold still ----
+   Pages never slide sideways (the rows inside them still scroll), a long
+   press doesn't select text the way a web page does (except where you type),
+   and while a page, a sheet or the map is up the app behind it can't be
+   dragged (js/appios.js sets ios-lock), so only the page itself bounces. */
+html.tn-ios{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+html.tn-ios body{overflow-x:hidden;-webkit-user-select:none;user-select:none}
+html.tn-ios :is(input,textarea,select,[contenteditable=true]){-webkit-user-select:text;user-select:text}
+html.tn-ios :is(.pv-scroll,.mp-ul,#lview,.sv-body,.at-sh,.acct-sheet,.cp-list,.sb-scroll,.pf-scroll,.pf-sheet,.ln-sheet,.ln-page,.ln-ask,
+  #axview,#aphome,#trview,#trview .tr-sheet,#prview,#qiblaview,.py-scroll,.ss-main){overflow-x:hidden;overscroll-behavior:contain}
+html.tn-ios.ios-lock,html.tn-ios.ios-lock body{overflow:hidden}
+
+/* ---- iPhone: glass you can feel ----
+   Pressed, a glass button swells a little and brightens, the way iOS 26's
+   glass does; the wide ones only just. The map's chips sit in a taller
+   strip, so a swipe that's a little off scrolls the chips, not the map. */
+html.tn-app.tn-ios :is(.pv-cb,.at-cb,.at-shx,.cp-x,.py-x,.pr-x,.ah-x,.tr-x,.cs-x,.ss-x,.mp-fab,.mp-ch,.xs-city,.at-fab,.tv-plus,.lr-add,.hx-madd,.mp-add,.rs-add,.acct-x,.pl-x,.pf-x,.tb,
+  .ax-search,.lv-map,.pv-maps,.pv-cta .addtrip,.mp-search){transition:scale .35s cubic-bezier(.3,1.6,.5,1),filter .2s}
+html.tn-app.tn-ios :is(.pv-cb,.at-cb,.at-shx,.cp-x,.py-x,.pr-x,.ah-x,.tr-x,.cs-x,.ss-x,.mp-fab,.at-fab,.tv-plus,.lr-add,.hx-madd,.mp-add,.rs-add,.acct-x,.pl-x,.pf-x):active{scale:1.12;filter:brightness(1.06) saturate(1.15)}
+html.tn-app.tn-ios :is(.mp-ch,.xs-city,.tb-apo):active{scale:1.07;filter:brightness(1.05)}
+html.tn-app.tn-ios :is(.ax-search,.lv-map,.pv-maps,.pv-cta .addtrip,.mp-search):active{scale:1.025;filter:brightness(1.04)}
+html.tn-app.tn-ios .mp-chips{margin-top:4px;padding-top:6px;padding-bottom:14px;touch-action:pan-x}
+
+/* ---- iPhone: the tab bar's glass lens (js/appios.js) ----
+   The tab you're on sits on a soft pill. Pressed, the pill lifts into a
+   clear glass lens over the icons (a bright rim, a hint of colour at its
+   edges like light bending through glass), the bar swells a little and
+   the icon under the lens grows; it follows a slide along the bar. */
+html.tn-app.tn-ios .ios-lens{position:absolute;left:0;top:0;z-index:0;border-radius:999px;pointer-events:none;transform-origin:50% 50%;
+  background:color-mix(in srgb,var(--lantern) 13%,transparent);transition:background .3s,box-shadow .3s}
+html.tn-app.tn-ios .ios-lens.up{z-index:2;background:radial-gradient(120% 100% at 50% 0%,rgba(255,255,255,.5),rgba(255,255,255,.08) 55%,rgba(255,255,255,.22));
+  -webkit-backdrop-filter:saturate(1.9) brightness(1.08);backdrop-filter:saturate(1.9) brightness(1.08);
+  box-shadow:inset 0 1.5px 1px rgba(255,255,255,.95),inset 0 -1.5px 2px rgba(255,255,255,.5),inset 0 0 0 1px rgba(255,255,255,.55),
+    inset 4px 0 5px -3px rgba(255,120,90,.3),inset -4px 0 5px -3px rgba(90,160,255,.3),0 10px 26px rgba(63,33,22,.2),0 2px 6px rgba(63,33,22,.1)}
+html.tn-app.tn-ios .tb{z-index:1}
+html.tn-app.tn-ios:not(.tn-wide) #tabbar{transition:scale .45s cubic-bezier(.3,1.5,.5,1)}
+html.tn-app.tn-ios:not(.tn-wide) #tabbar.ios-press{scale:1.03}
+html.tn-app.tn-ios .tb.ios-mag{scale:1.14}
+html.tn-app.tn-wide .ios-lens{display:none}
+
+/* ---- iPhone: the edge under the status bar, and My trip's top ----
+   Scrolled content fades into a soft blur under the clock and the Dynamic
+   Island (js/appios.js shows it once a page has scrolled); over a dark sky
+   or a photo it's a dark veil. My trip's list had the notch's room added
+   twice (by the page and by the list); once is enough, so its title lines
+   up with More's and a trip's cover photo reaches the top. */
+html.tn-ios #ios-edge{position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top) + 16px);z-index:69;pointer-events:none;opacity:0;transition:opacity .25s;
+  background:linear-gradient(color-mix(in srgb,var(--paper) 88%,transparent) 35%,color-mix(in srgb,var(--paper) 0%,transparent));
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+html.tn-ios #ios-edge.on{opacity:1}
+html.tn-ios #ios-edge.dark{background:linear-gradient(rgba(14,10,28,.42) 35%,transparent)}
+html.tn-ios #tripbook{padding-top:6px}
