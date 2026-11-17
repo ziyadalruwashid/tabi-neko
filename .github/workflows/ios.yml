@@ -175,9 +175,19 @@ jobs:
             <key>uploadSymbols</key><true/>
           </dict></plist>
           EOF
-          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" \
-            -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/export" \
-            -authenticationKeyPath "$KEY" -authenticationKeyID "$KID" -authenticationKeyIssuerID "$ISS" | tail -n 80
+          # The upload talks to Apple's servers, which sometimes time out: try
+          # it up to three times, a minute apart, before failing the build.
+          ok=""
+          for try in 1 2 3; do
+            rm -rf "$RUNNER_TEMP/export"
+            if xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" \
+              -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/export" \
+              -authenticationKeyPath "$KEY" -authenticationKeyID "$KID" -authenticationKeyIssuerID "$ISS" | tail -n 80; then
+              ok=1; break
+            fi
+            [ "$try" = 3 ] || { echo "::warning::Upload to App Store Connect failed (try $try of 3), trying again in a minute."; sleep 60; }
+          done
+          [ -n "$ok" ] || { echo "::error::Upload to App Store Connect failed 3 times."; exit 1; }
           VER=$(/usr/libexec/PlistBuddy -c 'Print :ApplicationProperties:CFBundleShortVersionString' "$RUNNER_TEMP/App.xcarchive/Info.plist")
           echo "Uploaded Tabi Neko $VER ($BUILD) to TestFlight. Apple takes about 10–30 minutes to process it before it shows in the TestFlight app." | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Remove this build's certificate, profile and key
