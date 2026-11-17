@@ -11,9 +11,11 @@
 // visits/<YYYY-MM-DD> (Riyadh time), plus one per browser tab, and nothing
 // about who visited. The rules let anyone add 1 and only the owner read.
 //
-// Without a server there's no list of sign-ups to read here, only accounts
-// that have saved a trip; the full list is in the Firebase console under
-// Authentication → Users.
+// Without a server there's no list of sign-ups to read here. So the app
+// notes each account in users/<uid> when it logs in (noteMe in
+// js/account.js), and People lists those plus every account with a trip.
+// Sign-ups from before that (17 Nov 2026) that never saved a trip are only
+// in the Firebase console under Authentication → Users.
 const ADMIN_UID="ngmNqVpxwkbL3SHdXJpmHkAoUO22";
 const isAdmin=()=>!!(auth&&ADMIN_UID&&auth.uid===ADMIN_UID);
 
@@ -28,6 +30,29 @@ async function allTrips(){
   }while(next);
   return out;
 }
+
+// Everyone the app has noted at sign-in (users/<uid>, see noteMe in
+// js/account.js), as a Map of uid to {email, name, via, seen, created}.
+async function allUsers(){
+  const m=new Map();let next="";
+  do{
+    const r=await call(`${FS}/users?pageSize=300${next?"&pageToken="+encodeURIComponent(next):""}`,{token:await token()});
+    (r.documents||[]).forEach(d=>{const f=d.fields||{},v=k=>f[k]&&f[k].stringValue||"";
+      if(!v("email")&&!v("via"))return; // only "active" so far: not noted yet
+      m.set(d.name.split("/").pop(),{email:v("email"),name:v("name"),via:v("via"),seen:v("seen")?new Date(v("seen")):new Date(d.updateTime),created:new Date(d.createTime)})});
+    next=r.nextPageToken||"";
+  }while(next);
+  return m;
+}
+// The accounts for People: every trip (with how its owner logs in, when
+// known), plus everyone noted at sign-in who hasn't saved a trip yet.
+function accountsOf(trips,users){
+  users=users||new Map();const have=new Set(trips.map(t=>t.uid));
+  const out=trips.map(t=>{const u=users.get(t.uid);return u?{...t,email:t.email||u.email,via:u.via,seen:u.seen}:t});
+  users.forEach((u,uid)=>{if(!have.has(uid))out.push({uid,email:u.email,via:u.via,seen:u.seen,data:{},members:[],emails:{},created:u.created,updated:u.seen,noTrip:true})});
+  return out;
+}
+const viaChip=a=>a.via==="google"?"Google":a.via==="email"?"Email":"";
 
 const DAY=864e5;
 const riyadhDay=d=>new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Riyadh"}).format(d);

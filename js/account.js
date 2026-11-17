@@ -55,6 +55,20 @@ async function lookup(){
     const via=(u.providerUserInfo||[]).map(x=>x.providerId);
     auth={...auth,email:u.email||auth.email,name:u.displayName||"",photo:u.photoUrl||"",verified:!!u.emailVerified,pwAt:+u.passwordUpdatedAt||0,google:via.includes("google.com"),pass:via.includes("password")};saveAuth()}
   catch(e){if(e&&e.status===401)loggedOut(true)}
+  noteMe();
+}
+// Note this account for the owner's dashboard (users/<uid>): email, name,
+// how it logs in and when it was last seen. Without a server Firestore has
+// no list of sign-ups, so this is how an account that hasn't saved a trip
+// yet (often a quick Google sign-in) still shows there. Right after logging
+// in, then at most twice a day; failure is silent.
+async function noteMe(via,now){
+  if(!FB_ON||!auth||!auth.uid)return;
+  const k="tabineko-noted-"+auth.uid,t=Date.now();
+  try{if(!now&&t-(+localStorage.getItem(k)||0)<12*3600e3)return}catch(e){}
+  via=via||(auth.google?"google":"email");
+  try{await fsPatch("users/"+me(),{email:S(auth.email||""),name:S(String(auth.name||"").slice(0,80)),via:S(via),seen:S(new Date(t).toISOString())},["email","name","via","seen"]);
+    try{localStorage.setItem(k,String(t))}catch(e){}}catch(e){}
 }
 // Change your name or picture (the travel buddy's web address).
 async function updateProfile(fields){await ID("update",{idToken:await token(),...fields,returnSecureToken:false});await lookup()}
@@ -497,7 +511,7 @@ async function logIn(email,pw,signup,name){
       try{await ID("sendOobCode",{requestType:"VERIFY_EMAIL",idToken:r.idToken})}catch(e){}}
     saveAuth();
     toast(T(signup?"Account created ✓ Your trip is saved to your account.":"Logged in ✓ Your trip is saved to your account."));
-    acct.busy=false;await afterLogin();
+    acct.busy=false;await afterLogin();noteMe("email",true);
     if(signup){if(!(acct&&acct.step==="choose"))openAcct("welcome")}else lookup();
   }catch(e){
     const c=e&&e.code;
@@ -522,7 +536,7 @@ async function logInGoogle(){
       if(b)auth.photo=BUDDY_BASE+b.img}
     saveAuth();
     toast(T(r.isNewUser?"Account created ✓ Your trip is saved to your account.":"Logged in ✓ Your trip is saved to your account."));
-    acct.busy=false;await afterLogin();
+    acct.busy=false;await afterLogin();noteMe("google",true);
     if(r.isNewUser){if(!(acct&&acct.step==="choose"))openAcct("welcome")}else lookup();
   }catch(e){say(e&&e.code==="USER_DISABLED"?T("This account has been turned off."):failMsg(e))}
 }
