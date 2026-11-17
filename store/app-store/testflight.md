@@ -44,9 +44,11 @@ four secrets below exist it skips itself with a note.
 
 ## What's different on iPhone for now
 
-- Sign-in is email and password only. Google sign-in on iOS needs an iOS
-  client ID in Firebase, and Apple then requires Sign in with Apple as well;
-  both come before the App Store review (not needed for TestFlight).
+- Sign-in: email and password, and Google (the iOS client ID of the
+  "Tabi Neko iOS" app in Firebase is GOOGLE_IOS in `js/account.js`, its
+  reversed form a URL scheme in `Info.plist`). Because Google is offered,
+  App Store review (guideline 4.8) also needs Sign in with Apple; TestFlight
+  doesn't.
 - `ITSAppUsesNonExemptEncryption` is `false` in `Info.plist` (the app only
   uses standard HTTPS), so App Store Connect doesn't ask about encryption on
   each build.
