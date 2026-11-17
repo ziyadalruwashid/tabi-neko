@@ -78,17 +78,20 @@ const BUDDY_BASE="https://tabi-neko.vercel.app/";
 // GOOGLE_WEB is the Web client ID of Firebase's Google sign-in (Firebase →
 // Authentication → Sign-in method → Google → Web SDK configuration). It's
 // public by design; the client secret never goes here. Google won't open its
-// sign-in page inside the app's web view, so the app uses Android's own
-// account picker instead (@capgo/capacitor-social-login). That only works
-// for an app whose signing fingerprint (SHA-1) is registered in Firebase;
+// sign-in page inside the app's web view, so the app uses the phone's own
+// (Android's account picker, Google Sign-In on iPhone, both through
+// @capgo/capacitor-social-login). On Android that only works for an app
+// whose signing fingerprint (SHA-1) is registered in Firebase;
 // GOOGLE_IN_APP turns it off in the app again if that's ever needed.
 const GOOGLE_WEB="568755432691-h5ek5vcounaooeoj86f66i3v9fdre54q.apps.googleusercontent.com",GOOGLE_IN_APP=true;
 const SOCIAL=()=>window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.SocialLogin;
-// On iPhone, Google sign-in also needs an iOS client ID from Firebase (and
-// Apple then requires Sign in with Apple too), so it stays off there until
-// that's set up; email and password work as on Android.
+// On iPhone, Google's own sign-in needs the iOS client ID Firebase made for
+// the iPhone app (GoogleService-Info.plist → CLIENT_ID; its reversed form is
+// the URL scheme in app/ios/App/App/Info.plist that Google returns to). The
+// ID token is still checked by Firebase, so GOOGLE_WEB stays the server ID.
+const GOOGLE_IOS="568755432691-ngmsepshvasdaqtda020rpucblkk6mcf.apps.googleusercontent.com";
 const IOS=()=>!!(window.Capacitor&&Capacitor.getPlatform&&Capacitor.getPlatform()==="ios");
-const googleOn=()=>FB_ON&&!!GOOGLE_WEB&&(!IS_APP||(GOOGLE_IN_APP&&!!SOCIAL()&&!IOS()));
+const googleOn=()=>FB_ON&&!!GOOGLE_WEB&&(!IS_APP||(GOOGLE_IN_APP&&!!SOCIAL()&&(!IOS()||!!GOOGLE_IOS)));
 // An account that only signs in with Google has no password to type.
 const googleOnly=()=>!!auth&&!!auth.google&&auth.pass===false;
 const G_LOGO=`<svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>`;
@@ -104,12 +107,12 @@ function googleToken(){return new Promise((ok,no)=>{
   google.accounts.oauth2.initTokenClient({client_id:GOOGLE_WEB,scope:"openid email profile",
     callback:r=>r&&r.access_token?ok(r.access_token):no({code:"GOOGLE_CANCELLED"}),
     error_callback:()=>no({code:"GOOGLE_CANCELLED"})}).requestAccessToken()})}
-// The app: Android's account picker gives a Google ID token, which Firebase
+// The app: the phone's Google sign-in gives a Google ID token, which Firebase
 // turns into the same Tabi Neko login as on the website.
 let socialReady=null;
 async function nativeGoogle(){
   const sl=SOCIAL();if(!sl)throw {};
-  if(!socialReady)socialReady=sl.initialize({google:{webClientId:GOOGLE_WEB,skipAuthOnlyAuthorizationAfterSignIn:true}}).catch(e=>{socialReady=null;throw e});
+  if(!socialReady)socialReady=sl.initialize({google:IOS()?{iOSClientId:GOOGLE_IOS,iOSServerClientId:GOOGLE_WEB,mode:"online"}:{webClientId:GOOGLE_WEB,skipAuthOnlyAuthorizationAfterSignIn:true}}).catch(e=>{socialReady=null;throw e});
   await socialReady;
   let r;
   try{r=await sl.login({provider:"google",options:{}})}
